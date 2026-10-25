@@ -4,6 +4,9 @@ import { supabaseAdmin } from '@/lib/flows/admin-client'
 import { resolveFallbackPolicy } from '@/lib/flows/fallback'
 import { resumeDueFlowRuns } from '@/lib/flows/engine'
 import { isMissingSchemaError } from '@/lib/db/schema-compat'
+import { pollSheetTriggers } from '@/lib/google/sheet-trigger'
+
+export const maxDuration = 60
 
 /**
  * Sweep abandoned active flow runs.
@@ -53,6 +56,12 @@ export async function GET(request: Request) {
   // Timed steps whose wait is over (migration 048).
   const resumed = await resumeDueFlowRuns()
 
+  // "On New Row Google Sheet" flows (migration 051). Never fails the sweep.
+  const sheets = await pollSheetTriggers().catch((err) => {
+    console.error('[flows-cron] sheet poll failed:', err instanceof Error ? err.message : err)
+    return null
+  })
+
   // Expired report files are dropped; their history rows stay (050).
   await admin.rpc('purge_expired_reports').then(
     () => undefined,
@@ -77,7 +86,7 @@ export async function GET(request: Request) {
     console.error('[flows-cron] active-run scan failed:', error.message)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
-  if (!runs?.length) return NextResponse.json({ swept: 0, resumed })
+  if (!runs?.length) return NextResponse.json({ swept: 0, resumed, sheets })
 
   type Row = {
     id: string
@@ -123,5 +132,5 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.json({ swept, resumed })
+  return NextResponse.json({ swept, resumed, sheets })
 }

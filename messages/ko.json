@@ -1324,6 +1324,10 @@
         "call_api": {
           "label": "API 호출",
           "blurb": "저장된 API에 요청을 보냅니다. 성공 또는 실패."
+        },
+        "google_sheets": {
+          "label": "Google 시트",
+          "blurb": "Google 시트에 행을 추가합니다. 성공 또는 실패."
         }
       }
     },
@@ -1520,13 +1524,11 @@
       "deleteLocallyAria": "로컬에서 템플릿 삭제",
       "deleteMetaLocallyTitle": "Meta와 로컬에서 삭제",
       "deleteLocallyTitle": "로컬에서 삭제",
-
       "dialogEditTitle": "메시지 템플릿 수정",
       "dialogNewTitle": "새 메시지 템플릿",
       "dialogEditDesc": "변경 사항을 저장해 Meta에 재제출하세요. 검토 중에는 상태가 다시 대기 중으로 바뀝니다.",
       "dialogNewDesc": "템플릿을 만들어 Meta 승인을 요청하세요. 승인되면 브로드캐스트와 인박스에서 사용할 수 있습니다.",
       "authWarning": "AUTHENTICATION 템플릿은 본문과 OTP 버튼 형식이 고정되어 있어 별도의 빌더가 필요합니다. 지금은 Meta WhatsApp 관리자에서 만든 뒤 <bold>Meta에서 동기화</bold>로 가져오세요.",
-
       "templateName": "템플릿 이름",
       "namePlaceholder": "예: order_confirmation",
       "nameFixed": "템플릿이 Meta에 존재하면 이름이 고정됩니다 — 변경하려면 새 템플릿을 만드세요.",
@@ -1535,7 +1537,6 @@
       "language": "언어",
       "langFixed": "템플릿이 Meta에 존재하면 언어가 고정됩니다.",
       "langHint": "Meta의 정확한 코드와 일치해야 합니다 — <code>en_US</code>와 <code>en</code>은 다른 코드입니다.",
-
       "header": "헤더",
       "headerNone": "없음",
       "headerText": "텍스트",
@@ -1545,7 +1546,6 @@
       "headerTextPlaceholder": "헤더 텍스트 (최대 60자, {{1}} 선택 가능)",
       "headerSampleAria": "헤더 변수 샘플 값",
       "headerSamplePlaceholder": "{{1}}의 샘플 값 (Meta 검토에 필요)",
-
       "uploadImage": "이미지 업로드",
       "uploadVideo": "동영상 업로드",
       "uploadDocument": "문서 업로드",
@@ -1557,17 +1557,14 @@
       "mediaHint": "파일을 업로드하거나 공개 HTTPS 링크를 붙여넣으세요 — 검토를 위해 자동으로 Meta에 업로드됩니다.",
       "videoHint": " MP4 또는 3GPP, 16MB 이하, 60초 이하 권장.",
       "documentHint": " PDF, Word, PowerPoint, Excel 또는 텍스트, 링크는 100MB 이하(여기서 업로드 시 16MB 이하).",
-
       "bodyText": "본문 텍스트",
       "bodyPlaceholder": "안녕하세요 {{1}}님, 주문 {{2}}이(가) 확정되었습니다.",
       "sampleValues": "샘플 값 (Meta가 템플릿 검토에 사용합니다)",
       "bodyHint": "변수에는 {{1}}, {{2}}를 사용하세요 ({{1}}부터 연속되어야 합니다).",
       "sampleAria": "본문 변수 {var}의 샘플 값",
       "samplePlaceholder": "{var}의 샘플",
-
       "footer": "푸터 (선택)",
       "footerPlaceholder": "선택적 푸터 텍스트 (최대 60자)",
-
       "buttons": "버튼 (선택)",
       "addButton": "버튼 추가",
       "buttonsLimit": "최대 {max}개 버튼. QUICK_REPLY 버튼은 URL / 전화 / 코드 복사 버튼보다 앞에 와야 합니다.",
@@ -1580,19 +1577,16 @@
       "urlSamplePlaceholder": "{{1}}의 예시 값 (URL에 변수가 있을 때 필요)",
       "phonePlaceholder": "+15551234567",
       "codePlaceholder": "예시 코드 (예: SUMMER20)",
-
       "cancel": "취소",
       "saving": "저장 중…",
       "submitting": "제출 중…",
       "saveResubmit": "저장 & 재제출",
       "submitApproval": "승인 요청",
-
       "deleteDialogTitle": "템플릿을 삭제하시겠습니까?",
       "deleteMetaDesc": "\"{name}\"이(가) Meta와 Bluetick에서 삭제됩니다. 이 템플릿을 사용하는 활성 브로드캐스트는 다음 전송부터 실패하기 시작합니다. 되돌릴 수 없습니다.",
       "deleteLocalDesc": "\"{name}\"이(가) Bluetick에서 삭제됩니다. Meta에 제출된 적이 없으므로 별도의 원격 정리가 필요하지 않습니다.",
       "deleting": "삭제 중…",
       "delete": "삭제",
-
       "toastLoadFailed": "템플릿을 불러오지 못했습니다",
       "toastSubmitFailed": "제출하지 못했습니다",
       "toastSubmitEditSuccess": "수정 사항이 제출되었습니다 — Meta는 보통 24시간 이내에 검토합니다.",
@@ -1739,7 +1733,8 @@
       "fields": "필드 & 태그",
       "deals": "딜 & 통화",
       "members": "팀원",
-      "api": "API 키"
+      "api": "API 키",
+      "integrations": "통합"
     },
     "groups": {
       "account": "계정",
@@ -1774,7 +1769,6 @@
       "profileSaved": "프로필이 저장되었습니다",
       "emailChangeFailed": "이메일 변경 실패: {message}",
       "profileSavedEmailCheck": "프로필이 저장되었습니다 — 이메일 주소 변경을 확인하려면 이메일을 확인하세요",
-
       "passwordTitle": "비밀번호",
       "passwordDesc": "최소 {min}자 이상 사용하세요. 변경 후에도 이 기기에서는 로그인이 유지됩니다.",
       "currentPassword": "현재 비밀번호",
@@ -1788,7 +1782,6 @@
       "currentPasswordIncorrect": "현재 비밀번호가 올바르지 않습니다",
       "passwordUpdateFailed": "비밀번호 업데이트 실패: {message}",
       "passwordUpdated": "비밀번호가 업데이트되었습니다",
-
       "sessionsTitle": "활성 세션",
       "sessionsDesc": "이 기기를 포함해 로그인되어 있는 모든 기기에서 로그아웃합니다. 노트북을 분실했거나 비밀번호를 공유한 경우 유용합니다.",
       "signOutAll": "모든 기기에서 로그아웃",
@@ -1955,6 +1948,32 @@
       "editDoc": "수정",
       "deleteDoc": "삭제",
       "loading": "불러오는 중…"
+    },
+    "integrations": {
+      "title": "통합",
+      "description": "플로우에서 사용할 외부 앱을 연결하세요.",
+      "sheetsDesc": "시트에 행이 추가되면 플로우를 시작하고, 플로우에서 행을 추가합니다(리드, 주문, 양식 답변).",
+      "loading": "불러오는 중…",
+      "needsMigration": "Google 시트를 사용하려면 데이터베이스 마이그레이션 051이 필요합니다.",
+      "notConfigured": "서버에 Google 로그인이 아직 설정되지 않았습니다(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET). docs/GOOGLE_SHEETS_SETUP.md를 참고하세요.",
+      "connectedAs": "{email}(으)로 연결됨",
+      "reconnect": "Google 다시 연결",
+      "disconnect": "연결 해제",
+      "disconnectConfirm": "Google 연결을 해제할까요? 다시 연결할 때까지 Google 시트를 사용하는 플로우가 작동하지 않습니다.",
+      "disconnected": "Google 연결이 해제되었습니다.",
+      "disconnectFailed": "Google 연결을 해제하지 못했습니다.",
+      "adminOnly": "관리자만 Google을 연결할 수 있습니다.",
+      "connect": "Google 계정 연결",
+      "connectHint": "플로우는 이 Google 계정이 편집할 수 있는 모든 시트를 열 수 있습니다. 시트를 이 계정과 편집자로 공유하세요.",
+      "results": {
+        "connected": "Google 시트가 연결되었습니다.",
+        "denied": "Google 로그인이 취소되었습니다.",
+        "error": "Google을 연결하지 못했습니다. 다시 시도하세요.",
+        "forbidden": "관리자만 Google을 연결할 수 있습니다.",
+        "invalid_state": "로그인 링크가 만료되었습니다. 다시 시도하세요.",
+        "missing_scope": "Google 화면에서 Google 시트 액세스를 허용한 후 다시 시도하세요.",
+        "not_configured": "서버에 Google 로그인이 아직 설정되지 않았습니다."
+      }
     }
   },
   "SignupPage": {
@@ -2259,6 +2278,14 @@
         "incoming_webhook": {
           "label": "수신 웹훅",
           "hint": "다른 시스템(양식, Zapier를 통한 Sheets, 웹사이트)이 이 자동화의 URL을 호출합니다."
+        },
+        "ctwa_lead": {
+          "label": "Click-to-WhatsApp 광고 리드",
+          "hint": "새 연락처의 첫 메시지가 Meta 광고에서 왔습니다."
+        },
+        "google_sheet_new_row": {
+          "label": "Google 시트 새 행",
+          "hint": "연결된 Google 시트에 행이 추가되었습니다(플로우 전용)."
         }
       },
       "timeBasedNotRunning": "참고: 예약 트리거는 아직 Bluetick에서 실행되지 않습니다. 시간 지정 후속 조치에는 \"지정 시간까지 대기\" 또는 \"대기\" 단계를 사용하세요.",
@@ -2695,7 +2722,6 @@
         "first_inbound_message": "최초 메시지",
         "interactive_reply": "버튼 / 목록 응답",
         "manual": "수동 시작",
-        "lead_ctwa": "CTWA 리드",
         "conversation_assigned": "상담원 배정 시",
         "contact_field_changed": "속성 변경 시",
         "new_contact_created": "새 리드",
@@ -2704,7 +2730,6 @@
         "sla_breached": "SLA 위반",
         "salesforce_updated": "Salesforce 리드 업데이트",
         "salesforce_new": "Salesforce 새 리드",
-        "sheets_new_row": "Google 시트 새 행",
         "incoming_webhook": "웹훅 수신 시",
         "time_based": "예약",
         "send_catalogue": "카탈로그 보내기",
@@ -2737,7 +2762,9 @@
         "format_phone": "휴대폰 번호 형식 지정",
         "google_sheets": "Google 시트",
         "ai_call": "AI 통화",
-        "fb_conversion": "Facebook 전환 이벤트"
+        "fb_conversion": "Facebook 전환 이벤트",
+        "ctwa_lead": "CTWA 리드",
+        "google_sheet_new_row": "Google 시트 새 행"
       },
       "triggerHelp": {
         "first_inbound_message": "연락처가 처음으로 메시지를 보내면 시작됩니다.",
@@ -2756,7 +2783,9 @@
         "template_delivered": "템플릿 메시지가 고객 휴대폰에 도착하면 시작됩니다.",
         "sla_breached": "응답이 받은편지함 SLA를 놓치면 시작됩니다(설정 → 받은편지함).",
         "incoming_webhook": "다른 시스템(Google 시트 스크립트, 웹사이트 양식, Zapier)이 이 플로우의 URL을 호출하면 시작됩니다.",
-        "time_based": "예약 트리거는 아직 실행되지 않습니다."
+        "time_based": "예약 트리거는 아직 실행되지 않습니다.",
+        "ctwa_lead": "새 리드가 Click-to-WhatsApp 광고에서 메시지를 보내면 시작됩니다. 그 메시지로 생성된 연락처, 또는 (선택) 기존 연락처가 해당 광고로 처음 대화를 시작한 경우입니다.",
+        "google_sheet_new_row": "Google 시트 탭에 새 행이 추가될 때마다 한 번 시작됩니다. 전화번호 열로 고객을 찾고, 없으면 새 연락처를 만듭니다."
       },
       "sections": {
         "message": "메시지 및 대화",
@@ -2987,16 +3016,54 @@
       "confirm": "확인",
       "leaveTitle": "저장되지 않은 변경 사항",
       "locked": {
-        "lead_ctwa": "Facebook(Meta 리드 광고) 연결이 필요하지만 Bluetick에는 아직 없습니다. 광고 클릭 대화에는 \"CTWA에서 온 메시지\"를 사용하세요.",
         "salesforce_updated": "Salesforce 연결(OAuth 및 필드 매핑)이 필요하지만 Bluetick에는 아직 없습니다. Salesforce가 이 플로우의 웹훅을 호출할 수 있습니다.",
         "salesforce_new": "Salesforce 연결(OAuth 및 필드 매핑)이 필요하지만 Bluetick에는 아직 없습니다. Salesforce가 이 플로우의 웹훅을 호출할 수 있습니다.",
-        "sheets_new_row": "Google 계정 연결이 필요하지만 Bluetick에는 아직 없습니다. Apps Script나 Zapier로 새 행을 \"웹훅 수신 시\"로 보낼 수 있습니다.",
         "send_catalogue": "번호에 연결된 WhatsApp 상품 카탈로그와 카탈로그 선택기가 필요하며 아직 만들지 않았습니다.",
         "tool_call": "AI 도구 호출이 필요하지만 Bluetick AI 에이전트에는 아직 없습니다.",
         "custom_event": "이벤트/분석 서비스가 필요하지만 Bluetick에는 아직 없습니다.",
-        "google_sheets": "Google 계정 연결이 필요하지만 Bluetick에는 아직 없습니다. Google Apps Script 웹 앱과 \"API 호출\"을 사용하세요.",
         "ai_call": "음성 통화 제공자(WhatsApp 통화 또는 전화 회선)가 필요합니다. 텍스트 AI 키로는 전화를 걸 수 없습니다.",
         "fb_conversion": "Meta 전환 API(데이터 세트/픽셀) 연결이 필요하지만 Bluetick에는 아직 없습니다."
+      },
+      "sheets": {
+        "checking": "Google 연결 확인 중…",
+        "needsMigration": "Google 시트를 사용하려면 데이터베이스 마이그레이션 051이 필요합니다.",
+        "notConnected": "Google 시트가 아직 연결되지 않았습니다. 관리자가 설정 → 통합에서 Google 계정을 연결할 수 있습니다.",
+        "reconnectNeeded": "Google 액세스가 만료되었거나 삭제되었습니다. 관리자가 설정 → 통합에서 Google을 다시 연결해야 합니다.",
+        "openIntegrations": "통합 열기",
+        "connectedAs": "{email} 사용 중",
+        "spreadsheet": "스프레드시트 링크",
+        "load": "불러오기",
+        "tab": "시트(탭)",
+        "pickTab": "탭 선택",
+        "refresh": "열 다시 불러오기",
+        "noHeaders": "이 탭에 머리글 행이 없습니다. 1행에 열 이름을 입력하세요.",
+        "addRowHelp": "탭 맨 아래에 행 하나를 추가합니다. 각 값은 해당 열 이름(1행) 아래에 들어갑니다.",
+        "values": "값",
+        "valuePlaceholder": "텍스트 또는 변수",
+        "staleColumns": "더 이상 머리글 행에 없음: {columns}.",
+        "removeStale": "제거",
+        "rawHint": "값은 일반 텍스트로 저장됩니다(수식은 실행되지 않음).",
+        "none": "없음",
+        "pickColumn": "열 선택",
+        "phoneColumn": "WhatsApp 번호 열",
+        "nameColumn": "이름 열",
+        "countryCode": "기본 국가 코드",
+        "countryCodeHint": "국가 코드 없이 적힌 번호에 사용됩니다. 예: 한국은 82.",
+        "rowVariables": "다음 단계에서 행 값 사용:",
+        "pollHint": "5분마다 확인합니다. 플로우를 켠 후 추가된 행만 플로우를 시작합니다. 새 연락처에는 먼저 승인된 템플릿만 보낼 수 있습니다(WhatsApp 24시간 규칙).",
+        "lastChecked": "마지막 확인",
+        "rowsStarted": "시작된 행"
+      },
+      "ctwaLead": {
+        "mode": "리드로 집계",
+        "modes": {
+          "new_contact": "새 연락처만",
+          "new_ad": "새 연락처 및 새 광고로 들어온 기존 연락처"
+        },
+        "adIds": "광고 / 게시물 ID(선택)",
+        "anyAd": "모든 광고",
+        "adIdsHint": "쉼표로 구분합니다. 비워 두면 모든 Click-to-WhatsApp 광고에 반응합니다.",
+        "variables": "다음 단계용 광고 정보:"
       }
     }
   },

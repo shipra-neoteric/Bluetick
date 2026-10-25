@@ -86,6 +86,7 @@ import {
   type TimeDelayNodeConfig,
   type WaitUntilNodeConfig,
   type CallApiNodeConfig,
+  type GoogleSheetsNodeConfig,
   isEventTrigger,
 } from "./types";
 
@@ -132,6 +133,7 @@ export const BOT_STUDIO_AUTO_NODES = new Set([
   "format_value",
   "ai_reply",
   "call_api",
+  "google_sheets",
 ]);
 
 /** Nodes that send a prompt and suspend awaiting a customer reply. */
@@ -629,10 +631,20 @@ async function evaluateConditionNode(
  */
 function interpolateVars(template: string, vars: Record<string, unknown>): string {
   if (!template) return "";
-  return template.replace(/\{\{vars\.([a-zA-Z0-9_]+)\}\}/g, (_, key) => {
-    const v = vars[key];
-    return v === undefined || v === null ? "" : String(v);
-  });
+  return template
+    .replace(/\{\{vars\.([a-zA-Z0-9_]+)\}\}/g, (_, key) => {
+      const v = vars[key];
+      return v === undefined || v === null ? "" : String(v);
+    })
+    // Event payload (sheet row, ad details, webhook body): {{trigger.a.b}}.
+    .replace(/\{\{\s*(trigger(?:\.[\w-]+)+)\s*\}\}/g, (_, token: string) =>
+      interpolateScope(`{{${token}}}`, { trigger: triggerOf(vars) }),
+    );
+}
+
+function triggerOf(vars: Record<string, unknown> | null | undefined): Record<string, unknown> | undefined {
+  const t = vars?.trigger;
+  return t && typeof t === "object" ? (t as Record<string, unknown>) : undefined;
 }
 
 /**
@@ -1134,6 +1146,7 @@ async function planDelay(
   const want = needsContact(raw);
   const scope = {
     vars: run.vars,
+    trigger: triggerOf(run.vars),
     ...(want.contact && run.contact_id
       ? await loadContactScope(db, run.account_id, run.contact_id, want.custom)
       : {}),
@@ -1231,6 +1244,12 @@ const LOOP_GUARDED = new Set(["conversation_assigned", "conversation_opened", "c
  * start in the background; they take the conversation only when they
  * ask the customer something.
  */
+/** Active flows (as published) whose trigger is `triggerType`. */
+export async function loadFlowsForTrigger(accountId: string, triggerType: string): Promise<FlowRow[]> {
+  const runtime = await loadRuntimeFlows(supabaseAdmin(), accountId);
+  return runtime.filter((r) => r.flow.trigger_type === triggerType && r.flow.entry_node_id).map((r) => r.flow);
+}
+
 export async function startFlowsForEvent(input: {
   accountId: string;
   triggerType: string;
@@ -1347,6 +1366,7 @@ async function runBotStudioNode(
   const want = needsContact(texts);
   const scope = {
     vars: run.vars,
+    trigger: triggerOf(run.vars),
     ...(want.contact && run.contact_id
       ? await loadContactScope(db, run.account_id, run.contact_id, want.custom)
       : {}),
@@ -1510,6 +1530,37 @@ async function runBotStudioNode(
         if (r.ok) return { kind: "next", next: cfg.next_node_key ?? "", log };
         if (cfg.failure_next) return { kind: "next", next: cfg.failure_next, log };
         return fail(`Call Api "${d.name}": ${r.error ?? "failed"}`);
+      }
+      case "google_sheets": {
+        // Add Row (migration 051): values are matched to the tab's header
+        // row by name and written RAW. Failure output when connected.
+        const cfg = node.config as unknown as GoogleSheetsNodeConfig;
+        const failed = (detail: string): BotStudioStep =>
+          cfg.failure_next ? { kind: "next", next: cfg.failure_next, log: { sheets_error: detail } } : fail(`Google Sheets: ${detail}`);
+        if (!cfg.spreadsheet_id || !cfg.sheet_name) return failed("no spreadsheet selected");
+        const { getAccessToken } = await import("@/lib/google/connection");
+        const sheets = await import("@/lib/google/sheets");
+        try {
+          const token = await getAccessToken(db, run.account_id);
+          const headers = await sheets.getHeaders(token, cfg.spreadsheet_id, cfg.sheet_name);
+          if (!headers.some((h) => h.trim())) return failed(`tab "${cfg.sheet_name}" has no header row`);
+          const { row, unknown } = sheets.buildRow(
+            headers,
+            (cfg.columns ?? []).map((c) => ({ column: c.column, value: fill(c.value) })),
+          );
+          if (unknown.length) return failed(`column${unknown.length > 1 ? "s" : ""} not in the header row: ${unknown.join(", ")}`);
+          if (!row.length) return failed("every mapped value is empty");
+          const range = await sheets.appendRow(token, cfg.spreadsheet_id, cfg.sheet_name, row);
+          const rowNumber = Number(range?.match(/(\d+)(?::[A-Z]+\d+)?$/)?.[1]) || null;
+          if (rowNumber) {
+            const vars = { ...run.vars, sheet_row: rowNumber };
+            await db.from("flow_runs").update({ vars }).eq("id", run.id);
+            run.vars = vars;
+          }
+          return { kind: "next", next: cfg.next_node_key ?? "", log: { sheet: cfg.sheet_name, range } };
+        } catch (err) {
+          return failed(err instanceof Error ? err.message : String(err));
+        }
       }
       default:
         return fail(`unknown node type ${node.node_type}`);

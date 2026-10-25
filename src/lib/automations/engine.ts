@@ -993,6 +993,15 @@ export function triggerMatches(automation: Automation, ctx: AutomationContext | 
     const ids = (cfg?.source_ids ?? []).filter(Boolean)
     return ids.length === 0 || Boolean(ctx?.source_id && ids.includes(ctx.source_id))
   }
+  // Lead From CTWA (migration 051): a new contact from an ad, or, with
+  // lead_mode 'new_ad', also a known contact's first chat from this ad.
+  if (automation.trigger_type === 'ctwa_lead') {
+    const cfg = automation.trigger_config as CtwaTriggerConfig & { lead_mode?: string }
+    const ids = (cfg?.source_ids ?? []).filter(Boolean)
+    if (ids.length > 0 && !(ctx?.source_id && ids.includes(ctx.source_id))) return false
+    const lead = ctx?.trigger as { new_contact?: boolean; new_ad?: boolean } | undefined
+    return cfg?.lead_mode === 'new_ad' ? Boolean(lead?.new_contact || lead?.new_ad) : Boolean(lead?.new_contact)
+  }
   if (automation.trigger_type === 'template_delivered') {
     const cfg = automation.trigger_config as TemplateDeliveredTriggerConfig
     const names = (cfg?.template_names ?? []).filter(Boolean)

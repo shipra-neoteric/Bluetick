@@ -61,6 +61,7 @@ import { flowVariables } from "../forms/bot-studio-forms";
 import { NODE_DRAG_TYPE } from "../node-palette";
 import { ADDABLE_NODE_TYPES, NODE_META, type BuilderNode, type NodeType } from "../shared";
 import { findItem, itemIdForNode, type CatalogItem } from "./catalog";
+import { GoogleSheetsBody, triggerVariables } from "./sheets-body";
 import { TriggerBody } from "./trigger-body";
 import { InteractiveBody, ListBody, MessageBody } from "./message-bodies";
 import { TagsBody, TemplateBody, TimeDelayBody, WaitTillBody } from "./step-bodies";
@@ -148,7 +149,10 @@ const StepNode = memo(function StepNode({ data, selected }: NodeProps) {
   const [renaming, setRenaming] = useState(false);
   const key = (data as StepData).nodeKey;
   const node = state.nodes.find((n) => n.node_key === key);
-  const vars = useMemo(() => flowVariables(state.nodes), [state.nodes]);
+  const vars = useMemo(
+    () => [...triggerVariables(state.trigger_type, state.trigger_config ?? {}), ...flowVariables(state.nodes)],
+    [state.nodes, state.trigger_type, state.trigger_config],
+  );
   if (!node) return null;
 
   const itemId = itemIdForNode(node);
@@ -204,6 +208,9 @@ const StepNode = memo(function StepNode({ data, selected }: NodeProps) {
       break;
     case "call_api":
       body = <CallApiBody node={node} onUpdate={update} />;
+      break;
+    case "google_sheets":
+      body = <GoogleSheetsBody node={node} vars={vars} onUpdate={update} />;
       break;
     default:
       body = (

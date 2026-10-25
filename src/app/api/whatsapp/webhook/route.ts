@@ -1056,6 +1056,44 @@ async function processMessage(
           },
         },
       }).catch((err) => console.error('[automations] ctwa dispatch failed:', err))
+
+      // Lead From CTWA (migration 051): a new lead from an ad — a
+      // contact created by (or messaging for the first time with) this
+      // message, or a known contact's first chat from this ad.
+      const newContact = contactOutcome.wasCreated || isFirstInboundMessage
+      let newAd = false
+      if (!newContact && message.referral.source_id) {
+        const { count } = await supabaseAdmin()
+          .from('message_referrals')
+          .select('id', { count: 'exact', head: true })
+          .eq('account_id', accountId)
+          .eq('contact_id', contactRecord.id)
+          .eq('source_id', message.referral.source_id)
+        newAd = (count ?? 0) <= 1
+      }
+      if (newContact || newAd) {
+        await runAutomationsForTrigger({
+          accountId,
+          triggerType: 'ctwa_lead',
+          contactId: contactRecord.id,
+          context: {
+            ...botContext,
+            source_id: message.referral.source_id,
+            trigger: {
+              new_contact: newContact,
+              new_ad: newAd,
+              source_id: message.referral.source_id ?? null,
+              source_type: message.referral.source_type ?? null,
+              source_url: message.referral.source_url ?? null,
+              headline: message.referral.headline ?? null,
+              body: message.referral.body ?? null,
+              ctwa_clid: message.referral.ctwa_clid ?? null,
+              contact_name: contact?.profile?.name ?? null,
+              phone: contactRecord.phone ?? null,
+            },
+          },
+        }).catch((err) => console.error('[automations] ctwa lead dispatch failed:', err))
+      }
     }
     // "No keyword match": typed text that no flow handled and no keyword
     // automation matched. A per-message responder, so (like the keyword

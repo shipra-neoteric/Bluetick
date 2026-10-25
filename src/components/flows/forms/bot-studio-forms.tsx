@@ -38,6 +38,7 @@ export function flowVariables(nodes: BuilderNode[]): ExtraVariable[] {
       if (typeof c.response_var === "string" && c.response_var) keys.add(c.response_var);
     }
     if ((n.node_type === "send_buttons" || n.node_type === "send_list") && c.other_next) keys.add("last_reply");
+    if (n.node_type === "google_sheets") keys.add("sheet_row");
   }
   return [...keys].map((k) => ({ token: `vars.${k}` }));
 }

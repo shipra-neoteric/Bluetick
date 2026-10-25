@@ -345,6 +345,19 @@ export interface CallApiNodeConfig {
   failure_next?: string;
 }
 
+/** Google Sheets "Add Row" (migration 051). */
+export interface GoogleSheetsNodeConfig {
+  spreadsheet_id: string;
+  spreadsheet_title?: string;
+  sheet_name: string;
+  /** Header row as last loaded in the builder (display only). */
+  headers?: string[];
+  /** Value per column, matched to the header row by name at run time. */
+  columns: { column: string; value: string }[];
+  next_node_key?: string;
+  failure_next?: string;
+}
+
 /**
  * Runs one Automation step (same executor as Automations), e.g.
  * close_conversation, send_webhook, create_deal, start_flow, or a
@@ -386,7 +399,8 @@ export type FlowNodeConfig =
   | { node_type: "time_delay"; config: TimeDelayNodeConfig }
   | { node_type: "wait_until"; config: WaitUntilNodeConfig }
   | { node_type: "action"; config: ActionNodeConfig }
-  | { node_type: "call_api"; config: CallApiNodeConfig };
+  | { node_type: "call_api"; config: CallApiNodeConfig }
+  | { node_type: "google_sheets"; config: GoogleSheetsNodeConfig };
 
 export type FlowNodeType = FlowNodeConfig["node_type"];
 
@@ -442,7 +456,9 @@ export type FlowTriggerKind =
   | "ctwa_message"
   | "template_delivered"
   | "sla_breached"
-  | "incoming_webhook";
+  | "incoming_webhook"
+  | "google_sheet_new_row"
+  | "ctwa_lead";
 
 export function isEventTrigger(t: string): boolean {
   return !(CONVERSATION_TRIGGERS as readonly string[]).includes(t);

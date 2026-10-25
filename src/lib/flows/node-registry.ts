@@ -44,6 +44,11 @@ export const BOT_STUDIO_SLOTS: Record<string, SlotDef[]> = {
     { key: "next_node_key", handle: "success", label: "Success", optional: true },
     { key: "failure_next", handle: "failure", label: "Failure", optional: true },
   ],
+  // Migration 051 — Google Sheets "Add Row".
+  google_sheets: [
+    { key: "next_node_key", handle: "success", label: "Success", optional: true },
+    { key: "failure_next", handle: "failure", label: "Failure", optional: true },
+  ],
 };
 
 /**
@@ -140,6 +145,17 @@ export function botStudioFieldIssues(type: string, cfg: Record<string, unknown>)
         out.push({ field: "response_var", message: "Response variable must be letters, digits or _." });
       }
       break;
+    case "google_sheets": {
+      if (!has(cfg.spreadsheet_id) || !has(cfg.sheet_name)) {
+        out.push({ field: "spreadsheet_id", message: "Pick the spreadsheet and the tab to add the row to." });
+        break;
+      }
+      const cols = Array.isArray(cfg.columns) ? (cfg.columns as { column?: unknown; value?: unknown }[]) : [];
+      if (!cols.some((c) => has(c?.column) && has(c?.value))) {
+        out.push({ field: "columns", message: "Fill in at least one column." });
+      }
+      break;
+    }
     case "action": {
       if (!(ACTION_STEP_TYPES as readonly string[]).includes(String(cfg.step_type))) {
         out.push({ field: "step_type", message: "Unknown action." });
@@ -221,6 +237,8 @@ export function botStudioDefaultConfig(type: string): Record<string, unknown> {
       return { step_type: "close_conversation", step_config: {}, next_node_key: "" };
     case "call_api":
       return { api_id: "", response_var: "api_response", next_node_key: "", failure_next: "" };
+    case "google_sheets":
+      return { spreadsheet_id: "", spreadsheet_title: "", sheet_name: "", headers: [], columns: [], next_node_key: "", failure_next: "" };
     default:
       return {};
   }

@@ -41,11 +41,23 @@ CREATE POLICY api_definitions_write ON api_definitions
 
 -- 2. Flow node type ---------------------------------------------------
 -- Same list as 048 plus call_api; NOT VALID = new/edited rows only.
-ALTER TABLE flow_nodes DROP CONSTRAINT IF EXISTS flow_nodes_node_type_check;
-ALTER TABLE flow_nodes ADD CONSTRAINT flow_nodes_node_type_check CHECK (node_type IN (
-  'start', 'send_buttons', 'send_list', 'send_message', 'collect_input',
-  'condition', 'set_tag', 'handoff', 'http_fetch', 'end', 'send_media',
-  'send_location', 'send_template', 'assign_agent', 'set_field',
-  'working_hours', 'opt_out', 'format_value', 'ai_reply',
-  'time_delay', 'wait_until', 'action', 'call_api'
-)) NOT VALID;
+-- Skipped when a later migration (051+) already allows more types.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'flow_nodes_node_type_check'
+      AND conrelid = 'public.flow_nodes'::regclass
+      AND pg_get_constraintdef(oid) LIKE '%google_sheets%'
+  ) THEN
+    RETURN;
+  END IF;
+  ALTER TABLE flow_nodes DROP CONSTRAINT IF EXISTS flow_nodes_node_type_check;
+  ALTER TABLE flow_nodes ADD CONSTRAINT flow_nodes_node_type_check CHECK (node_type IN (
+    'start', 'send_buttons', 'send_list', 'send_message', 'collect_input',
+    'condition', 'set_tag', 'handoff', 'http_fetch', 'end', 'send_media',
+    'send_location', 'send_template', 'assign_agent', 'set_field',
+    'working_hours', 'opt_out', 'format_value', 'ai_reply',
+    'time_delay', 'wait_until', 'action', 'call_api'
+  )) NOT VALID;
+END $$;

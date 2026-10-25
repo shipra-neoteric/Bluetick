@@ -589,7 +589,12 @@ export type AutomationTriggerType =
   /** Inbox SLA first/next-response target was missed. */
   | 'sla_breached'
   /** An external system called this automation's webhook URL. */
-  | 'incoming_webhook';
+  | 'incoming_webhook'
+  // ── Migration 051 (flows only) ──
+  /** A row was added to a connected Google Sheet tab. */
+  | 'google_sheet_new_row'
+  /** A new lead's first message came from a Click-to-WhatsApp ad. */
+  | 'ctwa_lead';
 
 export type AutomationStepType =
   | 'send_location'

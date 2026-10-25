@@ -218,6 +218,13 @@ export function validateTriggerForActivation(
     if (!nonEmpty(cfg.phone_path)) {
       issues.push({ path: 'trigger.phone_path', message: 'map the field that holds the customer phone number' })
     }
+  } else if (triggerType === 'google_sheet_new_row') {
+    if (!nonEmpty(cfg.spreadsheet_id) || !nonEmpty(cfg.sheet_name)) {
+      issues.push({ path: 'trigger.spreadsheet_id', message: 'pick the spreadsheet and the tab to watch' })
+    }
+    if (!nonEmpty(cfg.phone_column)) {
+      issues.push({ path: 'trigger.phone_column', message: 'pick the column that holds the customer phone number' })
+    }
   } else if (triggerType === 'tag_added') {
     if (!nonEmpty(cfg.tag_id)) {
       issues.push({ path: 'trigger.tag_id', message: 'tag is required' })

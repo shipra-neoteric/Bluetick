@@ -17,9 +17,18 @@
 -- ============================================================
 
 -- 1. Flow triggers ----------------------------------------------------
+-- Skipped when a later migration (051+) already allows more triggers.
 DO $$
 DECLARE c TEXT;
 BEGIN
+  IF EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'flows_trigger_type_check'
+      AND conrelid = 'public.flows'::regclass
+      AND pg_get_constraintdef(oid) LIKE '%ctwa_lead%'
+  ) THEN
+    RETURN;
+  END IF;
   FOR c IN
     SELECT conname FROM pg_constraint
     WHERE conrelid = 'public.flows'::regclass AND contype = 'c'
@@ -27,15 +36,15 @@ BEGIN
   LOOP
     EXECUTE format('ALTER TABLE flows DROP CONSTRAINT %I', c);
   END LOOP;
-END $$;
-ALTER TABLE flows ADD CONSTRAINT flows_trigger_type_check CHECK (trigger_type IN (
+  ALTER TABLE flows ADD CONSTRAINT flows_trigger_type_check CHECK (trigger_type IN (
   'keyword', 'first_inbound_message', 'manual',
   'new_message_received', 'new_contact_created', 'conversation_assigned',
   'tag_added', 'time_based', 'interactive_reply',
   'conversation_opened', 'conversation_closed', 'contact_field_changed',
   'first_daily_message', 'no_keyword_match', 'ctwa_message',
   'template_delivered', 'sla_breached', 'incoming_webhook'
-)) NOT VALID;  -- new/edited flows only; never blocks on an existing row
+  )) NOT VALID;  -- new/edited flows only; never blocks on an existing row
+END $$;
 
 -- 2. Flow node types (superset of 047) --------------------------------
 -- Skipped when a later migration (049+) already allows more types, so a

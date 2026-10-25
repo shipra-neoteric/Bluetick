@@ -1324,6 +1324,10 @@
         "call_api": {
           "label": "Llamar a API",
           "blurb": "Envía una solicitud a una API guardada; Éxito o Error."
+        },
+        "google_sheets": {
+          "label": "Google Sheets",
+          "blurb": "Añade una fila a una hoja de Google; Éxito o Error."
         }
       }
     },
@@ -1729,7 +1733,8 @@
       "fields": "Campos y etiquetas",
       "deals": "Negocios y moneda",
       "members": "Miembros del equipo",
-      "api": "Claves de API"
+      "api": "Claves de API",
+      "integrations": "Integraciones"
     },
     "groups": {
       "account": "Cuenta",
@@ -1943,6 +1948,32 @@
       "editDoc": "Editar",
       "deleteDoc": "Eliminar",
       "loading": "Cargando…"
+    },
+    "integrations": {
+      "title": "Integraciones",
+      "description": "Conecta aplicaciones externas que tus flujos pueden usar.",
+      "sheetsDesc": "Inicia flujos cuando se añade una fila a una hoja y añade filas desde los flujos (leads, pedidos, respuestas).",
+      "loading": "Cargando…",
+      "needsMigration": "Google Sheets requiere la migración 051 de la base de datos.",
+      "notConfigured": "El inicio de sesión con Google aún no está configurado en el servidor (GOOGLE_CLIENT_ID y GOOGLE_CLIENT_SECRET). Consulta docs/GOOGLE_SHEETS_SETUP.md.",
+      "connectedAs": "Conectado como {email}",
+      "reconnect": "Reconectar Google",
+      "disconnect": "Desconectar",
+      "disconnectConfirm": "¿Desconectar Google? Los flujos que usan Google Sheets dejarán de funcionar hasta que vuelvas a conectarlo.",
+      "disconnected": "Google desconectado.",
+      "disconnectFailed": "No se pudo desconectar Google.",
+      "adminOnly": "Solo un administrador puede conectar Google.",
+      "connect": "Conectar cuenta de Google",
+      "connectHint": "Los flujos pueden abrir cualquier hoja que esta cuenta de Google pueda editar. Compártelas con ella como Editor.",
+      "results": {
+        "connected": "Google Sheets conectado.",
+        "denied": "Se canceló el inicio de sesión con Google.",
+        "error": "No se pudo conectar Google. Inténtalo de nuevo.",
+        "forbidden": "Solo un administrador puede conectar Google.",
+        "invalid_state": "El enlace de inicio de sesión caducó. Inténtalo de nuevo.",
+        "missing_scope": "Permite el acceso a Google Sheets en la pantalla de Google y vuelve a intentarlo.",
+        "not_configured": "El inicio de sesión con Google aún no está configurado en el servidor."
+      }
     }
   },
   "SignupPage": {
@@ -2247,6 +2278,14 @@
         "incoming_webhook": {
           "label": "Webhook entrante",
           "hint": "Otro sistema (formularios, Sheets vía Zapier, tu sitio web) llama a la URL de esta automatización."
+        },
+        "ctwa_lead": {
+          "label": "Lead desde un anuncio Click-to-WhatsApp",
+          "hint": "El primer mensaje de un contacto nuevo vino de un anuncio de Meta."
+        },
+        "google_sheet_new_row": {
+          "label": "Nueva fila de Google Sheet",
+          "hint": "Se añadió una fila a una hoja de Google conectada (solo Flujos)."
         }
       },
       "timeBasedNotRunning": "Nota: Bluetick aún no ejecuta los disparadores programados. Usa los pasos \"Esperar hasta\" o \"Esperar\" para seguimientos programados.",
@@ -2683,7 +2722,6 @@
         "first_inbound_message": "Primer mensaje de siempre",
         "interactive_reply": "Respuesta de botón / lista",
         "manual": "Inicio manual",
-        "lead_ctwa": "Lead desde CTWA",
         "conversation_assigned": "Al asignar agente",
         "contact_field_changed": "Al cambiar un atributo",
         "new_contact_created": "Nuevo lead",
@@ -2692,7 +2730,6 @@
         "sla_breached": "SLA incumplido",
         "salesforce_updated": "Lead actualizado en Salesforce",
         "salesforce_new": "Nuevo lead de Salesforce",
-        "sheets_new_row": "Nueva fila en Google Sheet",
         "incoming_webhook": "Al recibir webhook",
         "time_based": "Programado",
         "send_catalogue": "Enviar catálogo",
@@ -2725,7 +2762,9 @@
         "format_phone": "Formatear número móvil",
         "google_sheets": "Google Sheets",
         "ai_call": "Llamada con IA",
-        "fb_conversion": "Eventos de conversión de Facebook"
+        "fb_conversion": "Eventos de conversión de Facebook",
+        "ctwa_lead": "Lead desde CTWA",
+        "google_sheet_new_row": "Nueva fila en Google Sheet"
       },
       "triggerHelp": {
         "first_inbound_message": "Empieza cuando un contacto te escribe por primera vez.",
@@ -2744,7 +2783,9 @@
         "template_delivered": "Empieza cuando una plantilla llega al teléfono del cliente.",
         "sla_breached": "Empieza cuando una respuesta incumple el SLA de la bandeja (Ajustes → Bandeja).",
         "incoming_webhook": "Empieza cuando otro sistema (script de Google Sheets, formulario web, Zapier) llama a la URL de este flujo.",
-        "time_based": "Los disparadores programados aún no funcionan."
+        "time_based": "Los disparadores programados aún no funcionan.",
+        "ctwa_lead": "Empieza cuando un nuevo lead te escribe desde un anuncio Click-to-WhatsApp: un contacto creado por ese mensaje o (opcional) el primer chat de un contacto conocido desde ese anuncio.",
+        "google_sheet_new_row": "Empieza una vez por cada fila nueva en una pestaña de Google Sheets. La columna de teléfono identifica al cliente (se crea el contacto si hace falta)."
       },
       "sections": {
         "message": "Mensajes y conversación",
@@ -2975,16 +3016,54 @@
       "confirm": "Confirmar",
       "leaveTitle": "Cambios sin guardar",
       "locked": {
-        "lead_ctwa": "Requiere conexión con Facebook (Meta Lead Ads), que Bluetick aún no tiene. Usa \"Mensaje desde CTWA\" para chats desde anuncios.",
         "salesforce_updated": "Requiere conexión con Salesforce (OAuth y mapeo de campos), que Bluetick aún no tiene. Salesforce puede llamar al webhook de este flujo.",
         "salesforce_new": "Requiere conexión con Salesforce (OAuth y mapeo de campos), que Bluetick aún no tiene. Salesforce puede llamar al webhook de este flujo.",
-        "sheets_new_row": "Requiere conectar una cuenta de Google, que Bluetick aún no tiene. Un Apps Script o Zapier puede enviar filas nuevas a \"Al recibir webhook\".",
         "send_catalogue": "Requiere un catálogo de productos de WhatsApp vinculado a tu número y un selector de catálogo; aún no está hecho.",
         "tool_call": "Requiere llamadas a herramientas de IA, que los agentes de IA de Bluetick aún no tienen.",
         "custom_event": "Requiere un servicio de eventos/analítica, que Bluetick aún no tiene.",
-        "google_sheets": "Requiere conectar una cuenta de Google, que Bluetick aún no tiene. Usa \"Llamar a API\" con una web app de Google Apps Script.",
         "ai_call": "Requiere un proveedor de llamadas de voz (llamadas de WhatsApp o línea telefónica); una clave de IA de texto no puede llamar.",
         "fb_conversion": "Requiere conexión con la API de Conversiones de Meta (dataset/píxel), que Bluetick aún no tiene."
+      },
+      "sheets": {
+        "checking": "Comprobando la conexión con Google…",
+        "needsMigration": "Google Sheets requiere la migración 051 de la base de datos.",
+        "notConnected": "Google Sheets aún no está conectado. Un administrador puede conectar una cuenta de Google en Ajustes → Integraciones.",
+        "reconnectNeeded": "El acceso a Google caducó o se retiró. Un administrador debe reconectar Google en Ajustes → Integraciones.",
+        "openIntegrations": "Abrir Integraciones",
+        "connectedAs": "Usando {email}",
+        "spreadsheet": "Enlace de la hoja de cálculo",
+        "load": "Cargar",
+        "tab": "Hoja (pestaña)",
+        "pickTab": "Elige una pestaña",
+        "refresh": "Recargar columnas",
+        "noHeaders": "Esta pestaña no tiene fila de encabezado. Pon los nombres de columna en la fila 1.",
+        "addRowHelp": "Añade una fila al final de la pestaña. Cada valor va bajo el nombre de su columna (fila 1).",
+        "values": "Valores",
+        "valuePlaceholder": "Texto o una variable",
+        "staleColumns": "Ya no están en la fila de encabezado: {columns}.",
+        "removeStale": "Quitar",
+        "rawHint": "Los valores se guardan como texto (las fórmulas no se ejecutan).",
+        "none": "Ninguna",
+        "pickColumn": "Elige una columna",
+        "phoneColumn": "Columna del número de WhatsApp",
+        "nameColumn": "Columna del nombre",
+        "countryCode": "Código de país por defecto",
+        "countryCodeHint": "Para números escritos sin código de país, p. ej. 34 para España.",
+        "rowVariables": "Usa los valores de la fila en pasos posteriores:",
+        "pollHint": "Se revisa cada 5 minutos. Solo las filas añadidas después de activar el flujo lo inician. A los contactos nuevos primero solo se les pueden enviar plantillas aprobadas (regla de 24 horas de WhatsApp).",
+        "lastChecked": "Última revisión",
+        "rowsStarted": "Filas iniciadas"
+      },
+      "ctwaLead": {
+        "mode": "Contar como lead",
+        "modes": {
+          "new_contact": "Solo contactos nuevos",
+          "new_ad": "Contactos nuevos y contactos conocidos que llegan de un anuncio nuevo"
+        },
+        "adIds": "ID de anuncio / publicación (opcional)",
+        "anyAd": "Cualquier anuncio",
+        "adIdsHint": "Separados por comas. Déjalo vacío para reaccionar a todos los anuncios Click-to-WhatsApp.",
+        "variables": "Datos del anuncio para pasos posteriores:"
       }
     }
   },

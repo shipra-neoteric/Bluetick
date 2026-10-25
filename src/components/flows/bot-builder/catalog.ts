@@ -114,7 +114,7 @@ export const TRIGGER_SECTIONS: CatalogSection[] = [
   {
     id: "leads",
     items: [
-      locked("lead_ctwa", MousePointerClick, GREEN),
+      trig("ctwa_lead", "ctwa_lead", MousePointerClick, GREEN, { source_ids: [], lead_mode: "new_contact" }),
       trig("conversation_assigned", "conversation_assigned", UserPlus, GREEN),
       trig("contact_field_changed", "contact_field_changed", PencilLine, GREEN),
       trig("new_contact_created", "new_contact_created", UserRound, GREEN),
@@ -129,7 +129,10 @@ export const TRIGGER_SECTIONS: CatalogSection[] = [
   },
   {
     id: "sheets",
-    items: [locked("sheets_new_row", Sheet, PURPLE), trig("incoming_webhook", "incoming_webhook", Webhook, PURPLE, {})],
+    items: [
+      trig("google_sheet_new_row", "google_sheet_new_row", Sheet, PURPLE, { default_country_code: "91" }),
+      trig("incoming_webhook", "incoming_webhook", Webhook, PURPLE, {}),
+    ],
   },
 ];
 
@@ -182,7 +185,7 @@ export const ACTION_SECTIONS: CatalogSection[] = [
       act("call_api", "call_api", Globe, RED),
       act("format_date", "format_value", CalendarClock, RED, { kind: "date" }),
       act("format_phone", "format_value", Phone, RED, { kind: "phone", default_country_code: "91", phone_output: "e164" }),
-      locked("google_sheets", Sheet, RED),
+      act("google_sheets", "google_sheets", Sheet, RED),
     ],
   },
   { id: "calls", items: [locked("ai_call", PhoneCall, GREEN)] },

@@ -44,6 +44,8 @@ export const TRIGGER_META: Record<AutomationTriggerType, TriggerMeta> = {
   template_delivered: { pillClass: 'border-sky-500/30 bg-sky-500/10 text-sky-400' },
   sla_breached: { pillClass: 'border-red-500/30 bg-red-500/10 text-red-400' },
   incoming_webhook: { pillClass: 'border-violet-500/30 bg-violet-500/10 text-violet-400' },
+  google_sheet_new_row: { pillClass: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400' },
+  ctwa_lead: { pillClass: 'border-green-500/30 bg-green-500/10 text-green-400' },
 }
 
 export function isKnownTrigger(t: string): t is AutomationTriggerType {

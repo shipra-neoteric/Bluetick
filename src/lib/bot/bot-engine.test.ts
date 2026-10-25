@@ -103,6 +103,16 @@ describe('automation trigger filters', () => {
     expect(triggerMatches(auto('conversation_assigned', { agent_id: 'u1' }), { agent_id: 'u2' })).toBe(false);
   });
 
+  it('Lead From CTWA: new contacts by default, new ads when enabled, ad filter', () => {
+    const lead = (new_contact: boolean, new_ad: boolean, source_id = 'AD1') => ({ source_id, trigger: { new_contact, new_ad } });
+    expect(triggerMatches(auto('ctwa_lead', {}), lead(true, false))).toBe(true);
+    expect(triggerMatches(auto('ctwa_lead', {}), lead(false, true))).toBe(false);
+    expect(triggerMatches(auto('ctwa_lead', { lead_mode: 'new_ad' }), lead(false, true))).toBe(true);
+    expect(triggerMatches(auto('ctwa_lead', { lead_mode: 'new_ad' }), lead(false, false))).toBe(false);
+    expect(triggerMatches(auto('ctwa_lead', { source_ids: ['AD2'] }), lead(true, false))).toBe(false);
+    expect(triggerMatches(auto('ctwa_lead', { source_ids: ['AD1'] }), lead(true, false))).toBe(true);
+  });
+
   it('attribute change modes (T09.02): set first time / removed / any', () => {
     const ev = (old_value: string | null, new_value: string | null) => ({ field: 'email', trigger: { old_value, new_value } });
     const first = auto('contact_field_changed', { change_mode: 'first_set' });

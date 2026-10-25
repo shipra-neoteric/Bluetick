@@ -37,6 +37,7 @@ import {
   MessageCircle,
   Paperclip,
   PlayCircle,
+  Sheet,
   Tag,
   UserPlus,
   Workflow,
@@ -76,7 +77,9 @@ export type NodeType =
   | 'time_delay'
   | 'wait_until'
   | 'action'
-  | 'call_api';
+  | 'call_api'
+  // Migration 051
+  | 'google_sheets';
 
 export interface BuilderNode {
   node_key: string;
@@ -195,6 +198,7 @@ export const NODE_META: Record<
   wait_until: { slugSeed: 'Wait till', icon: CalendarClock, color: 'text-orange-400', category: 'logic' },
   action: { slugSeed: 'Action', icon: Zap, color: 'text-emerald-400', category: 'actions' },
   call_api: { slugSeed: 'Call api', icon: Globe, color: 'text-rose-400', category: 'actions' },
+  google_sheets: { slugSeed: 'Google sheets', icon: Sheet, color: 'text-emerald-500', category: 'actions' },
 };
 
 /** Every type the add menus / palette offer, in display order. */
@@ -219,6 +223,7 @@ export const ADDABLE_NODE_TYPES: NodeType[] = [
   'wait_until',
   'action',
   'call_api',
+  'google_sheets',
   'handoff',
   'end',
 ];
@@ -285,6 +290,7 @@ const NODE_HUE: Record<NodeType, { l: number; c: number; h: number }> = {
   wait_until: { l: 0.7, c: 0.15, h: 55 },
   action: { l: 0.62, c: 0.13, h: 162 },
   call_api: { l: 0.62, c: 0.16, h: 15 },
+  google_sheets: { l: 0.6, c: 0.15, h: 150 },
 };
 
 export interface NodeColors {

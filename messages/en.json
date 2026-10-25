@@ -410,9 +410,9 @@
         "custom": "Custom Fields",
         "deals": "Deals",
         "tags": "Tags",
-      "noTags": "No tags",
-      "noDeals": "No deals",
-      "addNotePlaceholder": "Add a note..."
+        "noTags": "No tags",
+        "noDeals": "No deals",
+        "addNotePlaceholder": "Add a note..."
       },
       "actions": {
         "edit": "Edit",
@@ -1324,6 +1324,10 @@
         "call_api": {
           "label": "Call API",
           "blurb": "Send a request to a saved API; Success or Failure."
+        },
+        "google_sheets": {
+          "label": "Google Sheets",
+          "blurb": "Add a row to a Google Sheet; Success or Failure."
         }
       }
     },
@@ -1520,13 +1524,11 @@
       "deleteLocallyAria": "Delete template locally",
       "deleteMetaLocallyTitle": "Delete from Meta and locally",
       "deleteLocallyTitle": "Delete locally",
-      
       "dialogEditTitle": "Edit Message Template",
       "dialogNewTitle": "New Message Template",
       "dialogEditDesc": "Save your changes to re-submit to Meta. Status will flip back to PENDING during review.",
       "dialogNewDesc": "Build a template and submit it to Meta for approval. Once approved, you can use it in broadcasts and the inbox.",
       "authWarning": "AUTHENTICATION templates have a fixed body + OTP button shape that needs a different builder. Create them in Meta WhatsApp Manager for now and use <bold>Sync from Meta</bold> to bring them in.",
-      
       "templateName": "Template Name",
       "namePlaceholder": "e.g. order_confirmation",
       "nameFixed": "Name is fixed once a template exists on Meta — create a new template to change it.",
@@ -1535,7 +1537,6 @@
       "language": "Language",
       "langFixed": "Language is fixed once a template exists on Meta.",
       "langHint": "Must match the exact code on Meta — <code>en_US</code> and <code>en</code> are distinct.",
-      
       "header": "Header",
       "headerNone": "None",
       "headerText": "Text",
@@ -1545,7 +1546,6 @@
       "headerTextPlaceholder": "Header text (max 60 chars, optional {{1}})",
       "headerSampleAria": "Sample value for header variable",
       "headerSamplePlaceholder": "Sample value for {{1}} (required for Meta review)",
-      
       "uploadImage": "Upload image",
       "uploadVideo": "Upload video",
       "uploadDocument": "Upload document",
@@ -1557,17 +1557,14 @@
       "mediaHint": "Upload a file or paste a public HTTPS link — we upload it to Meta for review automatically.",
       "videoHint": " MP4 or 3GPP, ≤16 MB, ≤60 seconds recommended.",
       "documentHint": " PDF, Word, PowerPoint, Excel or text, ≤100 MB via link (≤16 MB when uploaded here).",
-      
       "bodyText": "Body Text",
       "bodyPlaceholder": "Hello {{1}}, your order {{2}} is confirmed.",
       "bodyHint": "Use {{1}}, {{2}} for variables (must be contiguous starting at {{1}}).",
       "sampleValues": "Sample values (Meta uses these to review your template)",
       "sampleAria": "Sample value for body variable {var}",
       "samplePlaceholder": "Sample for {var}",
-      
       "footer": "Footer (optional)",
       "footerPlaceholder": "Optional footer text (max 60 chars)",
-      
       "buttons": "Buttons (optional)",
       "addButton": "Add Button",
       "buttonsLimit": "Up to {max} buttons. QUICK_REPLY buttons must come before URL / phone / copy-code buttons.",
@@ -1580,19 +1577,16 @@
       "urlSamplePlaceholder": "Example value for {{1}} (required when URL has a variable)",
       "phonePlaceholder": "+15551234567",
       "codePlaceholder": "Example code (e.g. SUMMER20)",
-      
       "cancel": "Cancel",
       "saving": "Saving…",
       "submitting": "Submitting…",
       "saveResubmit": "Save & Resubmit",
       "submitApproval": "Submit for Approval",
-      
       "deleteDialogTitle": "Delete template?",
       "deleteMetaDesc": "\"{name}\" will be deleted from Meta and from Bluetick. Active broadcasts using this template will start failing on their next send. This can't be undone.",
       "deleteLocalDesc": "\"{name}\" will be deleted from Bluetick. It was never submitted to Meta, so no remote cleanup is needed.",
       "deleting": "Deleting…",
       "delete": "Delete",
-      
       "toastLoadFailed": "Failed to load templates",
       "toastSubmitFailed": "Failed to submit",
       "toastSubmitEditSuccess": "Edit submitted — Meta typically reviews within 24 hours.",
@@ -1739,7 +1733,8 @@
       "fields": "Fields & tags",
       "deals": "Deals & currency",
       "members": "Team members",
-      "api": "API keys"
+      "api": "API keys",
+      "integrations": "Integrations"
     },
     "groups": {
       "account": "Account",
@@ -1774,7 +1769,6 @@
       "profileSaved": "Profile saved",
       "emailChangeFailed": "Email change failed: {message}",
       "profileSavedEmailCheck": "Profile saved — check your email to confirm the address change",
-      
       "passwordTitle": "Password",
       "passwordDesc": "Use at least {min} characters. You will stay signed in on this device after changing it.",
       "currentPassword": "Current password",
@@ -1788,7 +1782,6 @@
       "currentPasswordIncorrect": "Current password is incorrect",
       "passwordUpdateFailed": "Password update failed: {message}",
       "passwordUpdated": "Password updated",
-      
       "sessionsTitle": "Active sessions",
       "sessionsDesc": "Sign out of every device where you're logged in — including this one. Useful if you lost a laptop or shared your password.",
       "signOutAll": "Sign out of all devices",
@@ -1955,6 +1948,32 @@
       "editDoc": "Edit",
       "deleteDoc": "Delete",
       "loading": "Loading…"
+    },
+    "integrations": {
+      "title": "Integrations",
+      "description": "Connect outside apps that your flows can use.",
+      "sheetsDesc": "Start flows when a row is added to a sheet, and add rows from flows (leads, orders, form answers).",
+      "loading": "Loading…",
+      "needsMigration": "Google Sheets needs database migration 051.",
+      "notConfigured": "Google sign-in is not set up on the server yet (GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET). See docs/GOOGLE_SHEETS_SETUP.md.",
+      "connectedAs": "Connected as {email}",
+      "reconnect": "Reconnect Google",
+      "disconnect": "Disconnect",
+      "disconnectConfirm": "Disconnect Google? Flows that use Google Sheets will stop working until you connect again.",
+      "disconnected": "Google disconnected.",
+      "disconnectFailed": "Could not disconnect Google.",
+      "adminOnly": "Only an admin can connect Google.",
+      "connect": "Connect Google account",
+      "connectHint": "Flows can open any sheet this Google account can edit. Share your sheets with it as Editor.",
+      "results": {
+        "connected": "Google Sheets connected.",
+        "denied": "Google sign-in was cancelled.",
+        "error": "Could not connect Google. Try again.",
+        "forbidden": "Only an admin can connect Google.",
+        "invalid_state": "The sign-in link expired. Try again.",
+        "missing_scope": "Allow access to Google Sheets on the Google screen, then try again.",
+        "not_configured": "Google sign-in is not set up on the server yet."
+      }
     }
   },
   "SignupPage": {
@@ -2259,6 +2278,14 @@
         "incoming_webhook": {
           "label": "Incoming webhook",
           "hint": "Another system (forms, Sheets via Zapier, your website) calls this automation's URL."
+        },
+        "ctwa_lead": {
+          "label": "Lead from a Click-to-WhatsApp ad",
+          "hint": "A new contact's first message came from a Meta ad."
+        },
+        "google_sheet_new_row": {
+          "label": "New Google Sheet row",
+          "hint": "A row was added to a connected Google Sheet (Flows only)."
         }
       },
       "timeBasedNotRunning": "Note: scheduled triggers are not run by Bluetick yet. Use \"Wait until\" or \"Wait\" steps for timed follow-ups.",
@@ -2746,7 +2773,6 @@
         "first_inbound_message": "On First Message Ever",
         "interactive_reply": "On Button / List Reply",
         "manual": "Started Manually",
-        "lead_ctwa": "Lead From CTWA",
         "conversation_assigned": "On Agent Assign",
         "contact_field_changed": "On Attribute Changed",
         "new_contact_created": "On New Lead",
@@ -2755,7 +2781,6 @@
         "sla_breached": "On SLA breached",
         "salesforce_updated": "On Lead updated from Salesforce",
         "salesforce_new": "On new Lead from Salesforce",
-        "sheets_new_row": "On New Row Google Sheet",
         "incoming_webhook": "On Webhook",
         "time_based": "On Schedule",
         "send_catalogue": "Send Catalogue",
@@ -2788,7 +2813,9 @@
         "format_phone": "Format Mobile Number",
         "google_sheets": "Google Sheets",
         "ai_call": "AI Call",
-        "fb_conversion": "Facebook Conversion Events"
+        "fb_conversion": "Facebook Conversion Events",
+        "ctwa_lead": "Lead From CTWA",
+        "google_sheet_new_row": "On New Row Google Sheet"
       },
       "triggerHelp": {
         "first_inbound_message": "Starts when a contact messages you for the very first time.",
@@ -2807,7 +2834,9 @@
         "template_delivered": "Starts when a template message reaches the customer's phone.",
         "sla_breached": "Starts when a reply misses the inbox SLA (Settings → Inbox).",
         "incoming_webhook": "Starts when another system (Google Sheets script, website form, Zapier) calls this flow's URL.",
-        "time_based": "Scheduled triggers don't run yet."
+        "time_based": "Scheduled triggers don't run yet.",
+        "ctwa_lead": "Starts when a new lead messages you from a Click-to-WhatsApp ad: a contact created by that message, or (optional) a known contact's first chat from that ad.",
+        "google_sheet_new_row": "Starts once for every new row added to a Google Sheet tab. The row's phone column identifies the customer (a new contact is created if needed)."
       },
       "sections": {
         "message": "Message & Conversation",
@@ -2987,16 +3016,54 @@
       "confirm": "Confirm",
       "leaveTitle": "Unsaved changes",
       "locked": {
-        "lead_ctwa": "Needs a Facebook (Meta Lead Ads) connection, which Bluetick doesn't have yet. Use \"Message from CTWA\" for ad-click chats.",
         "salesforce_updated": "Needs a Salesforce connection (OAuth + field mapping), which Bluetick doesn't have yet. Salesforce can call this flow's webhook instead.",
         "salesforce_new": "Needs a Salesforce connection (OAuth + field mapping), which Bluetick doesn't have yet. Salesforce can call this flow's webhook instead.",
-        "sheets_new_row": "Needs a Google account connection, which Bluetick doesn't have yet. A Google Apps Script or Zapier can post new rows to \"On Webhook\".",
         "send_catalogue": "Needs a WhatsApp product catalogue linked to your number and a catalogue picker; not built yet.",
         "tool_call": "Needs AI tool calling, which Bluetick's AI agents don't have yet.",
         "custom_event": "Needs an analytics/event service, which Bluetick doesn't have yet.",
-        "google_sheets": "Needs a Google account connection, which Bluetick doesn't have yet. Use \"Call Api\" with a Google Apps Script web app.",
         "ai_call": "Needs a voice-calling provider (WhatsApp calling or phone line); a text AI key can't place calls.",
         "fb_conversion": "Needs a Meta Conversions API dataset/pixel connection, which Bluetick doesn't have yet."
+      },
+      "sheets": {
+        "checking": "Checking Google connection…",
+        "needsMigration": "Google Sheets needs database migration 051.",
+        "notConnected": "Google Sheets is not connected yet. An admin can connect a Google account in Settings → Integrations.",
+        "reconnectNeeded": "Google access expired or was removed. An admin needs to reconnect Google in Settings → Integrations.",
+        "openIntegrations": "Open Integrations",
+        "connectedAs": "Using {email}",
+        "spreadsheet": "Spreadsheet link",
+        "load": "Load",
+        "tab": "Sheet (tab)",
+        "pickTab": "Pick a tab",
+        "refresh": "Reload columns",
+        "noHeaders": "This tab has no header row. Put column names in row 1.",
+        "addRowHelp": "Adds one row at the bottom of the tab. Each value goes under its column name (row 1).",
+        "values": "Values",
+        "valuePlaceholder": "Text or a variable",
+        "staleColumns": "Not in the header row any more: {columns}.",
+        "removeStale": "Remove",
+        "rawHint": "Values are saved as plain text (formulas are not run).",
+        "none": "None",
+        "pickColumn": "Pick a column",
+        "phoneColumn": "WhatsApp number column",
+        "nameColumn": "Name column",
+        "countryCode": "Default country code",
+        "countryCodeHint": "Used for numbers written without a country code, e.g. 91 for India.",
+        "rowVariables": "Use row values in later steps:",
+        "pollHint": "Checked every 5 minutes. Only rows added after the flow is turned on start it. New contacts can only receive approved templates first (WhatsApp 24-hour rule).",
+        "lastChecked": "Last checked",
+        "rowsStarted": "Rows started"
+      },
+      "ctwaLead": {
+        "mode": "Count as a lead",
+        "modes": {
+          "new_contact": "New contacts only",
+          "new_ad": "New contacts, and known contacts coming from a new ad"
+        },
+        "adIds": "Ad / post IDs (optional)",
+        "anyAd": "Any ad",
+        "adIdsHint": "Comma-separated. Leave empty to react to every Click-to-WhatsApp ad.",
+        "variables": "Ad details for later steps:"
       }
     }
   },
