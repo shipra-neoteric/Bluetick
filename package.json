@@ -46,7 +46,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@supabase/ssr": "^0.12.7",
-    "@supabase/supabase-js": "^2.117.1",
+    "@supabase/supabase-js": "^2.118.0",
     "@vercel/speed-insights": "^2.0.0",
     "@xyflow/react": "^12.11.3",
     "class-variance-authority": "^0.7.1",
