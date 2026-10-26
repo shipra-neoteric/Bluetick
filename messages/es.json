@@ -1349,7 +1349,9 @@
       "statusActivated": "Flujo activado.",
       "statusArchived": "Archivado.",
       "statusDraft": "Guardado como borrador.",
-      "deleteConfirm": "¿Eliminar \"{name}\"? Todas las ejecuciones activas terminan de inmediato. No se puede deshacer."
+      "deleteConfirm": "¿Eliminar \"{name}\"? Todas las ejecuciones activas terminan de inmediato. No se puede deshacer.",
+      "duplicated": "Se creó \"{name}\" (desactivado).",
+      "duplicateFailed": "No se pudo duplicar el flujo."
     },
     "summary": {
       "options": "{count} {count, plural, =1 {opción} other {opciones}}",
@@ -3083,7 +3085,8 @@
         "anyAd": "Cualquier anuncio",
         "adIdsHint": "Separados por comas. Déjalo vacío para reaccionar a todos los anuncios Click-to-WhatsApp.",
         "variables": "Datos del anuncio para pasos posteriores:"
-      }
+      },
+      "duplicateFlow": "Duplicar flujo"
     }
   },
   "Campaigns": {

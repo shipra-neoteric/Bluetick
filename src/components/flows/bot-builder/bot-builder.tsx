@@ -21,7 +21,7 @@
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useReactFlow } from "@xyflow/react";
-import { CircleAlert, History, List, Loader2, MoreHorizontal, Pencil, Redo2, Trash2, Undo2, X } from "lucide-react";
+import { CircleAlert, Copy, History, List, Loader2, MoreHorizontal, Pencil, Redo2, Trash2, Undo2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -61,6 +61,7 @@ export function BotBuilder({ onListView }: { onListView: () => void }) {
     save,
     setStatus,
     deleteFlow,
+    duplicateFlow,
     undo,
     redo,
     canUndo,
@@ -182,6 +183,10 @@ export function BotBuilder({ onListView }: { onListView: () => void }) {
                       <DropdownMenuItem onClick={onListView}>
                         <List className="h-4 w-4" />
                         {t("listView")}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => void duplicateFlow()}>
+                        <Copy className="h-4 w-4" />
+                        {t("duplicateFlow")}
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={() => void deleteFlow()} className="text-red-500">

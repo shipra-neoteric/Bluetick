@@ -82,6 +82,16 @@ const CanvasUi = createContext<{ showTriggers: () => void; askDelete: (keys: str
 
 // ── Cards ────────────────────────────────────────────────────────────
 
+/**
+ * Steps with nothing to configure (or that end the flow) gain nothing
+ * from a copy, so only the others offer Duplicate. Every card has Delete.
+ */
+const NO_DUPLICATE = new Set(["start", "end", "handoff", "opt_out"]);
+function canDuplicate(node: { node_type: string; config: Record<string, unknown> }): boolean {
+  if (node.node_type === "action" && node.config.step_type === "close_conversation") return false;
+  return !NO_DUPLICATE.has(node.node_type);
+}
+
 function CardMenu({ items }: { items: { label: string; icon: typeof Copy; onClick: () => void; danger?: boolean }[] }) {
   const t = useTranslations("BotStudio.builder");
   return (
@@ -106,7 +116,7 @@ function CardMenu({ items }: { items: { label: string; icon: typeof Copy; onClic
 
 const TriggerNode = memo(function TriggerNode({ selected }: NodeProps) {
   const t = useTranslations("BotStudio.builder");
-  const { state, setState } = useFlowEditor();
+  const { state, setState, duplicateFlow, deleteFlow } = useFlowEditor();
   const ui = useContext(CanvasUi);
   return (
     <div className="relative" style={{ width: 240 }}>
@@ -119,14 +129,17 @@ const TriggerNode = memo(function TriggerNode({ selected }: NodeProps) {
           <CardMenu
             items={[
               { label: t("changeTrigger"), icon: RefreshCw, onClick: ui.showTriggers },
-              // A flow always has a starting point: removing the trigger
-              // leaves "Started manually" (inbox / another flow).
+              // A flow has one starting point, so Duplicate / Delete here
+              // act on the whole flow.
+              { label: t("duplicateFlow"), icon: Copy, onClick: () => void duplicateFlow() },
+              // Removing the trigger leaves "Started manually" (inbox / another flow).
               {
                 label: t("removeTrigger"),
-                icon: Trash2,
+                icon: X,
                 danger: true,
                 onClick: () => setState((s) => ({ ...s, trigger_type: "manual", trigger_config: {} })),
               },
+              { label: t("deleteFlow"), icon: Trash2, danger: true, onClick: () => void deleteFlow() },
             ]}
           />
         </div>
@@ -174,7 +187,7 @@ const StepNode = memo(function StepNode({ data, selected }: NodeProps) {
 
   const menu = [
     { label: t("rename"), icon: Pencil, onClick: () => setRenaming(true) },
-    ...(node.node_type !== "start" ? [{ label: t("duplicate"), icon: Copy, onClick: () => duplicateNode(key) }] : []),
+    ...(canDuplicate(node) ? [{ label: t("duplicate"), icon: Copy, onClick: () => duplicateNode(key) }] : []),
     ...(!isEntry ? [{ label: t("setFirst"), icon: Flag, onClick: () => setState((s) => ({ ...s, entry_node_id: key })) }] : []),
     { label: t("delete"), icon: Trash2, onClick: () => ui.askDelete([key]), danger: true },
   ];

@@ -1349,7 +1349,9 @@
       "statusActivated": "Fluxo ativado.",
       "statusArchived": "Arquivado.",
       "statusDraft": "Salvo como rascunho.",
-      "deleteConfirm": "Excluir \"{name}\"? Todas as execuções ativas terminam imediatamente. Não é possível desfazer."
+      "deleteConfirm": "Excluir \"{name}\"? Todas as execuções ativas terminam imediatamente. Não é possível desfazer.",
+      "duplicated": "\"{name}\" criado (desativado).",
+      "duplicateFailed": "Não foi possível duplicar o fluxo."
     },
     "summary": {
       "options": "{count} {count, plural, =1 {opção} other {opções}}",
@@ -3083,7 +3085,8 @@
         "anyAd": "Qualquer anúncio",
         "adIdsHint": "Separados por vírgula. Deixe vazio para reagir a todos os anúncios Click-to-WhatsApp.",
         "variables": "Detalhes do anúncio para as próximas etapas:"
-      }
+      },
+      "duplicateFlow": "Duplicar fluxo"
     }
   },
   "Campaigns": {

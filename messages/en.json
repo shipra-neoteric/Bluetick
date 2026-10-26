@@ -1349,7 +1349,9 @@
       "statusActivated": "Flow activated.",
       "statusArchived": "Archived.",
       "statusDraft": "Saved as draft.",
-      "deleteConfirm": "Delete \"{name}\"? Any active runs end immediately. This can't be undone."
+      "deleteConfirm": "Delete \"{name}\"? Any active runs end immediately. This can't be undone.",
+      "duplicated": "Created \"{name}\" (switched off).",
+      "duplicateFailed": "Could not duplicate the flow."
     },
     "summary": {
       "options": "{count} {count, plural, =1 {option} other {options}}",
@@ -3083,7 +3085,8 @@
         "anyAd": "Any ad",
         "adIdsHint": "Comma-separated. Leave empty to react to every Click-to-WhatsApp ad.",
         "variables": "Ad details for later steps:"
-      }
+      },
+      "duplicateFlow": "Duplicate flow"
     }
   },
   "Campaigns": {

@@ -1349,7 +1349,9 @@
       "statusActivated": "플로우가 활성화되었습니다.",
       "statusArchived": "보관되었습니다.",
       "statusDraft": "초안으로 저장되었습니다.",
-      "deleteConfirm": "\"{name}\"을(를) 삭제할까요? 진행 중인 실행이 즉시 종료되며 되돌릴 수 없습니다."
+      "deleteConfirm": "\"{name}\"을(를) 삭제할까요? 진행 중인 실행이 즉시 종료되며 되돌릴 수 없습니다.",
+      "duplicated": "\"{name}\"을(를) 만들었습니다(꺼짐).",
+      "duplicateFailed": "플로우를 복제하지 못했습니다."
     },
     "summary": {
       "options": "옵션 {count}개",
@@ -3083,7 +3085,8 @@
         "anyAd": "모든 광고",
         "adIdsHint": "쉼표로 구분합니다. 비워 두면 모든 Click-to-WhatsApp 광고에 반응합니다.",
         "variables": "다음 단계용 광고 정보:"
-      }
+      },
+      "duplicateFlow": "플로우 복제"
     }
   },
   "Campaigns": {

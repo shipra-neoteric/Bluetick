@@ -126,6 +126,8 @@ export interface FlowEditorContextValue {
   save: () => Promise<void>;
   setStatus: (status: BuilderState["status"]) => Promise<void>;
   deleteFlow: () => Promise<void>;
+  /** Save pending edits, copy the flow into a new (off) draft, open it. */
+  duplicateFlow: () => Promise<void>;
 
   /**
    * Transient "look here" signal. Set when the validation panel's
@@ -507,6 +509,25 @@ export function FlowEditorProvider({
     }
   }, [initialFlow.id, router, state.name, t]);
 
+  // ---- Duplicate ----
+  const duplicateFlow = useCallback(async () => {
+    try {
+      // The copy is made from the saved flow, so save edits first.
+      if (dirty) await save();
+      const res = await fetch("/api/flows", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ duplicate_of: initialFlow.id }),
+      });
+      const json = (await res.json().catch(() => ({}))) as { flow?: { id: string; name: string }; error?: string };
+      if (!res.ok || !json.flow) throw new Error(json.error ?? `Duplicate failed: ${res.status}`);
+      toast.success(t("duplicated", { name: json.flow.name }));
+      router.push(`/flows/${json.flow.id}`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t("duplicateFailed"));
+    }
+  }, [dirty, save, initialFlow.id, router, t]);
+
   // ---- Node mutations ----
   const updateNode = useCallback(
     (key: string, patch: Partial<BuilderNode>) => {
@@ -668,6 +689,7 @@ export function FlowEditorProvider({
       save,
       setStatus,
       deleteFlow,
+      duplicateFlow,
       flashKey,
       requestFlash,
     }),
@@ -695,6 +717,7 @@ export function FlowEditorProvider({
       save,
       setStatus,
       deleteFlow,
+      duplicateFlow,
       flashKey,
       requestFlash,
     ],
