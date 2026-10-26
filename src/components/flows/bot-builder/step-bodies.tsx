@@ -17,6 +17,7 @@
 import { useMemo, useState } from "react";
 import { CalendarDays, Plus, Search, X } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useAutomationResources } from "@/components/automations/automation-builder";
 import type { ExtraVariable } from "@/components/bot/variable-picker";
@@ -209,8 +210,24 @@ export function TagsBody({ node, onUpdate }: { node: BuilderNode; onUpdate: (p: 
 
 export function TemplateBody({ node, vars, onUpdate }: { node: BuilderNode; vars: ExtraVariable[]; onUpdate: (p: Record<string, unknown>) => void }) {
   const t = useTranslations("BotStudio.builder");
-  const { templates } = useAutomationResources();
+  const { templates, reloadTemplates } = useAutomationResources();
+  const [syncing, setSyncing] = useState(false);
   const c = node.config as { template_name?: string; language?: string; params?: string[]; header_media_url?: string };
+  // Approved templates come from Meta; pull the latest list on request.
+  const sync = async () => {
+    setSyncing(true);
+    try {
+      const res = await fetch("/api/whatsapp/templates/sync", { method: "POST" });
+      const json = (await res.json().catch(() => ({}))) as { error?: string };
+      if (!res.ok) throw new Error(json.error ?? `HTTP ${res.status}`);
+      await reloadTemplates();
+      toast.success(t("template.synced"));
+    } catch (err) {
+      toast.error(t("template.syncFailed", { reason: err instanceof Error ? err.message : "" }));
+    } finally {
+      setSyncing(false);
+    }
+  };
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(!c.template_name);
   const current = templates.find((x) => x.name === c.template_name && (x.language ?? "") === (c.language ?? ""));
@@ -230,7 +247,21 @@ export function TemplateBody({ node, vars, onUpdate }: { node: BuilderNode; vars
             <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("template.search")} className="min-w-0 flex-1 bg-transparent text-[12.5px] outline-none" />
           </div>
           <div className="max-h-40 overflow-y-auto py-1">
-            {filtered.length === 0 && <p className="text-muted-foreground px-2 py-1 text-[11.5px]">{t("template.none")}</p>}
+            {filtered.length === 0 && (
+              <div className="px-2 py-1 text-[11.5px] leading-snug">
+                <p className="text-muted-foreground">{templates.length === 0 ? t("template.noneHelp") : t("template.none")}</p>
+                {templates.length === 0 && (
+                  <button
+                    type="button"
+                    onClick={() => void sync()}
+                    disabled={syncing}
+                    className="mt-1 font-medium text-emerald-700 disabled:opacity-50 dark:text-emerald-400"
+                  >
+                    {syncing ? t("template.syncing") : t("template.sync")}
+                  </button>
+                )}
+              </div>
+            )}
             {filtered.map((x) => (
               <button
                 key={x.id}

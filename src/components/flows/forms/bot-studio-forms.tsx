@@ -212,18 +212,7 @@ export function BotStudioNodeForm({ node, allNodes, onUpdateConfig }: Props) {
           ) : (
             <div>
               <Label>{t("pool")}</Label>
-              <div className="max-h-36 space-y-1 overflow-y-auto rounded-md border border-border p-2">
-                {members.map((m) => (
-                  <label key={m.user_id} className="flex items-center gap-2 text-xs">
-                    <input
-                      type="checkbox"
-                      checked={pool.includes(m.user_id)}
-                      onChange={(e) => onUpdateConfig({ pool: e.target.checked ? [...pool, m.user_id] : pool.filter((x) => x !== m.user_id) })}
-                    />
-                    {m.full_name || m.email || m.user_id}
-                  </label>
-                ))}
-              </div>
+              <AgentMultiSelect members={members} value={pool} onChange={(next) => onUpdateConfig({ pool: next })} />
               <p className="mt-1 text-[11px] text-muted-foreground">{t("poolHint")}</p>
             </div>
           )}
@@ -366,6 +355,84 @@ export function BotStudioNodeForm({ node, allNodes, onUpdateConfig }: Props) {
     default:
       return <p className="text-xs text-amber-600">{t("unknownNode")}</p>;
   }
+}
+
+/**
+ * Pick several agents: searchable list with chips, Select all / Clear.
+ * An empty selection means "every active agent" (engine behaviour).
+ */
+function AgentMultiSelect({
+  members,
+  value,
+  onChange,
+}: {
+  members: { user_id: string; full_name?: string; email?: string }[];
+  value: string[];
+  onChange: (next: string[]) => void;
+}) {
+  const t = useTranslations("BotStudio.flows.form");
+  const [open, setOpen] = useState(false);
+  const [q, setQ] = useState("");
+  const name = (m: { user_id: string; full_name?: string; email?: string }) => m.full_name || m.email || m.user_id;
+  const known = new Set(members.map((m) => m.user_id));
+  const chosen = value.filter((id) => known.has(id));
+  const shown = members.filter((m) => name(m).toLowerCase().includes(q.trim().toLowerCase()));
+  const toggle = (id: string) => onChange(chosen.includes(id) ? chosen.filter((x) => x !== id) : [...chosen, id]);
+  return (
+    <div className="rounded-md border border-border">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="flex w-full items-center justify-between gap-2 px-2 py-1.5 text-left text-xs"
+      >
+        <span className={chosen.length ? "text-foreground" : "text-muted-foreground"}>
+          {chosen.length ? t("agentsSelected", { count: chosen.length }) : t("allAgents")}
+        </span>
+        <span className="text-muted-foreground">{open ? "▴" : "▾"}</span>
+      </button>
+      {chosen.length > 0 && (
+        <div className="flex flex-wrap gap-1 px-2 pb-1.5">
+          {chosen.map((id) => (
+            <span key={id} className="inline-flex items-center gap-1 rounded-full border border-emerald-600/40 bg-emerald-600/10 px-2 py-0.5 text-[11px]">
+              {name(members.find((m) => m.user_id === id)!)}
+              <button type="button" aria-label={t("removeAgent")} onClick={() => toggle(id)} className="hover:text-red-500">
+                ×
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+      {open && (
+        <div className="border-t border-border">
+          <div className="flex items-center gap-2 px-2 py-1">
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder={t("searchAgents")}
+              aria-label={t("searchAgents")}
+              className="min-w-0 flex-1 bg-transparent text-xs outline-none"
+            />
+            <button type="button" onClick={() => onChange(members.map((m) => m.user_id))} className="text-[11px] font-medium text-emerald-700 dark:text-emerald-400">
+              {t("selectAll")}
+            </button>
+            <button type="button" onClick={() => onChange([])} className="text-[11px] text-muted-foreground hover:text-foreground">
+              {t("clear")}
+            </button>
+          </div>
+          <div className="max-h-40 overflow-y-auto py-1">
+            {members.length === 0 && <p className="px-2 py-1 text-[11px] text-muted-foreground">{t("noAgents")}</p>}
+            {shown.map((m) => (
+              <label key={m.user_id} className="flex cursor-pointer items-center gap-2 px-2 py-1 text-xs hover:bg-muted">
+                <input type="checkbox" className="accent-emerald-600" checked={chosen.includes(m.user_id)} onChange={() => toggle(m.user_id)} />
+                <span className="truncate">{name(m)}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 /** Extra options for collect_input (opt-in validation). */

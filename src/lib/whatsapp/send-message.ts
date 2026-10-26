@@ -660,6 +660,9 @@ export async function sendMessageToConversation(
       last_message_text: lastMessageText,
       last_message_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
+      // Messaging a resolved chat (e.g. a template after the 24-hour
+      // window) reopens it, so the thread is back in the Open folder.
+      ...(conversation.status === 'closed' ? { status: 'open' } : {}),
     })
     .eq('id', conversationId);
 

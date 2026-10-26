@@ -90,6 +90,8 @@ export async function POST(request: Request) {
          * provided.
          */
         template_slug?: string
+        /** If set, copy this flow (same account) into a new draft. */
+        duplicate_of?: string
       }
     | null
   if (!body) {
@@ -97,6 +99,52 @@ export async function POST(request: Request) {
   }
 
   const admin = supabaseAdmin()
+
+  // -------- Duplicate an existing flow --------
+  // Copies the live (editable) trigger and steps into a new draft. The
+  // copy starts switched off, with no run history and no webhook URL.
+  if (body.duplicate_of) {
+    const { data: src } = await admin
+      .from('flows')
+      .select('name, description, trigger_type, trigger_config, entry_node_id, fallback_policy')
+      .eq('id', body.duplicate_of)
+      .eq('account_id', accountId)
+      .maybeSingle()
+    if (!src) return NextResponse.json({ error: 'Flow not found' }, { status: 404 })
+    const { data: nodes, error: nodesReadErr } = await admin
+      .from('flow_nodes')
+      .select('node_key, node_type, config, position_x, position_y')
+      .eq('flow_id', body.duplicate_of)
+    if (nodesReadErr) return NextResponse.json({ error: nodesReadErr.message }, { status: 500 })
+    const { data: flow, error: flowErr } = await admin
+      .from('flows')
+      .insert({
+        user_id: userId,
+        account_id: accountId,
+        name: (body.name?.trim() || `${src.name} (copy)`).slice(0, 200),
+        description: src.description,
+        status: 'draft',
+        trigger_type: src.trigger_type,
+        trigger_config: src.trigger_config,
+        entry_node_id: src.entry_node_id,
+        ...(src.fallback_policy ? { fallback_policy: src.fallback_policy } : {}),
+      })
+      .select()
+      .single()
+    if (flowErr || !flow) {
+      return NextResponse.json({ error: flowErr?.message ?? 'flow insert failed' }, { status: 500 })
+    }
+    if (nodes?.length) {
+      const { error: nodesErr } = await admin
+        .from('flow_nodes')
+        .insert(nodes.map((n) => ({ ...n, flow_id: flow.id })))
+      if (nodesErr) {
+        await admin.from('flows').delete().eq('id', flow.id)
+        return NextResponse.json({ error: nodesErr.message }, { status: 500 })
+      }
+    }
+    return NextResponse.json({ flow }, { status: 201 })
+  }
 
   // -------- Template clone path --------
   if (body.template_slug) {

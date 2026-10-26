@@ -761,7 +761,8 @@
           "all": "전체 연락처",
           "tags": "태그로 필터링",
           "customField": "커스텀 필드",
-          "csv": "CSV 업로드"
+          "csv": "CSV 업로드",
+          "selected": "선택한 연락처"
         },
         "allDesc": "데이터베이스의 전체 연락처 {count}명에게 보냅니다.",
         "allDescLoading": "데이터베이스의 전체 연락처에게 보냅니다.",
@@ -790,7 +791,8 @@
         "errorCsvParse": "CSV 파일을 파싱할 수 없습니다.",
         "errorCsvMissingPhone": "CSV에 'phone' 열이 있어야 합니다.",
         "audienceSummary": "대상 요약",
-        "calculating": "계산 중…"
+        "calculating": "계산 중…",
+        "selectedDesc": "고객에서 선택한 연락처 {count}개입니다."
       },
       "personalize": {
         "title": "변수 개인화",
@@ -849,7 +851,8 @@
         "estimatedReach": "예상 도달 수",
         "language": "언어",
         "confirmTitle": "브로드캐스트 확인",
-        "confirmDesc": "<b>{template}</b> 템플릿으로 연락처 <b>{count, number}</b>명에게 이 브로드캐스트를 보내려고 합니다. 이 작업은 되돌릴 수 없습니다."
+        "confirmDesc": "<b>{template}</b> 템플릿으로 연락처 <b>{count, number}</b>명에게 이 브로드캐스트를 보내려고 합니다. 이 작업은 되돌릴 수 없습니다.",
+        "audienceSelected": "선택한 연락처"
       }
     }
   },
@@ -1111,7 +1114,11 @@
       "triggerKeywordNone": "키워드로 트리거 (설정 안 됨)",
       "triggerKeyword": "트리거 조건: {keywords}",
       "triggerFirstInbound": "연락처의 첫 수신 메시지에서 트리거됨",
-      "triggerManual": "수동 트리거"
+      "triggerManual": "수동 트리거",
+      "moreActions": "더 보기",
+      "duplicate": "복제",
+      "duplicateSuccess": "\"{name}\"을(를) 만들었습니다(꺼짐).",
+      "duplicateError": "플로우를 복제하지 못했습니다."
     },
     "edit": {
       "notFound": "플로우를 찾을 수 없습니다.",
@@ -2478,7 +2485,14 @@
         "validateHint": "유효하지 않은 답변은 플로우의 대체 정책(다시 묻기, 인계 또는 종료)을 따릅니다.",
         "handoffAgent": "배정 대상",
         "handoffQueue": "공유 대기열(담당자 없음)",
-        "unknownNode": "이 버전에서 지원되지 않는 단계 유형입니다. 그대로 유지되지만 제거하기 전까지 플로우를 게시할 수 없습니다."
+        "unknownNode": "이 버전에서 지원되지 않는 단계 유형입니다. 그대로 유지되지만 제거하기 전까지 플로우를 게시할 수 없습니다.",
+        "agentsSelected": "{count}명 선택됨",
+        "allAgents": "모든 활성 상담원",
+        "removeAgent": "상담원 제거",
+        "searchAgents": "상담원 검색",
+        "selectAll": "모두 선택",
+        "clear": "지우기",
+        "noAgents": "이 워크스페이스에 아직 상담원이 없습니다."
       },
       "settings": {
         "open": "설정",
@@ -2965,7 +2979,12 @@
         "search": "템플릿 검색",
         "none": "승인된 템플릿이 없습니다.",
         "headerMedia": "헤더 미디어",
-        "windowNote": "템플릿은 24시간 창 밖에서도 고객에게 전달됩니다."
+        "windowNote": "템플릿은 24시간 창 밖에서도 고객에게 전달됩니다.",
+        "noneHelp": "아직 승인된 템플릿이 없습니다. Meta가 승인하고 동기화되면 여기에 표시됩니다.",
+        "sync": "Meta에서 템플릿 동기화",
+        "syncing": "동기화 중…",
+        "synced": "템플릿이 동기화되었습니다.",
+        "syncFailed": "템플릿을 동기화하지 못했습니다: {reason}"
       },
       "api": {
         "needsMigration": "API 호출에는 데이터베이스 마이그레이션 049가 필요합니다.",
@@ -3430,6 +3449,31 @@
         "ticketClosed": "채팅 종료일",
         "ticketReplied": "상담원 답장",
         "lastCtwa": "마지막 광고 리드 (CTWA)"
+      },
+      "bulk": {
+        "selected": "{count}개 선택됨",
+        "selectAll": "{count}개 모두 선택",
+        "clear": "선택 해제",
+        "addToList": "브로드캐스트 목록에 추가",
+        "sendBroadcast": "브로드캐스트 보내기",
+        "assignAgent": "상담원 배정",
+        "addToListDesc": "선택한 연락처 {count}개를 브로드캐스트 목록에 추가합니다.",
+        "list": "브로드캐스트 목록",
+        "pickList": "목록 선택",
+        "newList": "+ 새 목록",
+        "newListName": "새 목록 이름",
+        "cancel": "취소",
+        "add": "추가",
+        "listExists": "같은 이름의 목록이 이미 있습니다.",
+        "addedToList": "연락처 {count}개를 목록에 추가했습니다.",
+        "failed": "문제가 발생했습니다. 다시 시도하세요.",
+        "noChats": "선택한 연락처 중 대화가 있는 연락처가 없습니다.",
+        "assigned": "대화 {count}개를 배정했습니다.",
+        "storageBlocked": "브라우저가 임시 저장소를 차단하여 선택 항목을 브로드캐스트로 전달할 수 없습니다.",
+        "assignDesc": "선택한 연락처 {count}개의 대화를 한 상담원에게 배정합니다.",
+        "agent": "상담원",
+        "pickAgent": "상담원 선택",
+        "assign": "배정"
       }
     },
     "ads": {

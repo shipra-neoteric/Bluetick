@@ -22,7 +22,15 @@ import {
   LayoutGrid,
   List as ListIcon,
   Zap,
+  Copy,
+  MoreVertical,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { BotStudioGuide } from "@/components/bot/bot-studio-guide";
 import { ConvertAutomationsBanner } from "@/components/flows/convert-banner";
 import { TRIGGER_SECTIONS } from "@/components/flows/bot-builder/catalog";
@@ -251,6 +259,23 @@ export default function FlowsPage() {
     }
   }
 
+  async function handleDuplicate(flow: FlowRow) {
+    try {
+      const res = await fetch("/api/flows", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ duplicate_of: flow.id }),
+      });
+      const json = (await res.json().catch(() => ({}))) as { flow?: FlowRow; error?: string };
+      if (!res.ok || !json.flow) throw new Error(json.error ?? `Duplicate failed: ${res.status}`);
+      setFlows((prev) => [json.flow!, ...prev]);
+      toast.success(t("duplicateSuccess", { name: json.flow.name }));
+    } catch (err) {
+      console.error(err);
+      toast.error(t("duplicateError"));
+    }
+  }
+
   async function handleDelete(flow: FlowRow) {
     const yes = window.confirm(t("deleteConfirm", { name: flow.name }));
     if (!yes) return;
@@ -397,9 +422,12 @@ export default function FlowsPage() {
                     <Button variant="ghost" size="sm" onClick={() => router.push(`/flows/${flow.id}/runs`)} aria-label={tc("logs")} title={tc("logs")}>
                       <ScrollText className="h-3.5 w-3.5" />
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={() => handleDelete(flow)} className="text-red-400 hover:bg-red-500/10" aria-label={t("delete")}>
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
+                    <FlowMenu
+                      t={t}
+                      onEdit={() => router.push(`/flows/${flow.id}`)}
+                      onDuplicate={() => void handleDuplicate(flow)}
+                      onDelete={() => handleDelete(flow)}
+                    />
                   </td>
                 </tr>
               ))}
@@ -414,6 +442,7 @@ export default function FlowsPage() {
               flow={flow}
               onEdit={() => router.push(`/flows/${flow.id}`)}
               onDelete={() => handleDelete(flow)}
+              onDuplicate={() => void handleDuplicate(flow)}
               t={t}
             />
           ))}
@@ -533,15 +562,56 @@ function EmptyState({
   );
 }
 
+/** Three-dot menu shared by the card and table views. */
+function FlowMenu({
+  onEdit,
+  onDuplicate,
+  onDelete,
+  t,
+}: {
+  onEdit: () => void;
+  onDuplicate: () => void;
+  onDelete: () => void;
+  t: ReturnType<typeof useTranslations>;
+}) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
+        aria-label={t("moreActions")}
+        title={t("moreActions")}
+      >
+        <MoreVertical className="h-4 w-4" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="min-w-40">
+        <DropdownMenuItem onClick={onEdit}>
+          <Pencil className="h-3.5 w-3.5" />
+          {t("edit")}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={onDuplicate}>
+          <Copy className="h-3.5 w-3.5" />
+          {t("duplicate")}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={onDelete} className="text-red-500 focus:text-red-500">
+          <Trash2 className="h-3.5 w-3.5" />
+          {t("delete")}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
 function FlowCard({
   flow,
   onEdit,
   onDelete,
+  onDuplicate,
   t,
 }: {
   flow: FlowRow;
   onEdit: () => void;
   onDelete: () => void;
+  onDuplicate: () => void;
   t: ReturnType<typeof useTranslations>;
 }) {
   const ti = useTranslations("BotStudio.builder.items");
@@ -562,16 +632,19 @@ function FlowCard({
             {flow.name}
           </h3>
         </div>
-        <Badge
-          variant="outline"
-          className={cn(
-            "shrink-0 gap-1 text-[10px]",
-            STATUS_COLORS[flow.status],
-          )}
-        >
-          <StatusIcon className="h-3 w-3" />
-          {STATUS_LABELS(t)[flow.status]}
-        </Badge>
+        <div className="flex shrink-0 items-center gap-1">
+          <Badge
+            variant="outline"
+            className={cn(
+              "shrink-0 gap-1 text-[10px]",
+              STATUS_COLORS[flow.status],
+            )}
+          >
+            <StatusIcon className="h-3 w-3" />
+            {STATUS_LABELS(t)[flow.status]}
+          </Badge>
+          <FlowMenu t={t} onEdit={onEdit} onDuplicate={onDuplicate} onDelete={onDelete} />
+        </div>
       </div>
 
       <p className="mt-2 line-clamp-2 text-xs text-muted-foreground">

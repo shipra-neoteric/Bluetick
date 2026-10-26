@@ -737,6 +737,12 @@ export function MessageThread({
     };
   }, [conversationId, user?.id]);
 
+  // A successful send reopens a resolved chat (the server does the same),
+  // so a template sent to a closed conversation moves it back to Open.
+  const reopenIfClosed = useCallback(() => {
+    if (conversation?.status === "closed") onStatusChange(conversation.id, "open");
+  }, [conversation, onStatusChange]);
+
   const handleSend = useCallback(
     async (text: string, replyToId?: string) => {
       if (!conversation) return;
@@ -787,6 +793,7 @@ export function MessageThread({
         // with the real DB row. If realtime hasn't arrived yet, at least
         // flip status to 'sent' so the UI stops showing "sending".
         onUpdateMessage(tempId, { status: "sent" });
+        reopenIfClosed();
       } catch (err) {
         console.error("Failed to send message:", err);
         const reason = err instanceof Error ? err.message : "network error";
@@ -794,7 +801,7 @@ export function MessageThread({
         onUpdateMessage(tempId, { status: "failed" });
       }
     },
-    [conversation, onNewMessage, onUpdateMessage, t]
+    [conversation, onNewMessage, onUpdateMessage, reopenIfClosed, t]
   );
 
   const handleSendMedia = useCallback(
@@ -855,6 +862,7 @@ export function MessageThread({
         }
 
         onUpdateMessage(tempId, { status: "sent" });
+        reopenIfClosed();
       } catch (err) {
         console.error("Failed to send media:", err);
         const reason = err instanceof Error ? err.message : "network error";
@@ -863,7 +871,7 @@ export function MessageThread({
         void deleteAccountMedia(CHAT_MEDIA_BUCKET, payload.path).catch(() => {});
       }
     },
-    [conversation, onNewMessage, onUpdateMessage, t],
+    [conversation, onNewMessage, onUpdateMessage, reopenIfClosed, t],
   );
 
   const handleSendInteractive = useCallback(
@@ -912,6 +920,7 @@ export function MessageThread({
         }
 
         onUpdateMessage(tempId, { status: "sent" });
+        reopenIfClosed();
       } catch (err) {
         console.error("Failed to send interactive message:", err);
         const reason = err instanceof Error ? err.message : "network error";
@@ -919,7 +928,7 @@ export function MessageThread({
         onUpdateMessage(tempId, { status: "failed" });
       }
     },
-    [conversation, onNewMessage, onUpdateMessage, t],
+    [conversation, onNewMessage, onUpdateMessage, reopenIfClosed, t],
   );
 
   const handleStatusChange = useCallback(
@@ -1008,6 +1017,7 @@ export function MessageThread({
         }
 
         onUpdateMessage(tempId, { status: "sent" });
+        reopenIfClosed();
       } catch (err) {
         console.error("Failed to send template:", err);
         const reason = err instanceof Error ? err.message : "network error";
@@ -1015,7 +1025,7 @@ export function MessageThread({
         onUpdateMessage(tempId, { status: "failed" });
       }
     },
-    [conversation, onNewMessage, onUpdateMessage, t],
+    [conversation, onNewMessage, onUpdateMessage, reopenIfClosed, t],
   );
 
   // Build a quick id → Message map so reply quotes can be rendered without

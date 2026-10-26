@@ -29,8 +29,10 @@ export interface CustomFieldFilter {
 }
 
 export interface AudienceConfig {
-  type: 'all' | 'tags' | 'custom_field' | 'csv';
+  type: 'all' | 'tags' | 'custom_field' | 'csv' | 'contacts';
   tagIds?: string[];
+  /** type 'contacts': contacts picked in the Customers table. */
+  contactIds?: string[];
   customField?: CustomFieldFilter;
   csvContacts?: { phone: string; name?: string }[];
   /** When set, CSV contacts are also tagged with this group name. */
@@ -225,6 +227,9 @@ export function useBroadcastSending(): UseBroadcastSendingReturn {
       contacts = await fetchContactsByIds<Contact>(supabase, uniqueContactIds);
     } else if (audience.type === 'custom_field' && audience.customField) {
       contacts = await resolveCustomFieldAudience(supabase, audience.customField);
+    } else if (audience.type === 'contacts' && audience.contactIds?.length) {
+      // RLS scopes the read to the caller's account.
+      contacts = await fetchContactsByIds<Contact>(supabase, [...new Set(audience.contactIds)]);
     } else if (audience.type === 'csv' && audience.csvContacts) {
       contacts = await upsertCsvContacts(supabase, audience.csvContacts);
       if (audience.csvGroupName?.trim() && contacts.length > 0) {

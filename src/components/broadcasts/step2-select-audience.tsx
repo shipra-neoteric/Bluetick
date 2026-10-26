@@ -21,10 +21,11 @@ import {
   ArrowRight,
   ArrowLeft,
   X,
+  UserCheck,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-type AudienceType = 'all' | 'tags' | 'custom_field' | 'csv';
+type AudienceType = 'all' | 'tags' | 'custom_field' | 'csv' | 'contacts';
 type CustomFieldOperator = 'is' | 'is_not' | 'contains';
 
 interface CustomFieldFilter {
@@ -36,6 +37,8 @@ interface CustomFieldFilter {
 interface AudienceConfig {
   type: AudienceType;
   tagIds?: string[];
+  /** Contacts picked in the Customers table (type 'contacts'). */
+  contactIds?: string[];
   customField?: CustomFieldFilter;
   csvContacts?: { phone: string; name?: string }[];
   csvGroupName?: string;
@@ -93,7 +96,16 @@ export function Step2SelectAudience({
       description: t('selectAudience.csvDesc'),
       icon: Upload,
     },
-  ], [t]);
+    // Only when the wizard was opened from a selection in Customers.
+    ...(audience.contactIds?.length
+      ? [{
+          type: 'contacts' as const,
+          label: t('selectAudience.method.selected'),
+          description: t('selectAudience.selectedDesc', { count: audience.contactIds.length }),
+          icon: UserCheck,
+        }]
+      : []),
+  ], [t, audience.contactIds]);
   const [tags, setTags] = useState<Tag[]>([]);
   const [customFields, setCustomFields] = useState<CustomField[]>([]);
   const [loadingTags, setLoadingTags] = useState(false);
@@ -224,6 +236,8 @@ export function Step2SelectAudience({
       ) {
         setEstimatedCount(audience.csvContacts.length);
         return;
+      } else if (audience.type === 'contacts' && audience.contactIds?.length) {
+        baseIds = new Set(audience.contactIds);
       } else {
         // Partially-configured audience — wait for the user to finish.
         setEstimatedCount(null);
@@ -270,6 +284,7 @@ export function Step2SelectAudience({
     audience.tagIds,
     audience.customField,
     audience.csvContacts,
+    audience.contactIds,
     audience.excludeTagIds,
   ]);
 
@@ -359,7 +374,8 @@ export function Step2SelectAudience({
       audience.customField.value.trim().length > 0) ||
     (audience.type === 'csv' &&
       audience.csvContacts &&
-      audience.csvContacts.length > 0);
+      audience.csvContacts.length > 0) ||
+    (audience.type === 'contacts' && (audience.contactIds?.length ?? 0) > 0);
 
   return (
     <div className="space-y-6">

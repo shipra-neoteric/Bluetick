@@ -2,6 +2,7 @@
 
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -275,6 +276,8 @@ interface AutomationResources {
   customFields: CustomField[]
   pipelines: PipelineOption[]
   stages: PipelineStageOption[]
+  /** Re-read approved templates (after a sync from Meta). */
+  reloadTemplates: () => Promise<void>
 }
 
 interface PipelineOption {
@@ -296,6 +299,7 @@ const ResourcesContext = createContext<AutomationResources>({
   customFields: [],
   pipelines: [],
   stages: [],
+  reloadTemplates: async () => {},
 })
 
 function useResources(): AutomationResources {
@@ -361,9 +365,18 @@ function ResourcesProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  const reloadTemplates = useCallback(async () => {
+    const { data } = await createClient()
+      .from("message_templates")
+      .select("*")
+      .eq("status", "APPROVED")
+      .order("name")
+    setTemplates((data as MessageTemplate[] | null) ?? [])
+  }, [])
+
   return (
     <ResourcesContext.Provider
-      value={{ tags, members, templates, customFields, pipelines, stages }}
+      value={{ tags, members, templates, customFields, pipelines, stages, reloadTemplates }}
     >
       {children}
     </ResourcesContext.Provider>

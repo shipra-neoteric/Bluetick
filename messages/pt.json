@@ -761,7 +761,8 @@
           "all": "Todos os contatos",
           "tags": "Filtrar por tags",
           "customField": "Campo personalizado",
-          "csv": "Enviar CSV"
+          "csv": "Enviar CSV",
+          "selected": "Contatos selecionados"
         },
         "allDesc": "Enviar para todos os {count} contatos do seu banco de dados.",
         "allDescLoading": "Enviar para todos os contatos do seu banco de dados.",
@@ -790,7 +791,8 @@
         "errorCsvParse": "Não foi possível ler o arquivo CSV.",
         "errorCsvMissingPhone": "O CSV deve ter uma coluna 'phone'.",
         "audienceSummary": "Resumo do público",
-        "calculating": "Calculando…"
+        "calculating": "Calculando…",
+        "selectedDesc": "Os {count} contatos que você selecionou em Clientes."
       },
       "personalize": {
         "title": "Personalizar variáveis",
@@ -849,7 +851,8 @@
         "estimatedReach": "Alcance estimado",
         "language": "Idioma",
         "confirmTitle": "Confirmar disparo",
-        "confirmDesc": "Você está prestes a enviar este disparo para <b>{count, number}</b> {count, plural, =1 {contato} other {contatos}} usando o modelo <b>{template}</b>. Esta ação não pode ser desfeita."
+        "confirmDesc": "Você está prestes a enviar este disparo para <b>{count, number}</b> {count, plural, =1 {contato} other {contatos}} usando o modelo <b>{template}</b>. Esta ação não pode ser desfeita.",
+        "audienceSelected": "Contatos selecionados"
       }
     }
   },
@@ -1111,7 +1114,11 @@
       "triggerKeywordNone": "Acionado por palavra-chave (nenhuma definida)",
       "triggerKeyword": "Acionado por: {keywords}",
       "triggerFirstInbound": "Acionado pela primeira mensagem recebida de um contato",
-      "triggerManual": "Acionamento manual"
+      "triggerManual": "Acionamento manual",
+      "moreActions": "Mais ações",
+      "duplicate": "Duplicar",
+      "duplicateSuccess": "\"{name}\" criado (desativado).",
+      "duplicateError": "Não foi possível duplicar o fluxo."
     },
     "edit": {
       "notFound": "Fluxo não encontrado.",
@@ -2478,7 +2485,14 @@
         "validateHint": "Uma resposta inválida segue a política de fallback do fluxo (perguntar de novo, transferir ou encerrar).",
         "handoffAgent": "Atribuir a",
         "handoffQueue": "Fila compartilhada (ninguém)",
-        "unknownNode": "Este tipo de etapa não é compatível com esta versão. Ele é mantido como está, mas o fluxo não pode ser publicado até que seja removido."
+        "unknownNode": "Este tipo de etapa não é compatível com esta versão. Ele é mantido como está, mas o fluxo não pode ser publicado até que seja removido.",
+        "agentsSelected": "{count} selecionados",
+        "allAgents": "Todos os agentes ativos",
+        "removeAgent": "Remover agente",
+        "searchAgents": "Buscar agentes",
+        "selectAll": "Selecionar todos",
+        "clear": "Limpar",
+        "noAgents": "Ainda não há agentes neste espaço."
       },
       "settings": {
         "open": "Configurações",
@@ -2965,7 +2979,12 @@
         "search": "Buscar modelo",
         "none": "Nenhum modelo aprovado.",
         "headerMedia": "Mídia do cabeçalho",
-        "windowNote": "Modelos chegam ao cliente mesmo fora da janela de 24 horas."
+        "windowNote": "Modelos chegam ao cliente mesmo fora da janela de 24 horas.",
+        "noneHelp": "Ainda não há modelos aprovados. Eles aparecem aqui depois que a Meta os aprova e são sincronizados.",
+        "sync": "Sincronizar modelos da Meta",
+        "syncing": "Sincronizando…",
+        "synced": "Modelos sincronizados.",
+        "syncFailed": "Não foi possível sincronizar os modelos: {reason}"
       },
       "api": {
         "needsMigration": "Chamar API requer a migração 049 do banco de dados.",
@@ -3430,6 +3449,31 @@
         "ticketClosed": "Chat fechado em",
         "ticketReplied": "Agente respondeu",
         "lastCtwa": "Último lead de anúncio (CTWA)"
+      },
+      "bulk": {
+        "selected": "{count} selecionados",
+        "selectAll": "Selecionar todos os {count}",
+        "clear": "Limpar seleção",
+        "addToList": "Adicionar à lista de transmissão",
+        "sendBroadcast": "Enviar transmissão",
+        "assignAgent": "Atribuir agente",
+        "addToListDesc": "Adicione os {count} contatos selecionados a uma lista de transmissão.",
+        "list": "Lista de transmissão",
+        "pickList": "Escolha uma lista",
+        "newList": "+ Nova lista",
+        "newListName": "Nome da nova lista",
+        "cancel": "Cancelar",
+        "add": "Adicionar",
+        "listExists": "Já existe uma lista com este nome.",
+        "addedToList": "{count} contatos adicionados à lista.",
+        "failed": "Algo deu errado. Tente de novo.",
+        "noChats": "Nenhum dos contatos selecionados tem conversa ainda.",
+        "assigned": "{count} conversas atribuídas.",
+        "storageBlocked": "Seu navegador bloqueou o armazenamento temporário, então a seleção não pode ser passada para a transmissão.",
+        "assignDesc": "Atribua as conversas dos {count} contatos selecionados a um agente.",
+        "agent": "Agente",
+        "pickAgent": "Escolha um agente",
+        "assign": "Atribuir"
       }
     },
     "ads": {

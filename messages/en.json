@@ -761,7 +761,8 @@
           "all": "All Contacts",
           "tags": "Filter by Tags",
           "customField": "Custom Field",
-          "csv": "Upload CSV"
+          "csv": "Upload CSV",
+          "selected": "Selected contacts"
         },
         "allDesc": "Send to all {count} contacts in your database.",
         "allDescLoading": "Send to all contacts in your database.",
@@ -790,7 +791,8 @@
         "errorCsvParse": "Could not parse CSV file.",
         "errorCsvMissingPhone": "CSV must have a 'phone' column.",
         "audienceSummary": "Audience Summary",
-        "calculating": "Calculating…"
+        "calculating": "Calculating…",
+        "selectedDesc": "The {count} contacts you selected in Customers."
       },
       "personalize": {
         "title": "Personalize Variables",
@@ -849,7 +851,8 @@
         "estimatedReach": "Estimated Reach",
         "language": "Language",
         "confirmTitle": "Confirm Broadcast",
-        "confirmDesc": "You are about to send this broadcast to <b>{count, number}</b> {count, plural, =1 {contact} other {contacts}} using the <b>{template}</b> template. This action cannot be undone."
+        "confirmDesc": "You are about to send this broadcast to <b>{count, number}</b> {count, plural, =1 {contact} other {contacts}} using the <b>{template}</b> template. This action cannot be undone.",
+        "audienceSelected": "Selected contacts"
       }
     }
   },
@@ -1111,7 +1114,11 @@
       "triggerKeywordNone": "Triggers on keyword (none set)",
       "triggerKeyword": "Triggers on: {keywords}",
       "triggerFirstInbound": "Triggers on a contact's first-ever inbound message",
-      "triggerManual": "Manual trigger"
+      "triggerManual": "Manual trigger",
+      "moreActions": "More actions",
+      "duplicate": "Duplicate",
+      "duplicateSuccess": "Created \"{name}\" (switched off).",
+      "duplicateError": "Could not duplicate the flow."
     },
     "edit": {
       "notFound": "Flow not found.",
@@ -2478,7 +2485,14 @@
         "validateHint": "An invalid answer follows the flow's fallback policy (ask again, hand off or end).",
         "handoffAgent": "Assign to",
         "handoffQueue": "Shared queue (no one)",
-        "unknownNode": "This step type isn't supported in this version. It is kept as is but the flow can't be published until it is removed."
+        "unknownNode": "This step type isn't supported in this version. It is kept as is but the flow can't be published until it is removed.",
+        "agentsSelected": "{count} selected",
+        "allAgents": "All active agents",
+        "removeAgent": "Remove agent",
+        "searchAgents": "Search agents",
+        "selectAll": "Select all",
+        "clear": "Clear",
+        "noAgents": "No agents in this workspace yet."
       },
       "settings": {
         "open": "Settings",
@@ -2965,7 +2979,12 @@
         "search": "Search template",
         "none": "No approved templates.",
         "headerMedia": "Header Media",
-        "windowNote": "Templates reach the customer even outside the 24-hour window."
+        "windowNote": "Templates reach the customer even outside the 24-hour window.",
+        "noneHelp": "No approved templates yet. Templates appear here after Meta approves them and they are synced.",
+        "sync": "Sync templates from Meta",
+        "syncing": "Syncing…",
+        "synced": "Templates synced.",
+        "syncFailed": "Could not sync templates: {reason}"
       },
       "api": {
         "needsMigration": "Call Api needs database migration 049.",
@@ -3430,6 +3449,31 @@
         "ticketClosed": "Chat closed on",
         "ticketReplied": "Agent replied",
         "lastCtwa": "Last ad lead (CTWA)"
+      },
+      "bulk": {
+        "selected": "{count} selected",
+        "selectAll": "Select all {count}",
+        "clear": "Clear selection",
+        "addToList": "Add to broadcast list",
+        "sendBroadcast": "Send broadcast",
+        "assignAgent": "Assign agent",
+        "addToListDesc": "Add the {count} selected contacts to a broadcast list.",
+        "list": "Broadcast list",
+        "pickList": "Pick a list",
+        "newList": "+ New list",
+        "newListName": "New list name",
+        "cancel": "Cancel",
+        "add": "Add",
+        "listExists": "A list with this name already exists.",
+        "addedToList": "Added {count} contacts to the list.",
+        "failed": "Something went wrong. Try again.",
+        "noChats": "None of the selected contacts has a chat yet.",
+        "assigned": "Assigned {count} chats.",
+        "storageBlocked": "Your browser blocked temporary storage, so the selection can't be passed to the broadcast.",
+        "assignDesc": "Assign the chats of the {count} selected contacts to one agent.",
+        "agent": "Agent",
+        "pickAgent": "Pick an agent",
+        "assign": "Assign"
       }
     },
     "ads": {

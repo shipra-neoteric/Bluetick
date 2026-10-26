@@ -12,6 +12,7 @@ import { Step3Personalize } from '@/components/broadcasts/step3-personalize';
 import { Step4ScheduleSend } from '@/components/broadcasts/step4-schedule-send';
 import { useBroadcastSending } from '@/hooks/use-broadcast-sending';
 import { Check } from 'lucide-react';
+import { SELECTED_CONTACTS_KEY } from '@/lib/campaigns/selected-contacts';
 import { useTranslations } from 'next-intl';
 
 const steps = [
@@ -31,8 +32,9 @@ export default function NewBroadcastPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [template, setTemplate] = useState<MessageTemplate | null>(null);
   const [audience, setAudience] = useState<{
-    type: 'all' | 'tags' | 'custom_field' | 'csv';
+    type: 'all' | 'tags' | 'custom_field' | 'csv' | 'contacts';
     tagIds?: string[];
+    contactIds?: string[];
     customField?: {
       fieldId: string;
       operator: 'is' | 'is_not' | 'contains';
@@ -58,6 +60,19 @@ export default function NewBroadcastPage() {
     const language = params.get('language');
     // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time URL prefill
     if (tag) setAudience({ type: 'tags', tagIds: [tag] });
+    // ?selected=1: contacts picked in Customers (ids handed over in
+    // sessionStorage — too many for a URL).
+    if (params.get('selected') === '1') {
+      try {
+        const raw = sessionStorage.getItem(SELECTED_CONTACTS_KEY);
+        const ids = raw ? (JSON.parse(raw) as unknown) : null;
+        if (Array.isArray(ids) && ids.length) {
+          setAudience({ type: 'contacts', contactIds: ids.filter((x): x is string => typeof x === 'string') });
+        }
+      } catch {
+        // Storage blocked or bad JSON: the user picks the audience instead.
+      }
+    }
     if (!templateName) return;
     let q = createClient()
       .from('message_templates')
@@ -86,6 +101,7 @@ export default function NewBroadcastPage() {
           customField: audience.customField,
           csvContacts: audience.csvContacts,
           csvGroupName: audience.csvGroupName,
+          contactIds: audience.contactIds,
           excludeTagIds: audience.excludeTagIds,
         },
         variables,

@@ -761,7 +761,8 @@
           "all": "Todos los contactos",
           "tags": "Filtrar por etiquetas",
           "customField": "Campo personalizado",
-          "csv": "Subir CSV"
+          "csv": "Subir CSV",
+          "selected": "Contactos seleccionados"
         },
         "allDesc": "Enviar a los {count} contactos de tu base de datos.",
         "allDescLoading": "Enviar a todos los contactos de tu base de datos.",
@@ -790,7 +791,8 @@
         "errorCsvParse": "No se pudo leer el archivo CSV.",
         "errorCsvMissingPhone": "El CSV debe tener una columna 'phone'.",
         "audienceSummary": "Resumen de la audiencia",
-        "calculating": "Calculando…"
+        "calculating": "Calculando…",
+        "selectedDesc": "Los {count} contactos que seleccionaste en Clientes."
       },
       "personalize": {
         "title": "Personalizar variables",
@@ -849,7 +851,8 @@
         "estimatedReach": "Alcance estimado",
         "language": "Idioma",
         "confirmTitle": "Confirmar difusión",
-        "confirmDesc": "Estás a punto de enviar esta difusión a <b>{count, number}</b> {count, plural, =1 {contacto} other {contactos}} con la plantilla <b>{template}</b>. Esta acción no se puede deshacer."
+        "confirmDesc": "Estás a punto de enviar esta difusión a <b>{count, number}</b> {count, plural, =1 {contacto} other {contactos}} con la plantilla <b>{template}</b>. Esta acción no se puede deshacer.",
+        "audienceSelected": "Contactos seleccionados"
       }
     }
   },
@@ -1111,7 +1114,11 @@
       "triggerKeywordNone": "Se activa por palabra clave (ninguna definida)",
       "triggerKeyword": "Se activa con: {keywords}",
       "triggerFirstInbound": "Se activa con el primer mensaje entrante de un contacto",
-      "triggerManual": "Activación manual"
+      "triggerManual": "Activación manual",
+      "moreActions": "Más acciones",
+      "duplicate": "Duplicar",
+      "duplicateSuccess": "Se creó \"{name}\" (desactivado).",
+      "duplicateError": "No se pudo duplicar el flujo."
     },
     "edit": {
       "notFound": "Flujo no encontrado.",
@@ -2478,7 +2485,14 @@
         "validateHint": "Una respuesta no válida sigue la política alternativa del flujo (volver a preguntar, transferir o finalizar).",
         "handoffAgent": "Asignar a",
         "handoffQueue": "Cola compartida (nadie)",
-        "unknownNode": "Este tipo de paso no es compatible con esta versión. Se conserva tal cual, pero el flujo no se puede publicar hasta que se elimine."
+        "unknownNode": "Este tipo de paso no es compatible con esta versión. Se conserva tal cual, pero el flujo no se puede publicar hasta que se elimine.",
+        "agentsSelected": "{count} seleccionados",
+        "allAgents": "Todos los agentes activos",
+        "removeAgent": "Quitar agente",
+        "searchAgents": "Buscar agentes",
+        "selectAll": "Seleccionar todo",
+        "clear": "Borrar",
+        "noAgents": "Aún no hay agentes en este espacio."
       },
       "settings": {
         "open": "Configuración",
@@ -2965,7 +2979,12 @@
         "search": "Buscar plantilla",
         "none": "No hay plantillas aprobadas.",
         "headerMedia": "Archivo del encabezado",
-        "windowNote": "Las plantillas llegan al cliente incluso fuera de la ventana de 24 horas."
+        "windowNote": "Las plantillas llegan al cliente incluso fuera de la ventana de 24 horas.",
+        "noneHelp": "Aún no hay plantillas aprobadas. Aparecen aquí cuando Meta las aprueba y se sincronizan.",
+        "sync": "Sincronizar plantillas desde Meta",
+        "syncing": "Sincronizando…",
+        "synced": "Plantillas sincronizadas.",
+        "syncFailed": "No se pudieron sincronizar las plantillas: {reason}"
       },
       "api": {
         "needsMigration": "Llamar a API requiere la migración 049 de la base de datos.",
@@ -3430,6 +3449,31 @@
         "ticketClosed": "Chat cerrado el",
         "ticketReplied": "Respondió un agente",
         "lastCtwa": "Último lead de anuncio (CTWA)"
+      },
+      "bulk": {
+        "selected": "{count} seleccionados",
+        "selectAll": "Seleccionar los {count}",
+        "clear": "Quitar selección",
+        "addToList": "Añadir a lista de difusión",
+        "sendBroadcast": "Enviar difusión",
+        "assignAgent": "Asignar agente",
+        "addToListDesc": "Añade los {count} contactos seleccionados a una lista de difusión.",
+        "list": "Lista de difusión",
+        "pickList": "Elige una lista",
+        "newList": "+ Nueva lista",
+        "newListName": "Nombre de la nueva lista",
+        "cancel": "Cancelar",
+        "add": "Añadir",
+        "listExists": "Ya existe una lista con este nombre.",
+        "addedToList": "Se añadieron {count} contactos a la lista.",
+        "failed": "Algo salió mal. Inténtalo de nuevo.",
+        "noChats": "Ninguno de los contactos seleccionados tiene chat todavía.",
+        "assigned": "Se asignaron {count} chats.",
+        "storageBlocked": "Tu navegador bloqueó el almacenamiento temporal, así que la selección no se puede pasar a la difusión.",
+        "assignDesc": "Asigna los chats de los {count} contactos seleccionados a un agente.",
+        "agent": "Agente",
+        "pickAgent": "Elige un agente",
+        "assign": "Asignar"
       }
     },
     "ads": {

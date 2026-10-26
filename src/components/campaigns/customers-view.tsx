@@ -52,6 +52,7 @@ import {
 import { ImportModal } from '@/components/contacts/import-modal';
 import { ContactDetailView } from '@/components/contacts/contact-detail-view';
 import { AddMemberDialog } from './broadcast-workspace';
+import { CustomersBulkBar } from './customers-bulk-bar';
 
 const PAGE_SIZE = 50;
 const PREFS_KEY = 'customers.table';
@@ -337,6 +338,21 @@ export function CustomersView() {
             </Button>
           </div>
         </div>
+
+        <CustomersBulkBar
+          selectedIds={[...selected]}
+          tags={tags}
+          userId={user?.id ?? null}
+          accountId={accountId ?? null}
+          canSend={canSend}
+          total={total}
+          onSelectAll={async () => {
+            const all = await fetchAllCustomers(createClient(), { tagId, search: debounced, sort: prefs.sort });
+            setSelected(new Set(all.map((r) => r.contact.id)));
+          }}
+          onClear={() => setSelected(new Set())}
+          onDone={() => { setSelected(new Set()); void load(); void loadSegments(); }}
+        />
 
         <div className="overflow-x-auto rounded-xl border border-border">
           <table className="w-full text-sm">
