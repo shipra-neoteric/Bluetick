@@ -605,20 +605,6 @@ export function MessageComposer({
           />
         </div>
       )}
-      {closedWindowMode && (
-        <div className="mb-2 rounded-lg border border-border bg-muted/40 px-3 py-2">
-          <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Clock className="h-3.5 w-3.5 text-red-500" />
-            <span>
-              <span className="font-semibold text-foreground">{t("closedWindowTitle")}</span>{" "}
-              {t("closedWindowSuffix")}
-            </span>
-          </p>
-          {closedWindow!.before && (
-            <p className="mt-1.5 whitespace-pre-wrap text-sm text-foreground/80">{closedWindow!.before}</p>
-          )}
-        </div>
-      )}
       {sessionExpired && !closedWindowMode && (
         <div className="mb-2 flex items-center justify-between rounded-lg bg-amber-500/10 px-3 py-2">
           <p className="text-xs text-amber-400">
@@ -700,6 +686,63 @@ export function MessageComposer({
           >
             <Square className="h-4 w-4" />
           </Button>
+        </div>
+      ) : closedWindowMode ? (
+        // Closed 24h window: the agent fills the {{1}} of the configured
+        // template, shown in place between the template's own text.
+        <div className="overflow-hidden rounded-xl border border-border bg-background shadow-sm">
+          <div className="flex items-center justify-between gap-3 border-b border-border bg-muted/50 px-3 py-2">
+            <p className="flex min-w-0 items-center gap-2 text-xs text-muted-foreground">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-red-500/10">
+                <Clock className="h-3 w-3 text-red-500" />
+              </span>
+              <span className="truncate">
+                <span className="font-semibold text-foreground">{t("closedWindowTitle")}</span>{" "}
+                {t("closedWindowSuffix")}
+              </span>
+            </p>
+            <button
+              type="button"
+              onClick={onOpenTemplates}
+              className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-primary hover:underline"
+            >
+              <LayoutTemplate className="h-3.5 w-3.5" />
+              {t("sendATemplate")}
+            </button>
+          </div>
+          <div className="flex items-end gap-3 px-3 py-2.5">
+            <div className="min-w-0 flex-1 space-y-1.5 text-sm text-foreground">
+              {closedWindow!.before && <p className="whitespace-pre-wrap">{closedWindow!.before}</p>}
+              <textarea
+                ref={textareaRef}
+                value={text}
+                onChange={handleChange}
+                onKeyDown={handleKeyDown}
+                placeholder={readOnly ? t("readOnlyPlaceholder") : t("closedWindowPlaceholder")}
+                disabled={textDisabled}
+                rows={1}
+                title={readOnly ? t("readOnlyTitle") : undefined}
+                className={cn(
+                  "block w-full resize-none rounded-md border border-dashed border-primary/40 bg-primary/5 px-2.5 py-1.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-solid focus:border-primary",
+                  textDisabled && "cursor-not-allowed opacity-50",
+                )}
+              />
+              {closedWindow!.after && (
+                <p className="whitespace-pre-wrap italic text-muted-foreground">{closedWindow!.after}</p>
+              )}
+            </div>
+            <GatedButton
+              size="sm"
+              canAct={!readOnly}
+              gateReason="send messages"
+              disabled={!text.trim() || textDisabled || sending}
+              onClick={handleSend}
+              title={readOnly ? undefined : t("send")}
+              className="h-9 w-9 shrink-0 bg-primary p-0 hover:bg-primary/90 disabled:opacity-40"
+            >
+              <Send className="h-4 w-4" />
+            </GatedButton>
+          </div>
         </div>
       ) : (
         <div className="flex items-end gap-2">
@@ -809,7 +852,7 @@ export function MessageComposer({
                 ? t("readOnlyPlaceholder")
                 : blocked
                   ? "Contact is blocked — unblock to send messages"
-                  : sessionExpired && !closedWindowMode
+                  : sessionExpired
                     ? t("sessionExpiredPlaceholder")
                     : t("typeMessagePlaceholder")
             }
@@ -841,20 +884,7 @@ export function MessageComposer({
       {/* Hint sits outside the flex row so its height doesn't push
           `items-end` buttons below the textarea. Indented to line up
           under the textarea left edge. */}
-      {closedWindowMode && !draft && !recording && (
-        <div className="mt-1.5 space-y-1 pl-[5.5rem]">
-          {closedWindow!.after && (
-            <p className="whitespace-pre-wrap text-sm italic text-foreground/80">{closedWindow!.after}</p>
-          )}
-          <p className="text-xs text-muted-foreground">
-            {t("closedWindowOr")}{" "}
-            <button type="button" onClick={onOpenTemplates} className="font-medium text-primary underline">
-              {t("sendATemplate")}
-            </button>
-          </p>
-        </div>
-      )}
-      {!draft && !recording && (
+      {!draft && !recording && !closedWindowMode && (
         <p className="mt-1 pl-[5.5rem] text-[10px] text-muted-foreground">
           {t("draftHint")}
         </p>

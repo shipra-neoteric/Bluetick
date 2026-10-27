@@ -235,9 +235,9 @@
       "quickReplySaveError": "No se pudo guardar la respuesta rápida.",
       "closedWindowTitle": "Envía un mensaje",
       "closedWindowSuffix": "al cliente con la ventana cerrada",
-      "closedWindowOr": "o",
       "sendATemplate": "Enviar una plantilla",
-      "closedWindowSent": "Enviado como plantilla {name}"
+      "closedWindowSent": "Enviado como plantilla {name}",
+      "closedWindowPlaceholder": "Escribe tu mensaje…"
     },
     "bubble": {
       "photo": "Foto",

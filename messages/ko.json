@@ -235,9 +235,9 @@
       "quickReplySaveError": "빠른 답장을 저장하지 못했습니다.",
       "closedWindowTitle": "메시지 보내기",
       "closedWindowSuffix": "— 대화 창이 닫힌 고객에게",
-      "closedWindowOr": "또는",
       "sendATemplate": "템플릿 보내기",
-      "closedWindowSent": "{name} 템플릿으로 보냄"
+      "closedWindowSent": "{name} 템플릿으로 보냄",
+      "closedWindowPlaceholder": "메시지를 입력하세요…"
     },
     "bubble": {
       "photo": "사진",
