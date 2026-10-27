@@ -235,9 +235,9 @@
       "quickReplySaveError": "Couldn't save the quick reply.",
       "closedWindowTitle": "Send a message",
       "closedWindowSuffix": "to customer in closed window",
-      "closedWindowOr": "or",
       "sendATemplate": "Send a template",
-      "closedWindowSent": "Sent as template {name}"
+      "closedWindowSent": "Sent as template {name}",
+      "closedWindowPlaceholder": "Type your message…"
     },
     "bubble": {
       "photo": "Photo",

@@ -235,9 +235,9 @@
       "quickReplySaveError": "Não foi possível salvar a resposta rápida.",
       "closedWindowTitle": "Envie uma mensagem",
       "closedWindowSuffix": "ao cliente com a janela fechada",
-      "closedWindowOr": "ou",
       "sendATemplate": "Enviar um modelo",
-      "closedWindowSent": "Enviado como modelo {name}"
+      "closedWindowSent": "Enviado como modelo {name}",
+      "closedWindowPlaceholder": "Digite sua mensagem…"
     },
     "bubble": {
       "photo": "Foto",

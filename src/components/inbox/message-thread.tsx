@@ -72,7 +72,7 @@ import { AiThreadBanner } from "./ai-thread-banner";
 import { buildReplyPreview } from "./reply-quote";
 import { renderTemplateBody, templateHeaderMediaUrl } from "@/lib/whatsapp/template-body";
 import { loadInboxSettings } from "@/lib/inbox/settings";
-import { isClosedWindowTemplate, splitClosedWindowBody } from "@/lib/inbox/closed-window";
+import { isClosedWindowTemplate, splitClosedWindowBody, stripWhatsAppFormatting } from "@/lib/inbox/closed-window";
 import { contactHandle } from "@/lib/whatsapp/wa-identity";
 import { toast } from "sonner";
 import { isMissingSchemaError } from "@/lib/db/schema-compat";
@@ -1066,7 +1066,11 @@ export function MessageThread({
     };
   }, [sessionExpiredNow, accountId]);
   const closedWindowParts = useMemo(
-    () => (closedWindowTemplate ? splitClosedWindowBody(closedWindowTemplate.body_text) : null),
+    () => {
+      if (!closedWindowTemplate) return null;
+      const { before, after } = splitClosedWindowBody(closedWindowTemplate.body_text);
+      return { before: stripWhatsAppFormatting(before), after: stripWhatsAppFormatting(after) };
+    },
     [closedWindowTemplate],
   );
   const handleSendClosedWindow = useCallback(
