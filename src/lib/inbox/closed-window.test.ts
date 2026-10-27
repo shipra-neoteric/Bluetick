@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { MessageTemplate } from '@/types';
-import { isClosedWindowTemplate, splitClosedWindowBody } from './closed-window';
+import { isClosedWindowTemplate, splitClosedWindowBody, stripWhatsAppFormatting } from './closed-window';
 
 const tpl = (over: Partial<MessageTemplate>): MessageTemplate =>
   ({
@@ -50,5 +50,17 @@ describe('splitClosedWindowBody', () => {
   it('handles {{1}} at either end', () => {
     expect(splitClosedWindowBody('{{1}}')).toEqual({ before: '', after: '' });
     expect(splitClosedWindowBody('Note: {{1}}')).toEqual({ before: 'Note:', after: '' });
+  });
+});
+
+describe('stripWhatsAppFormatting', () => {
+  it('drops italic / bold / strike markers', () => {
+    expect(stripWhatsAppFormatting('_Your chat support request is successfully registered._')).toBe(
+      'Your chat support request is successfully registered.',
+    );
+    expect(stripWhatsAppFormatting('*Hello*, ~old~ text')).toBe('Hello, old text');
+  });
+  it('leaves lone markers alone', () => {
+    expect(stripWhatsAppFormatting('2 * 3 = 6, file_name')).toBe('2 * 3 = 6, file_name');
   });
 });

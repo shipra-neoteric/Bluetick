@@ -33,3 +33,12 @@ export function splitClosedWindowBody(body: string): { before: string; after: st
   if (i < 0) return { before: body, after: '' };
   return { before: body.slice(0, i).trimEnd(), after: body.slice(i + 5).trimStart() };
 }
+
+/**
+ * Text as WhatsApp shows it, for the composer's preview of the template
+ * around the agent's message: drops the *bold* / _italic_ / ~strike~
+ * markers (the composer styles the closing line itself).
+ */
+export function stripWhatsAppFormatting(text: string): string {
+  return text.replace(/([*_~])(\S(?:[^\n]*?\S)?)\1/g, '$2');
+}
