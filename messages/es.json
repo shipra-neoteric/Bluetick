@@ -3021,7 +3021,9 @@
         "sync": "Sincronizar plantillas desde Meta",
         "syncing": "Sincronizando…",
         "synced": "Plantillas sincronizadas.",
-        "syncFailed": "No se pudieron sincronizar las plantillas: {reason}"
+        "syncFailed": "No se pudieron sincronizar las plantillas: {reason}",
+        "headerDocument": "Documento",
+        "headerMissing": "Esta plantilla no tiene {type} guardado — súbelo abajo"
       },
       "api": {
         "needsMigration": "Llamar a API requiere la migración 049 de la base de datos.",

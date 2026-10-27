@@ -205,7 +205,7 @@ function Combobox({
   const label = selectedLabel ?? options.find((o) => o.value === value)?.label;
 
   return (
-    <div ref={box} className="min-w-0 flex-1">
+    <div ref={box} className="relative min-w-0 flex-1">
       <button
         type="button"
         disabled={disabled}
@@ -221,7 +221,9 @@ function Combobox({
         <ChevronDown className="h-3.5 w-3.5 shrink-0 opacity-60" />
       </button>
       {open && (
-        <div className="border-border bg-background mt-1 rounded-md border shadow-sm">
+        // Floats over the canvas at a readable width instead of being
+        // squeezed into the field next to Refresh.
+        <div className="border-border bg-background absolute left-0 top-full z-40 mt-1 w-80 max-w-[calc(100vw-2rem)] rounded-md border shadow-lg">
           <div className="border-border flex items-center gap-1 border-b px-2">
             <Search className="text-muted-foreground h-3.5 w-3.5 shrink-0" />
             <input
@@ -235,7 +237,7 @@ function Combobox({
             />
             {loading && <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin" />}
           </div>
-          <ul role="listbox" className="max-h-56 overflow-y-auto py-1">
+          <ul role="listbox" className="max-h-72 overflow-y-auto py-1">
             {shown.map((o) => (
               <li key={o.value}>
                 <button
@@ -247,10 +249,10 @@ function Combobox({
                     setQ("");
                     onSelect(o.value);
                   }}
-                  className={`hover:bg-muted flex w-full flex-col px-2 py-1 text-left text-[12.5px] ${o.value === value ? "font-semibold" : ""}`}
+                  className={`hover:bg-muted flex w-full flex-col px-3 py-1.5 text-left text-[13px] ${o.value === value ? "bg-emerald-600/5 font-semibold" : ""}`}
                 >
-                  <span className="truncate">{o.label}</span>
-                  {o.hint && <span className="text-muted-foreground truncate text-[10.5px]">{o.hint}</span>}
+                  <span className="break-words">{o.label}</span>
+                  {o.hint && <span className="text-muted-foreground text-[11px]">{o.hint}</span>}
                 </button>
               </li>
             ))}

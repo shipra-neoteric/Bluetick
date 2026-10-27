@@ -306,7 +306,19 @@ const StepNode = memo(function StepNode({ data, selected }: NodeProps) {
 function RemovableEdge(props: EdgeProps) {
   const t = useTranslations("BotStudio.builder");
   const rf = useReactFlow();
-  const [hover, setHover] = useState(false);
+  const [hover, setHoverNow] = useState(false);
+  // Leaving the line to reach the × fires mouseleave first; hide only
+  // after a short grace period so the button is still there to click.
+  const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const setHover = useCallback((on: boolean) => {
+    if (hideTimer.current) clearTimeout(hideTimer.current);
+    hideTimer.current = null;
+    if (on) setHoverNow(true);
+    else hideTimer.current = setTimeout(() => setHoverNow(false), 200);
+  }, []);
+  useEffect(() => () => {
+    if (hideTimer.current) clearTimeout(hideTimer.current);
+  }, []);
   const [path, labelX, labelY] = getBezierPath(props);
   return (
     <>
@@ -322,7 +334,9 @@ function RemovableEdge(props: EdgeProps) {
             onMouseEnter={() => setHover(true)}
             onMouseLeave={() => setHover(false)}
             onClick={() => void rf.deleteElements({ edges: [{ id: props.id }] })}
-            style={{ transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)` }}
+            // The label layer is pointer-events: none — opt back in, or
+            // the click falls through to the canvas and nothing is removed.
+            style={{ transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`, pointerEvents: "all" }}
             className="nodrag nopan bg-card text-muted-foreground absolute rounded-full border p-0.5 shadow-sm hover:text-red-500"
           >
             <X className="h-3 w-3" />
