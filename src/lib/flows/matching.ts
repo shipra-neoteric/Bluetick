@@ -133,16 +133,80 @@ export function evaluateConditionPredicate(args: {
   /** The configured comparison value, when applicable. */
   configValue: string | undefined;
 }): boolean {
+  const s = args.subjectValue;
+  const v = args.configValue ?? "";
   switch (args.operator) {
     case "present":
-      return args.subjectValue !== undefined && args.subjectValue !== "";
+      return s !== undefined && s !== "";
     case "absent":
-      return args.subjectValue === undefined || args.subjectValue === "";
+      return s === undefined || s === "";
     case "equals":
-      if (args.subjectValue === undefined) return false;
-      return args.subjectValue === (args.configValue ?? "");
+      if (s === undefined) return false;
+      return s === v;
     case "contains":
-      if (args.subjectValue === undefined) return false;
-      return args.subjectValue.includes(args.configValue ?? "");
+      if (s === undefined) return false;
+      return s.includes(v);
+    // A missing subject is "not equal" / "does not contain" anything.
+    case "not_equals":
+      return s === undefined || s !== v;
+    case "not_contains":
+      return s === undefined || !s.includes(v);
+    case "equals_ignore_case":
+      return s !== undefined && fold(s) === fold(v);
+    case "starts_with":
+      return s !== undefined && fold(s).startsWith(fold(v));
+    case "ends_with":
+      return s !== undefined && fold(s).endsWith(fold(v));
+    case "gt":
+    case "gte":
+    case "lt":
+    case "lte": {
+      const a = toNumber(s);
+      const b = toNumber(v);
+      if (a === null || b === null) return false;
+      return args.operator === "gt" ? a > b : args.operator === "gte" ? a >= b : args.operator === "lt" ? a < b : a <= b;
+    }
+    case "regex":
+      return s !== undefined && safeRegexTest(v, s);
+    default:
+      // Unknown operator from a newer version: never take the true branch.
+      return false;
+  }
+}
+
+/** Case- and accent-insensitive comparison form (works for Hindi too). */
+function fold(x: string): string {
+  return x.normalize("NFKC").trim().toLocaleLowerCase();
+}
+
+/** "1,234.5" / " 42 " → number; anything else → null (no silent 0). */
+export function toNumber(x: string | undefined): number | null {
+  if (x === undefined) return null;
+  const t = x.trim().replace(/(?<=\d)[\s,](?=\d)/g, "");
+  if (!/^[-+]?\d+(?:\.\d+)?$/.test(t)) return null;
+  const n = Number(t);
+  return Number.isFinite(n) ? n : null;
+}
+
+/** Same bounds as collect_input regex: pattern ≤ 200, input ≤ 1 KB, unicode. */
+export const MAX_REGEX_LENGTH = 200;
+export function safeRegexTest(pattern: string, value: string): boolean {
+  if (!pattern || pattern.length > MAX_REGEX_LENGTH) return false;
+  try {
+    return new RegExp(pattern, "u").test(value.slice(0, 1024));
+  } catch {
+    return false;
+  }
+}
+
+/** Null when the pattern compiles within bounds, else the reason. */
+export function regexProblem(pattern: string | undefined): string | null {
+  if (!pattern) return "Enter a pattern.";
+  if (pattern.length > MAX_REGEX_LENGTH) return `Pattern is longer than ${MAX_REGEX_LENGTH} characters.`;
+  try {
+    new RegExp(pattern, "u");
+    return null;
+  } catch (err) {
+    return err instanceof Error ? err.message : "Invalid pattern.";
   }
 }

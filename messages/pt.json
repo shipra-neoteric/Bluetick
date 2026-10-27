@@ -232,7 +232,12 @@
       "send": "Enviar",
       "quickReplyNamePrompt": "Dê um nome a esta resposta rápida:",
       "quickReplySaved": "Salva como resposta rápida.",
-      "quickReplySaveError": "Não foi possível salvar a resposta rápida."
+      "quickReplySaveError": "Não foi possível salvar a resposta rápida.",
+      "closedWindowTitle": "Envie uma mensagem",
+      "closedWindowSuffix": "ao cliente com a janela fechada",
+      "closedWindowOr": "ou",
+      "sendATemplate": "Enviar um modelo",
+      "closedWindowSent": "Enviado como modelo {name}"
     },
     "bubble": {
       "photo": "Foto",
@@ -252,7 +257,8 @@
       "downloadFailed": "Não foi possível baixar o anexo",
       "viewImage": "Ver imagem",
       "expandVideo": "Expandir vídeo",
-      "imageAlt": "Imagem compartilhada"
+      "imageAlt": "Imagem compartilhada",
+      "marketingLimitHint": "A Meta limita quantos modelos de marketing uma pessoa recebe. Tente novamente em um ou dois dias, ou envie um modelo de Utilidade."
     },
     "mediaViewer": {
       "counter": "{index} de {total}",
@@ -1234,7 +1240,24 @@
         "fileUploaded": "Arquivo enviado.",
         "uploadFailed": "Falha no upload.",
         "fileTooLarge": "O arquivo tem {size} MB — o limite é 16 MB.",
-        "defaultOptionTitle": "Opção"
+        "defaultOptionTitle": "Opção",
+        "operators": {
+          "present": "tem valor",
+          "absent": "está vazio",
+          "equals": "é igual a",
+          "not_equals": "não é igual a",
+          "equals_ignore_case": "é igual a (sem maiúsculas)",
+          "contains": "contém",
+          "not_contains": "não contém",
+          "starts_with": "começa com",
+          "ends_with": "termina com",
+          "gt": "é maior que (>)",
+          "gte": "é pelo menos (>=)",
+          "lt": "é menor que (<)",
+          "lte": "é no máximo (<=)",
+          "regex": "corresponde ao regex"
+        },
+        "numberExpected": "Digite um número (ou uma variável)."
       },
       "categories": {
         "actions": "Ações",
@@ -1963,7 +1986,7 @@
       "description": "Conecte apps externos que seus fluxos podem usar.",
       "sheetsDesc": "Inicie fluxos quando uma linha for adicionada a uma planilha e adicione linhas a partir dos fluxos (leads, pedidos, respostas).",
       "loading": "Carregando…",
-      "needsMigration": "O Google Sheets requer a migração 051 do banco de dados.",
+      "needsMigration": "O Google Sheets precisa das migrações 051 e 053 do banco de dados.",
       "notConfigured": "O login com Google ainda não está configurado no servidor (GOOGLE_CLIENT_ID e GOOGLE_CLIENT_SECRET). Veja docs/GOOGLE_SHEETS_SETUP.md.",
       "connectedAs": "Conectado como {email}",
       "reconnect": "Reconectar Google",
@@ -1973,16 +1996,21 @@
       "disconnectFailed": "Não foi possível desconectar o Google.",
       "adminOnly": "Só um administrador pode conectar o Google.",
       "connect": "Conectar conta Google",
-      "connectHint": "Os fluxos podem abrir qualquer planilha que esta conta Google pode editar. Compartilhe as planilhas com ela como Editor.",
+      "connectHint": "Os fluxos podem abrir qualquer planilha que a conta do Google escolhida possa editar. Você pode conectar várias contas do Google e escolher uma em cada fluxo.",
       "results": {
         "connected": "Google Sheets conectado.",
         "denied": "O login com Google foi cancelado.",
         "error": "Não foi possível conectar o Google. Tente de novo.",
-        "forbidden": "Só um administrador pode conectar o Google.",
+        "forbidden": "Você não tem permissão para conectar o Google.",
         "invalid_state": "O link de login expirou. Tente de novo.",
         "missing_scope": "Permita o acesso ao Google Sheets na tela do Google e tente de novo.",
         "not_configured": "O login com Google ainda não está configurado no servidor."
-      }
+      },
+      "accountsTitle": "Contas do Google conectadas",
+      "connectAnother": "Conectar outra conta do Google",
+      "connectedOn": "Conectada em {date}",
+      "disconnectAccountConfirm": "Desconectar {email}? Os fluxos que usam esta conta do Google deixam de ler e adicionar linhas até você escolher outra conta neles.",
+      "noPermission": "Você não tem permissão para conectar o Google."
     }
   },
   "SignupPage": {
@@ -2800,7 +2828,7 @@
         "sla_breached": "Começa quando uma resposta perde o SLA da caixa de entrada (Configurações → Caixa de entrada).",
         "incoming_webhook": "Começa quando outro sistema (script do Google Sheets, formulário do site, Zapier) chama a URL deste fluxo.",
         "time_based": "Gatilhos agendados ainda não funcionam.",
-        "ctwa_lead": "Começa quando um novo lead envia mensagem de um anúncio Click-to-WhatsApp: um contato criado por essa mensagem ou (opcional) a primeira conversa de um contato conhecido vinda desse anúncio.",
+        "ctwa_lead": "Inicia quando um novo lead envia mensagem a partir de um anúncio de clique para o WhatsApp. Acompanhe todos os anúncios, ou uma campanha ou conjunto de anúncios de uma conta do Facebook conectada.",
         "google_sheet_new_row": "Começa uma vez para cada nova linha adicionada a uma aba do Google Sheets. A coluna de telefone identifica o cliente (um novo contato é criado se necessário)."
       },
       "sections": {
@@ -2974,7 +3002,14 @@
         "missing": "(excluída)",
         "removeChip": "Remover",
         "search": "Buscar",
-        "none": "Ainda não há etiquetas. Crie em Contatos."
+        "none": "Ainda não há etiquetas. Crie em Contatos.",
+        "createList": "Criar nova lista de transmissão",
+        "createTag": "Criar nova etiqueta",
+        "newListName": "Nome da nova lista",
+        "newTagName": "Nome da etiqueta",
+        "create": "Criar",
+        "exists": "Esse nome já existe.",
+        "createFailed": "Não foi possível criar."
       },
       "template": {
         "select": "Selecionar modelo",
@@ -3047,16 +3082,16 @@
       },
       "sheets": {
         "checking": "Verificando a conexão com o Google…",
-        "needsMigration": "O Google Sheets requer a migração 051 do banco de dados.",
+        "needsMigration": "O Google Sheets precisa das migrações 051 e 053 do banco de dados.",
         "notConnected": "O Google Sheets ainda não está conectado. Um administrador pode conectar uma conta Google em Configurações → Integrações.",
         "reconnectNeeded": "O acesso ao Google expirou ou foi removido. Um administrador precisa reconectar o Google em Configurações → Integrações.",
         "openIntegrations": "Abrir Integrações",
         "connectedAs": "Usando {email}",
-        "spreadsheet": "Link da planilha",
+        "spreadsheet": "Planilha",
         "load": "Carregar",
         "tab": "Aba",
         "pickTab": "Escolha uma aba",
-        "refresh": "Recarregar colunas",
+        "refresh": "Atualizar a lista e as colunas",
         "noHeaders": "Esta aba não tem linha de cabeçalho. Coloque os nomes das colunas na linha 1.",
         "addRowHelp": "Adiciona uma linha no fim da aba. Cada valor vai sob o nome da sua coluna (linha 1).",
         "values": "Valores",
@@ -3073,20 +3108,109 @@
         "rowVariables": "Use os valores da linha nas próximas etapas:",
         "pollHint": "Verificado a cada 5 minutos. Só as linhas adicionadas depois de ativar o fluxo o iniciam. Contatos novos só podem receber primeiro modelos aprovados (regra de 24 horas do WhatsApp).",
         "lastChecked": "Última verificação",
-        "rowsStarted": "Linhas iniciadas"
+        "rowsStarted": "Linhas iniciadas",
+        "viewSheet": "Ver planilha",
+        "viewExample": "Ver exemplo",
+        "firstRowHeader": "Usar a primeira linha como cabeçalho",
+        "duplicateHeaders": "Nomes de coluna repetidos: {headers}. Renomeie para cada coluna ter um nome único.",
+        "blankHeaders": "Colunas sem nome: {columns}.",
+        "exampleTitle": "Linhas de exemplo de \"{tab}\"",
+        "exampleDesc": "As primeiras linhas da aba, somente leitura. Nada é importado ou enviado.",
+        "waUserIdColumn": "Coluna de ID de usuário do WhatsApp (opcional)",
+        "waUserIdHint": "Usada quando a linha não tem telefone válido: encontra um contato que já enviou mensagem com esse ID de usuário do WhatsApp (BSUID).",
+        "skippedRows": "Linhas não iniciadas",
+        "rowProblem": "Linha {row}: {reason}",
+        "triggerIntro": "Inicia o fluxo quando uma nova linha é adicionada à planilha do Google",
+        "selectAccount": "Selecionar conta",
+        "orAddAccount": "Ou adicione outra conta do Google:",
+        "signInWithGoogle": "Fazer login com o Google",
+        "userDataPolicy": "Política de dados do usuário dos serviços de API do Google",
+        "signInFailed": "O login com o Google não foi concluído. Tente novamente.",
+        "popupBlocked": "Seu navegador bloqueou a janela do Google. Permita pop-ups para este site e tente novamente.",
+        "notConfigured": "O login com o Google ainda não está configurado no servidor (GOOGLE_CLIENT_ID e GOOGLE_CLIENT_SECRET).",
+        "needsReconnect": "Reconexão necessária",
+        "connected": "Conectado",
+        "change": "Alterar",
+        "cancel": "Cancelar",
+        "selectSpreadsheet": "Selecione uma planilha",
+        "selectSheet": "Selecione uma aba",
+        "search": "Pesquisar",
+        "noResults": "Nada encontrado",
+        "modified": "Modificada em {when}",
+        "refreshShort": "Atualizar",
+        "pasteLink": "Ou cole o link da planilha",
+        "loadingColumns": "Carregando colunas…",
+        "phoneField": "Selecione o campo do número de telefone",
+        "phoneFieldHelp": "O campo do número de telefone nos ajuda a associar este fluxo a um cliente. Verifique se o número inclui o código do país",
+        "phonePlaceholder": "Selecione a coluna do telefone",
+        "usernameField": "Selecione o campo do nome de usuário (BSUID)",
+        "usernameFieldHelp": "Usado apenas quando não há número de telefone. Para clientes que escrevem de um nome de usuário do WhatsApp, ex.: IN.1429526195123904",
+        "usernamePlaceholder": "Selecione a coluna do nome de usuário",
+        "customerIdField": "Selecione o campo do ID do cliente",
+        "customerIdFieldHelp": "Usado apenas quando não há número de telefone nem nome de usuário. O ID do cliente no Bluetick (ID do contato).",
+        "customerIdPlaceholder": "Selecione a coluna do ID do cliente",
+        "noAccountsYet": "Nenhuma conta Google ainda — entre abaixo"
       },
       "ctwaLead": {
-        "mode": "Contar como lead",
-        "modes": {
-          "new_contact": "Só contatos novos",
-          "new_ad": "Contatos novos e contatos conhecidos vindos de um novo anúncio"
-        },
         "adIds": "IDs de anúncio / post (opcional)",
         "anyAd": "Qualquer anúncio",
         "adIdsHint": "Separados por vírgula. Deixe vazio para reagir a todos os anúncios Click-to-WhatsApp.",
-        "variables": "Detalhes do anúncio para as próximas etapas:"
+        "variables": "Detalhes do anúncio para as próximas etapas:",
+        "account": "Selecionar conta",
+        "selectAccount": "Selecione uma conta do Facebook",
+        "connectNew": "+ Conectar nova conta do Facebook",
+        "connectedTo": "Conectado a {name}",
+        "change": "Alterar",
+        "keep": "Manter {name}",
+        "loadingAccounts": "Carregando contas do Facebook…",
+        "accountsFailed": "Não foi possível carregar as contas do Facebook.",
+        "accountMissing": "A conta do Facebook escolhida foi desconectada. Escolha outra.",
+        "needsReconnect": "reconexão necessária",
+        "reconnectHint": "O Facebook não aceita mais este login. Conecte a conta novamente para manter o rastreamento da campanha.",
+        "needsMigration": "As contas do Facebook ainda não estão configuradas (migração 054 do banco de dados).",
+        "notConfigured": "O login do Facebook não está configurado neste servidor (META_APP_ID).",
+        "waitingForFacebook": "Aguardando o login do Facebook…",
+        "cancel": "Cancelar",
+        "connectResult": {
+          "blocked": "O navegador bloqueou a janela do Facebook. Permita pop-ups para este site e tente novamente.",
+          "not_configured": "O login do Facebook não está configurado neste servidor (META_APP_ID).",
+          "missing_scope": "O Facebook não concedeu acesso aos anúncios (ads_read). Conecte novamente e permita.",
+          "denied": "O login do Facebook foi cancelado.",
+          "forbidden": "Você não tem permissão para conectar contas.",
+          "error": "Não foi possível conectar a conta do Facebook. Tente novamente."
+        },
+        "trackFrom": "Rastrear leads de",
+        "track": {
+          "all": "Todos",
+          "campaign": "Campanha",
+          "adset": "Conjunto de anúncios"
+        },
+        "selectCampaign": "Selecionar campanha",
+        "selectAdSet": "Selecionar conjunto de anúncios",
+        "selectValue": "Selecionar valor",
+        "searchCampaigns": "Pesquisar campanhas",
+        "searchAdSets": "Pesquisar conjuntos de anúncios",
+        "loadingCampaigns": "Carregando do Facebook…",
+        "campaignsFailed": "Não foi possível carregar do Facebook.",
+        "noCampaigns": "Nenhuma campanha encontrada para esta conta do Facebook.",
+        "noAdSets": "Nenhum conjunto de anúncios encontrado para esta conta do Facebook.",
+        "legacyAds": "Este gatilho também só reage a {count, plural, one {# ID de anúncio} other {# IDs de anúncio}} escolhidos antes.",
+        "legacyClear": "Remover esse filtro"
       },
-      "duplicateFlow": "Duplicar fluxo"
+      "duplicateFlow": "Duplicar fluxo",
+      "ads": {
+        "anyAd": "Qualquer anúncio (deixe vazio)",
+        "remove": "Remover anúncio",
+        "search": "Busque anúncios ou cole um ID",
+        "loading": "Carregando anúncios…",
+        "addId": "Usar o ID {id}",
+        "chats": "{count} conversas",
+        "loadFailed": "Não foi possível carregar os anúncios. Você ainda pode colar um ID.",
+        "none": "Ainda não há anúncios. Eles aparecem quando um cliente envia mensagem por um anúncio ou ao conectar o Meta Ads.",
+        "metaHint": "Conecte o Meta Ads para ver nomes de anúncios e campanhas.",
+        "metaError": "Não foi possível acessar o Meta Ads; só aparecem anúncios que geraram conversas.",
+        "openAds": "Meta Ads"
+      }
     }
   },
   "Campaigns": {
@@ -3537,6 +3661,32 @@
       "saved": "Conta de anúncios salva",
       "saveFailed": "Não foi possível salvar a conta de anúncios.",
       "disconnected": "Conta de anúncios desconectada"
+    }
+  },
+  "MetaConnections": {
+    "title": "Contas do Facebook",
+    "description": "Conecte as contas do Facebook que veiculam seus anúncios de clique para o WhatsApp. Assim o gatilho \"Lead From CTWA\" pode iniciar apenas para leads de uma campanha ou conjunto de anúncios.",
+    "loading": "Carregando…",
+    "needsMigration": "Execute a migração 054 do banco de dados para conectar contas do Facebook.",
+    "notConfigured": "O login do Facebook não está configurado neste servidor. Defina META_APP_ID (e o segredo do app) e adicione a URL de retorno ao app da Meta.",
+    "connect": "Conectar conta do Facebook",
+    "connectHint": "Acesso somente leitura às suas campanhas e anúncios (ads_read). O Bluetick nunca altera seus anúncios.",
+    "connectedOn": "Conectada em {date}",
+    "reconnectNeeded": "O Facebook não aceita mais este login. Conecte novamente.",
+    "disconnect": "Desconectar",
+    "disconnectConfirm": "Desconectar {name}? Fluxos que acompanham uma campanha que só esta conta vê deixarão de detectar leads.",
+    "disconnected": "Conta do Facebook desconectada",
+    "disconnectFailed": "Não foi possível desconectar a conta do Facebook",
+    "cancel": "Cancelar",
+    "results": {
+      "connected": "Conta do Facebook conectada",
+      "denied": "O login do Facebook foi cancelado",
+      "error": "Não foi possível conectar a conta do Facebook. Tente novamente.",
+      "forbidden": "Você não tem permissão para conectar contas",
+      "invalid_state": "O login do Facebook expirou. Tente novamente.",
+      "missing_scope": "O Facebook não concedeu acesso aos anúncios (ads_read). Conecte novamente e permita.",
+      "not_configured": "O login do Facebook não está configurado neste servidor (META_APP_ID)",
+      "blocked": "O navegador bloqueou a janela do Facebook. Permita pop-ups para este site."
     }
   }
 }

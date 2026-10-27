@@ -70,7 +70,9 @@ import { deleteAccountMedia } from "@/lib/storage/upload-media";
 import { TemplatePicker } from "./template-picker";
 import { AiThreadBanner } from "./ai-thread-banner";
 import { buildReplyPreview } from "./reply-quote";
-import { renderTemplateBody } from "@/lib/whatsapp/template-body";
+import { renderTemplateBody, templateHeaderMediaUrl } from "@/lib/whatsapp/template-body";
+import { loadInboxSettings } from "@/lib/inbox/settings";
+import { isClosedWindowTemplate, splitClosedWindowBody } from "@/lib/inbox/closed-window";
 import { contactHandle } from "@/lib/whatsapp/wa-identity";
 import { toast } from "sonner";
 import { isMissingSchemaError } from "@/lib/db/schema-compat";
@@ -199,14 +201,15 @@ function describeEvent(
 /**
  * WhatsApp-style doodle background applied to the chat area (both the
  * active thread and the empty state). The SVG tile lives at
- * `/public/inbox-doodle.svg`; the slate-950 colour sits underneath so
- * the doodles read as a subtle pattern rather than a stark grid.
+ * `/public/inbox-doodle.svg`; WhatsApp's wallpaper colour (`--wa-wallpaper`,
+ * beige in light mode) sits underneath so the doodles read as a subtle
+ * pattern rather than a stark grid.
  *
  * Defined once at module scope so the two render paths can't drift —
  * if we ever switch the asset, both spots update together.
  */
 const DOODLE_BG_CLASSES =
-  "bg-background bg-[url('/inbox-doodle.svg')] bg-repeat";
+  "bg-[var(--wa-wallpaper)] bg-[url('/inbox-doodle.svg')] bg-repeat";
 
 export function MessageThread({
   conversation,
@@ -232,7 +235,7 @@ export function MessageThread({
   const tTimer = useTranslations("Inbox.sessionTimer");
   const tQuote = useTranslations("Inbox.replyQuote");
 
-  const { user } = useAuth();
+  const { user, accountId } = useAuth();
   const { getPresence, getRow, now } = usePresence();
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -974,6 +977,7 @@ export function MessageThread({
         sender_type: "agent",
         content_type: "template",
         content_text: renderedBody,
+        media_url: templateHeaderMediaUrl(template) ?? undefined,
         template_name: template.name,
         status: "sending",
         created_at: new Date().toISOString(),
@@ -1035,6 +1039,45 @@ export function MessageThread({
     for (const m of messages) map.set(m.id, m);
     return map;
   }, [messages]);
+
+  // Closed-window template (Settings → Inbox, migration 055): looked up
+  // only once the 24h window has closed, since that is the only time the
+  // composer uses it. Null = not configured / no longer approved.
+  const [closedWindowTemplate, setClosedWindowTemplate] = useState<MessageTemplate | null>(null);
+  const sessionExpiredNow = sessionInfo.expired;
+  useEffect(() => {
+    if (!sessionExpiredNow || !accountId) return;
+    let cancelled = false;
+    void (async () => {
+      const supabase = createClient();
+      const settings = await loadInboxSettings(supabase, accountId);
+      if (!settings.closed_window_template) {
+        if (!cancelled) setClosedWindowTemplate(null);
+        return;
+      }
+      let q = supabase.from("message_templates").select("*").eq("name", settings.closed_window_template);
+      if (settings.closed_window_template_language) q = q.eq("language", settings.closed_window_template_language);
+      const { data } = await q.limit(1).maybeSingle();
+      const row = data as MessageTemplate | null;
+      if (!cancelled) setClosedWindowTemplate(row && isClosedWindowTemplate(row) ? row : null);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [sessionExpiredNow, accountId]);
+  const closedWindowParts = useMemo(
+    () => (closedWindowTemplate ? splitClosedWindowBody(closedWindowTemplate.body_text) : null),
+    [closedWindowTemplate],
+  );
+  const handleSendClosedWindow = useCallback(
+    (text: string) => {
+      if (!closedWindowTemplate) return;
+      // Meta rejects template params with newlines, tabs or 4+ spaces.
+      const value = text.replace(/\s+/g, " ").trim().slice(0, 1000);
+      if (value) void handleSendTemplate(closedWindowTemplate, { body: [value] });
+    },
+    [closedWindowTemplate, handleSendTemplate],
+  );
 
   // Images + videos in the thread, in order — the set the media viewer
   // pages through with ← / →.
@@ -1763,6 +1806,8 @@ export function MessageThread({
         onSendMedia={handleSendMedia}
         onSendInteractive={handleSendInteractive}
         onOpenTemplates={handleOpenTemplates}
+        closedWindow={closedWindowParts}
+        onSendClosedWindow={handleSendClosedWindow}
         replyTo={replyTo}
         onClearReply={() => setReplyTo(null)}
       />

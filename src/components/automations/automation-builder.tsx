@@ -278,6 +278,8 @@ interface AutomationResources {
   stages: PipelineStageOption[]
   /** Re-read approved templates (after a sync from Meta). */
   reloadTemplates: () => Promise<void>
+  /** Re-read tags / broadcast lists (after creating one in a card). */
+  reloadTags: () => Promise<void>
 }
 
 interface PipelineOption {
@@ -300,6 +302,7 @@ const ResourcesContext = createContext<AutomationResources>({
   pipelines: [],
   stages: [],
   reloadTemplates: async () => {},
+  reloadTags: async () => {},
 })
 
 function useResources(): AutomationResources {
@@ -374,9 +377,14 @@ function ResourcesProvider({ children }: { children: ReactNode }) {
     setTemplates((data as MessageTemplate[] | null) ?? [])
   }, [])
 
+  const reloadTags = useCallback(async () => {
+    const { data } = await createClient().from("tags").select("*").order("name")
+    setTags((data as TagRecord[] | null) ?? [])
+  }, [])
+
   return (
     <ResourcesContext.Provider
-      value={{ tags, members, templates, customFields, pipelines, stages, reloadTemplates }}
+      value={{ tags, members, templates, customFields, pipelines, stages, reloadTemplates, reloadTags }}
     >
       {children}
     </ResourcesContext.Provider>

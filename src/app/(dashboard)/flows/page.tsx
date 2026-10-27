@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -25,12 +25,6 @@ import {
   Copy,
   MoreVertical,
 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { BotStudioGuide } from "@/components/bot/bot-studio-guide";
 import { ConvertAutomationsBanner } from "@/components/flows/convert-banner";
 import { TRIGGER_SECTIONS } from "@/components/flows/bot-builder/catalog";
@@ -422,12 +416,12 @@ export default function FlowsPage() {
                     <Button variant="ghost" size="sm" onClick={() => router.push(`/flows/${flow.id}/runs`)} aria-label={tc("logs")} title={tc("logs")}>
                       <ScrollText className="h-3.5 w-3.5" />
                     </Button>
-                    <FlowMenu
-                      t={t}
-                      onEdit={() => router.push(`/flows/${flow.id}`)}
-                      onDuplicate={() => void handleDuplicate(flow)}
-                      onDelete={() => handleDelete(flow)}
-                    />
+                    <Button variant="ghost" size="sm" onClick={() => void handleDuplicate(flow)} aria-label={t("duplicate")} title={t("duplicate")}>
+                      <Copy className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => handleDelete(flow)} className="text-red-400 hover:bg-red-500/10" aria-label={t("delete")} title={t("delete")}>
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
                   </td>
                 </tr>
               ))}
@@ -562,7 +556,11 @@ function EmptyState({
   );
 }
 
-/** Three-dot menu shared by the card and table views. */
+/**
+ * Three-dot menu shared by the card and table views. A plain popup (same
+ * pattern as the Customers row menu): opens on click, closes on outside
+ * click, Escape or after an action.
+ */
 function FlowMenu({
   onEdit,
   onDuplicate,
@@ -574,30 +572,58 @@ function FlowMenu({
   onDelete: () => void;
   t: ReturnType<typeof useTranslations>;
 }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+  const run = (fn: () => void) => () => {
+    setOpen(false);
+    fn();
+  };
+  const item = "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm hover:bg-muted";
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
+    <div ref={ref} className="relative" onDoubleClick={(e) => e.stopPropagation()}>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="menu"
+        aria-expanded={open}
         aria-label={t("moreActions")}
         title={t("moreActions")}
+        className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
       >
         <MoreVertical className="h-4 w-4" />
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="min-w-40">
-        <DropdownMenuItem onClick={onEdit}>
-          <Pencil className="h-3.5 w-3.5" />
-          {t("edit")}
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={onDuplicate}>
-          <Copy className="h-3.5 w-3.5" />
-          {t("duplicate")}
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={onDelete} className="text-red-500 focus:text-red-500">
-          <Trash2 className="h-3.5 w-3.5" />
-          {t("delete")}
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+      </button>
+      {open && (
+        <div role="menu" className="absolute right-0 top-8 z-30 w-44 rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-lg">
+          <button type="button" role="menuitem" onClick={run(onEdit)} className={item}>
+            <Pencil className="h-3.5 w-3.5" />
+            {t("edit")}
+          </button>
+          <button type="button" role="menuitem" onClick={run(onDuplicate)} className={item}>
+            <Copy className="h-3.5 w-3.5" />
+            {t("duplicate")}
+          </button>
+          <button type="button" role="menuitem" onClick={run(onDelete)} className={`${item} text-red-500`}>
+            <Trash2 className="h-3.5 w-3.5" />
+            {t("delete")}
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -624,7 +650,11 @@ function FlowCard({
         ? Archive
         : PauseCircle;
   return (
-    <div className="flex flex-col rounded-lg border border-border bg-card p-4 transition-colors hover:border-border">
+    // Double-click anywhere on the card opens the flow; actions live in ⋮.
+    <div
+      onDoubleClick={onEdit}
+      className="flex cursor-pointer select-none flex-col rounded-lg border border-border bg-card p-4 transition-colors hover:border-primary/40"
+    >
       <div className="flex items-start justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
           <Workflow className="h-4 w-4 shrink-0 text-primary" />
@@ -660,21 +690,6 @@ function FlowCard({
         {flow.has_unpublished_changes && <span className="text-amber-600">· {tUnpub("unpublished")}</span>}
       </div>
 
-      <div className="mt-4 flex items-center justify-end gap-2 border-t border-border pt-3">
-        <Button variant="ghost" size="sm" onClick={onEdit}>
-          <Pencil className="h-3.5 w-3.5" />
-          {t("edit")}
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onDelete}
-          className="text-red-400 hover:bg-red-500/10 hover:text-red-300"
-        >
-          <Trash2 className="h-3.5 w-3.5" />
-          {t("delete")}
-        </Button>
-      </div>
     </div>
   );
 }

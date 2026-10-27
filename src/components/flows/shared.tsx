@@ -477,19 +477,22 @@ export function summarizeNode(
         subject === 'tag'
           ? t ? t('hasTag', { tag: truncate(subjectKey, 24) }) : `has tag ${truncate(subjectKey, 24)}`
           : `${subject}.${subjectKey}`;
+      const SYMBOLS: Record<string, string> = {
+        equals: '==', not_equals: '!=', gt: '>', gte: '>=', lt: '<', lte: '<=',
+        equals_ignore_case: '≈', starts_with: 'starts with', ends_with: 'ends with',
+        not_contains: 'not contains', regex: 'matches',
+      };
       const op =
-        cfg.operator === 'equals'
-          ? '=='
-          : cfg.operator === 'contains'
-            ? t ? t('opContains') : 'contains'
-            : cfg.operator === 'present'
-              ? t ? t('opExists') : 'exists'
-              : cfg.operator === 'absent'
-                ? t ? t('opMissing') : 'missing'
-                : '';
+        cfg.operator === 'contains'
+          ? t ? t('opContains') : 'contains'
+          : cfg.operator === 'present'
+            ? t ? t('opExists') : 'exists'
+            : cfg.operator === 'absent'
+              ? t ? t('opMissing') : 'missing'
+              : SYMBOLS[String(cfg.operator)] ?? '';
       const value = typeof cfg.value === 'string' ? cfg.value : '';
       const valStr =
-        (cfg.operator === 'equals' || cfg.operator === 'contains') && value
+        cfg.operator !== 'present' && cfg.operator !== 'absent' && value
           ? ` "${truncate(value, 20)}"`
           : '';
       return subject === 'tag' ? subjectStr : `${subjectStr} ${op}${valStr}`;

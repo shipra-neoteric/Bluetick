@@ -96,7 +96,9 @@ function CardMenu({ items }: { items: { label: string; icon: typeof Copy; onClic
   const t = useTranslations("BotStudio.builder");
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger aria-label={t("stepMenu")} className="text-muted-foreground hover:text-foreground hover:bg-muted -mr-1 rounded p-0.5">
+      {/* nodrag/nopan: the card header is the drag handle, which would
+          otherwise swallow the click and the menu would never open. */}
+      <DropdownMenuTrigger aria-label={t("stepMenu")} className="nodrag nopan text-muted-foreground hover:text-foreground hover:bg-muted -mr-1 rounded p-0.5">
         <MoreVertical className="h-4 w-4" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-52">

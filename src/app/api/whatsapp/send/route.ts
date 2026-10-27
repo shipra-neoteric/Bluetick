@@ -177,6 +177,9 @@ export async function POST(request: Request) {
 
       return NextResponse.json({
         success: true,
+        // The thread the message landed in — a contact_id caller needs it
+        // to open the conversation it may have just created.
+        conversation_id: conversationId,
         message_id: result.messageId,
         whatsapp_message_id: result.whatsappMessageId,
         duplicate: result.duplicate ?? false,

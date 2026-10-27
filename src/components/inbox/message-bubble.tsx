@@ -23,6 +23,7 @@ import {
   MediaVideoBubble,
 } from "./message-media";
 import { InteractivePreview } from "@/components/interactive/interactive-preview";
+import { templateHeaderKind } from "@/lib/media/gallery";
 import { useTranslations } from "next-intl";
 
 interface MessageBubbleProps {
@@ -64,19 +65,20 @@ function StatusIcon({
   /** Tooltip for the failed state — Meta's reason, when we have one. */
   title?: string | null;
 }) {
+  // WhatsApp's ticks: grey ✓ sent, grey ✓✓ delivered, blue ✓✓ read.
   switch (status) {
     case "sending":
-      return <Clock className="h-3 w-3 text-muted-foreground" />;
+      return <Clock className="h-3 w-3 text-[var(--wa-meta)]" />;
     case "sent":
-      return <Check className="h-3 w-3 text-muted-foreground" />;
+      return <Check className="h-3.5 w-3.5 text-[var(--wa-meta)]" />;
     case "delivered":
-      return <CheckCheck className="h-3 w-3 text-muted-foreground" />;
+      return <CheckCheck className="h-3.5 w-3.5 text-[var(--wa-meta)]" />;
     case "read":
-      return <CheckCheck className="h-3 w-3 text-blue-400" />;
+      return <CheckCheck className="h-3.5 w-3.5 text-[var(--wa-read)]" />;
     case "failed":
       return (
         <span className="inline-flex" title={title ?? undefined}>
-          <XCircle className="h-3 w-3 text-red-400" />
+          <XCircle className="h-3.5 w-3.5 text-red-500" />
         </span>
       );
     default:
@@ -84,16 +86,38 @@ function StatusIcon({
   }
 }
 
+/** A template's image / video / document header, above its body. */
+function TemplateHeaderMedia({
+  message,
+  onOpen,
+  t,
+}: {
+  message: Message;
+  onOpen?: () => void;
+  t: ReturnType<typeof useTranslations>;
+}) {
+  const kind = templateHeaderKind(message.media_url!);
+  return (
+    <div className="mb-1.5">
+      {kind === "video" ? (
+        <MediaVideoBubble message={message} onOpen={onOpen} t={t} />
+      ) : kind === "document" ? (
+        // The body is rendered below — don't repeat it as the file label.
+        <MediaDocumentBubble message={{ ...message, content_text: undefined }} t={t} />
+      ) : (
+        <MediaImageBubble message={message} onOpen={onOpen} t={t} />
+      )}
+    </div>
+  );
+}
+
 function MessageContent({
   message,
   t,
-  isAgent,
   onOpenMedia,
 }: {
   message: Message;
   t: ReturnType<typeof useTranslations>;
-  /** Outbound bubbles sit on the primary fill — badges must invert. */
-  isAgent: boolean;
   onOpenMedia?: (messageId: string) => void;
 }) {
   // Passed to the media bubbles as a no-arg callback; `undefined` when the
@@ -158,21 +182,19 @@ function MessageContent({
       return <MediaDocumentBubble message={message} t={t} />;
 
     case "template":
-      // Templates are almost always outbound, where the bubble fill IS
-      // `primary` — so the old `bg-primary/20 text-primary` chip was
-      // primary-on-primary and invisible. Paired with a null
-      // content_text (issue #483) that rendered a bubble with nothing
-      // in it at all. Invert on the primary fill, and fall back to the
+      // A neutral "Template" chip that reads on both the WhatsApp green
+      // (outbound) and white (inbound) fills. Falls back to the
       // template's name when we have no stored body (legacy rows sent
-      // before the fix).
+      // before issue #483 was fixed).
       return (
         <div>
+          {message.media_url && (
+            <TemplateHeaderMedia message={message} onOpen={openMedia} t={t} />
+          )}
           <span
             className={cn(
               "mb-1 inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-medium",
-              isAgent
-                ? "bg-primary-foreground/20 text-primary-foreground"
-                : "bg-primary/20 text-primary",
+              "bg-black/5 text-[var(--wa-meta)] dark:bg-white/10",
             )}
           >
             <LayoutTemplate className="h-3 w-3" />
@@ -269,39 +291,39 @@ export function MessageBubble({
     >
       <div
         className={cn(
-          "relative rounded-2xl px-3 py-2 transition-shadow",
+          "relative rounded-lg px-2.5 py-1.5 transition-shadow",
           highlighted && "ring-4 ring-amber-400/70",
+          // WhatsApp's own chat colours: light green out, white in.
+          "text-[var(--wa-text)] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]",
           isAgent
-            ? "rounded-br-md bg-primary text-primary-foreground"
-            : "rounded-bl-md bg-muted text-foreground",
+            ? "rounded-tr-sm bg-[var(--wa-out)]"
+            : "rounded-tl-sm bg-[var(--wa-in)]",
         )}
       >
         {reply && (
           <ReplyQuote
             authorLabel={reply.authorLabel}
             preview={reply.preview}
-            onPrimary={isAgent}
           />
         )}
         <MessageContent
           message={message}
           t={t}
-          isAgent={isAgent}
           onOpenMedia={onOpenMedia}
         />
         <div
           className={cn(
             "mt-1 flex items-center gap-1",
-            isAgent ? "justify-end" : "justify-start",
+            "justify-end",
           )}
         >
           {/* AI badge — only on replies the auto-reply bot generated
-              (always outbound, so it sits on the primary fill). Lets
+              (always outbound). Lets
               agents tell an AI reply from their own / a Flow's at a
               glance. */}
           {message.ai_generated && (
             <span
-              className="inline-flex items-center gap-0.5 rounded-full bg-primary-foreground/20 px-1.5 py-px text-[9px] font-semibold uppercase leading-none tracking-wide text-primary-foreground"
+              className="inline-flex items-center gap-0.5 rounded-full bg-black/5 px-1.5 py-px text-[9px] font-semibold uppercase leading-none tracking-wide text-[var(--wa-meta)] dark:bg-white/10"
               title={t("aiBadgeTitle")}
             >
               <Sparkles className="h-2.5 w-2.5" />
@@ -309,14 +331,7 @@ export function MessageBubble({
             </span>
           )}
           <span
-            className={cn(
-              "text-[10px]",
-              // Outbound bubbles sit on the primary fill, so the
-              // timestamp must read against that (not the neutral
-              // foreground) — otherwise it goes low-contrast in light
-              // mode. Inbound bubbles use the muted surface.
-              isAgent ? "text-primary-foreground/70" : "text-muted-foreground",
-            )}
+            className="text-[10px] text-[var(--wa-meta)]"
           >
             {senderLabel ? `${senderLabel} · ` : ""}
             {time}
@@ -326,10 +341,17 @@ export function MessageBubble({
       </div>
       {failure && (
         <p
-          className="mt-0.5 px-1 text-[10px] leading-tight text-muted-foreground"
+          className="mt-0.5 max-w-xs px-1 text-[10.5px] leading-tight text-red-600 dark:text-red-400"
           title={failure}
         >
-          {t("notDelivered")}: {failure}
+          <span className="font-semibold">{t("notDelivered")}:</span> {failure}
+        </p>
+      )}
+      {failure && message.error_code === 131049 && (
+        // Meta's per-person cap on marketing templates — not a Bluetick
+        // fault, so say what the agent can actually do about it.
+        <p className="mt-0.5 max-w-xs px-1 text-[10.5px] leading-tight text-[var(--wa-meta)]">
+          {t("marketingLimitHint")}
         </p>
       )}
       {reactions && reactions.length > 0 && onToggleReaction && (

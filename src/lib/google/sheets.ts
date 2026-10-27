@@ -137,22 +137,77 @@ async function call<T>(token: string, url: string, init: RequestInit = {}): Prom
 export interface SpreadsheetMeta {
   id: string;
   title: string;
+  /** Tab titles, in order (kept for older builders). */
   tabs: string[];
+  /** Tabs with Google's stable sheetId (survives renames). */
+  sheets: { id: number; title: string }[];
 }
 
 export async function getSpreadsheetMeta(token: string, id: string): Promise<SpreadsheetMeta> {
-  const j = await call<{ properties?: { title?: string }; sheets?: { properties?: { title?: string } }[] }>(
-    token,
-    `${API}/${encodeURIComponent(id)}?fields=properties.title,sheets.properties.title`,
-  );
-  return {
-    id,
-    title: j.properties?.title ?? '',
-    tabs: (j.sheets ?? []).map((s) => s.properties?.title ?? '').filter(Boolean),
-  };
+  const j = await call<{
+    properties?: { title?: string };
+    sheets?: { properties?: { title?: string; sheetId?: number } }[];
+  }>(token, `${API}/${encodeURIComponent(id)}?fields=properties.title,sheets.properties(title,sheetId)`);
+  const sheets = (j.sheets ?? [])
+    .map((s) => ({ id: Number(s.properties?.sheetId ?? -1), title: s.properties?.title ?? '' }))
+    .filter((s) => s.title);
+  return { id, title: j.properties?.title ?? '', tabs: sheets.map((s) => s.title), sheets };
+}
+
+/**
+ * The tab's current title: looked up by stable sheetId when known (so a
+ * renamed tab keeps working), else the saved title. Throws when the tab
+ * no longer exists.
+ */
+export async function resolveTabTitle(token: string, spreadsheetId: string, sheetName: string, sheetId?: number | null): Promise<string> {
+  if (sheetId === undefined || sheetId === null || !Number.isFinite(sheetId) || sheetId < 0) return sheetName;
+  const meta = await getSpreadsheetMeta(token, spreadsheetId);
+  const hit = meta.sheets.find((s) => s.id === sheetId);
+  if (!hit) throw new SheetsApiError('The selected tab was deleted from the spreadsheet. Pick a tab again.', 404);
+  return hit.title;
+}
+
+/** "A", "B", … "Z", "AA" for a 0-based column index. */
+export function columnLetter(index: number): string {
+  let n = index + 1;
+  let out = '';
+  while (n > 0) {
+    const r = (n - 1) % 26;
+    out = String.fromCharCode(65 + r) + out;
+    n = Math.floor((n - 1) / 26);
+  }
+  return out;
+}
+
+/** Headers used when the first row is data: "Column A", "Column B", … */
+export function letterHeaders(width: number): string[] {
+  return Array.from({ length: Math.min(width, MAX_COLUMNS) }, (_, i) => `Column ${columnLetter(i)}`);
+}
+
+/** Header problems worth showing: blanks among used columns and duplicates. */
+export function headerProblems(headers: string[]): { blank: number[]; duplicates: string[] } {
+  const last = headers.reduce((m, h, i) => (h.trim() ? i : m), -1);
+  const blank: number[] = [];
+  const seen = new Map<string, number>();
+  for (let i = 0; i <= last; i++) {
+    const h = headers[i]?.trim() ?? '';
+    if (!h) blank.push(i);
+    else seen.set(h.toLowerCase(), (seen.get(h.toLowerCase()) ?? 0) + 1);
+  }
+  const duplicates = [...seen.entries()].filter(([, n]) => n > 1).map(([h]) => headers.find((x) => x.trim().toLowerCase() === h)!.trim());
+  return { blank, duplicates };
 }
 
 type Values = { values?: unknown[][] };
+
+/** First `limit` rows of a tab (header included) for the read-only preview. */
+export async function getFirstRows(token: string, id: string, sheet: string, limit: number): Promise<unknown[][]> {
+  const j = await call<Values>(
+    token,
+    `${API}/${encodeURIComponent(id)}/values/${encodeURIComponent(a1(sheet, `A1:${LAST_COL}${Math.max(1, Math.min(limit, 50))}`))}`,
+  );
+  return j.values ?? [];
+}
 
 export async function getHeaders(token: string, id: string, sheet: string): Promise<string[]> {
   const j = await call<Values>(token, `${API}/${encodeURIComponent(id)}/values/${encodeURIComponent(a1(sheet, `A1:${LAST_COL}1`))}`);
@@ -178,4 +233,61 @@ export async function appendRow(token: string, id: string, sheet: string, row: s
     body: JSON.stringify({ majorDimension: 'ROWS', values: [row] }),
   });
   return j.updates?.updatedRange ?? null;
+}
+
+const DRIVE_FILES = 'https://www.googleapis.com/drive/v3/files';
+
+/**
+ * Drive search for the spreadsheet picker: Google Sheets files only, not
+ * trashed, optionally whose name contains `search`. Quotes and
+ * backslashes are escaped as the Drive query language requires.
+ */
+export function spreadsheetQuery(search?: string | null): string {
+  const base = "mimeType='application/vnd.google-apps.spreadsheet' and trashed=false";
+  const s = (search ?? '').trim().slice(0, 100);
+  if (!s) return base;
+  return `${base} and name contains '${s.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
+}
+
+export interface SpreadsheetFile {
+  id: string;
+  name: string;
+  modifiedTime: string | null;
+}
+
+/**
+ * Spreadsheets the Google account can see (own, shared, shared drives),
+ * newest first. Needs the drive.metadata.readonly scope (migration 053).
+ */
+export async function listSpreadsheets(token: string, search?: string | null, pageSize = 100): Promise<SpreadsheetFile[]> {
+  const q = new URLSearchParams({
+    q: spreadsheetQuery(search),
+    fields: 'files(id,name,modifiedTime)',
+    orderBy: 'modifiedTime desc',
+    pageSize: String(Math.max(1, Math.min(pageSize, 200))),
+    supportsAllDrives: 'true',
+    includeItemsFromAllDrives: 'true',
+    corpora: 'allDrives',
+  });
+  const res = await fetch(`${DRIVE_FILES}?${q.toString()}`, {
+    headers: { Authorization: `Bearer ${token}` },
+    signal: AbortSignal.timeout(TIMEOUT_MS),
+    cache: 'no-store',
+  });
+  const json = (await res.json().catch(() => ({}))) as {
+    files?: { id?: string; name?: string; modifiedTime?: string }[];
+    error?: { message?: string };
+  };
+  if (!res.ok) {
+    if (res.status === 403) {
+      throw new SheetsApiError(
+        'This Google account cannot list spreadsheets yet. Sign in with Google again and allow access to file names (and make sure the Drive API is enabled).',
+        403,
+      );
+    }
+    throw new SheetsApiError(json.error?.message ?? `Google Drive error (${res.status})`, res.status);
+  }
+  return (json.files ?? [])
+    .filter((f) => f.id && f.name)
+    .map((f) => ({ id: f.id!, name: f.name!, modifiedTime: f.modifiedTime ?? null }));
 }

@@ -114,6 +114,15 @@ html[data-mode="dark"] {
   --sidebar-accent: oklch(0.22 0.01 260);
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.28 0.01 260);
+  /* WhatsApp chat surfaces (inbox thread). */
+  --wa-wallpaper: #0b141a;
+  --wa-doodle: rgba(233, 237, 239, 0.06);
+  --wa-out: #005c4b;
+  --wa-in: #202c33;
+  --wa-text: #e9edef;
+  --wa-meta: rgba(233, 237, 239, 0.6);
+  --wa-read: #53bdeb;
+  --wa-link: #53bdeb;
 }
 
 html[data-mode="light"] {
@@ -143,6 +152,14 @@ html[data-mode="light"] {
   --sidebar-accent: oklch(0.96 0.004 260);
   --sidebar-accent-foreground: oklch(0.25 0.01 260);
   --sidebar-border: oklch(0.922 0.004 260);
+  --wa-wallpaper: #efeae2;
+  --wa-doodle: rgba(17, 27, 33, 0.07);
+  --wa-out: #d9fdd3;
+  --wa-in: #ffffff;
+  --wa-text: #111b21;
+  --wa-meta: #667781;
+  --wa-read: #53bdeb;
+  --wa-link: #027eb5;
 }
 
 /* ---- ACCENT: primary color ---- */

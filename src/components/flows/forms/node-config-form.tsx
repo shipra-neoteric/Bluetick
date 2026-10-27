@@ -51,6 +51,8 @@ import { slugify, type BuilderNode } from "../shared";
 import { NextNodeRow, NodeKeySelect, TextRow } from "./fields";
 import { BotStudioNodeForm, CollectInputValidation, HandoffAssignee } from "./bot-studio-forms";
 import { RuleConditionForm, UnifiedNodeForm } from "./unified-forms";
+import { CONDITION_OPERATORS, operatorNeedsValue, type ConditionOperator } from "@/lib/flows/types";
+import { regexProblem, toNumber } from "@/lib/flows/matching";
 
 interface NodeConfigFormProps {
   node: BuilderNode;
@@ -614,7 +616,7 @@ function SendListForm({
 interface ConditionCfg {
   subject?: "var" | "tag" | "contact_field";
   subject_key?: string;
-  operator?: "equals" | "contains" | "present" | "absent";
+  operator?: ConditionOperator;
   value?: string;
   true_next?: string;
   false_next?: string;
@@ -643,7 +645,10 @@ function ConditionForm({
 
   const subject = cfg.subject ?? "var";
   const operator = cfg.operator ?? "equals";
-  const showValue = operator === "equals" || operator === "contains";
+  const showValue = operatorNeedsValue(operator);
+  const regexError = operator === "regex" ? regexProblem(cfg.value) : null;
+  const numberError =
+    ["gt", "gte", "lt", "lte"].includes(operator) && cfg.value && !cfg.value.includes("{{") && toNumber(cfg.value) === null;
 
   return (
     <>
@@ -736,10 +741,11 @@ function ConditionForm({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="present">{t("isPresent")}</SelectItem>
-              <SelectItem value="absent">{t("isAbsent")}</SelectItem>
-              <SelectItem value="equals">{t("equals")}</SelectItem>
-              <SelectItem value="contains">{t("contains")}</SelectItem>
+              {CONDITION_OPERATORS.map((op) => (
+                <SelectItem key={op} value={op}>
+                  {t(`operators.${op}`)}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -749,8 +755,11 @@ function ConditionForm({
             <Input
               value={cfg.value ?? ""}
               onChange={(e) => onUpdateConfig({ value: e.target.value })}
-              className="bg-muted"
+              placeholder={operator === "regex" ? "^9[0-9]{9}$" : undefined}
+              className={cn("bg-muted", operator === "regex" && "font-mono text-xs")}
             />
+            {regexError && cfg.value ? <p className="mt-1 text-[11px] text-red-500">{regexError}</p> : null}
+            {numberError ? <p className="mt-1 text-[11px] text-red-500">{t("numberExpected")}</p> : null}
           </div>
         )}
       </div>

@@ -22,7 +22,14 @@ export async function GET(request: Request) {
       if (isMissingSchemaError(error)) return NextResponse.json({ watch: null })
       throw error
     }
-    return NextResponse.json({ watch: data ?? null })
+    // Latest rows the trigger saw (why a row was skipped). RLS-scoped too.
+    const { data: rows } = await supabase
+      .from('google_sheet_row_log')
+      .select('row_number, status, detail, created_at')
+      .eq('flow_id', flowId)
+      .order('created_at', { ascending: false })
+      .limit(10)
+    return NextResponse.json({ watch: data ?? null, rows: rows ?? [] })
   } catch (err) {
     return toErrorResponse(err)
   }

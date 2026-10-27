@@ -222,8 +222,15 @@ export function validateTriggerForActivation(
     if (!nonEmpty(cfg.spreadsheet_id) || !nonEmpty(cfg.sheet_name)) {
       issues.push({ path: 'trigger.spreadsheet_id', message: 'pick the spreadsheet and the tab to watch' })
     }
-    if (!nonEmpty(cfg.phone_column)) {
+    if (!nonEmpty(cfg.phone_column) && !nonEmpty(cfg.wa_user_id_column) && !nonEmpty(cfg.customer_id_column)) {
       issues.push({ path: 'trigger.phone_column', message: 'pick the column that holds the customer phone number' })
+    }
+  } else if (triggerType === 'ctwa_lead' || triggerType === 'ctwa_message') {
+    // Migration 054: following one campaign / ad set needs it picked.
+    if (cfg.track === 'campaign' && !nonEmpty(cfg.campaign_id)) {
+      issues.push({ path: 'trigger.campaign_id', message: 'pick the campaign to track leads from' })
+    } else if (cfg.track === 'adset' && !nonEmpty(cfg.adset_id)) {
+      issues.push({ path: 'trigger.adset_id', message: 'pick the ad set to track leads from' })
     }
   } else if (triggerType === 'tag_added') {
     if (!nonEmpty(cfg.tag_id)) {

@@ -12,7 +12,7 @@ import { BOT_STUDIO_SLOTS } from "./node-registry";
 import { formatDate, formatPhone } from "@/lib/bot/formatters";
 import { workingHoursAt, DEFAULT_BUSINESS_HOURS, type BusinessHours } from "@/lib/bot/working-hours";
 import { interpolate } from "@/lib/bot/variables";
-import { DEFAULT_FALLBACK_POLICY, isEventTrigger, type FlowFallbackPolicy, type KeywordTriggerConfig } from "./types";
+import { DEFAULT_FALLBACK_POLICY, isEventTrigger, type ConditionOperator, type FlowFallbackPolicy, type KeywordTriggerConfig } from "./types";
 
 export interface SimNode {
   node_key: string;
@@ -178,7 +178,7 @@ export function simulateFlow(flow: SimFlow, nodes: SimNode[], inputs: SimInput[]
           else if (c.subject === "tag") subject = ctx.tagIds.includes(String(c.subject_key)) ? String(c.subject_key) : undefined;
           else subject = (ctx.contact as Record<string, string | undefined>)[String(c.subject_key)] || undefined;
           const ok = evaluateConditionPredicate({
-            operator: c.operator as "equals" | "contains" | "present" | "absent",
+            operator: c.operator as ConditionOperator,
             subjectValue: subject,
             configValue: c.value as string | undefined,
           });

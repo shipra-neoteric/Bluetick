@@ -232,7 +232,12 @@
       "send": "보내기",
       "quickReplyNamePrompt": "이 빠른 답장의 이름을 지정하세요:",
       "quickReplySaved": "빠른 답장으로 저장되었습니다.",
-      "quickReplySaveError": "빠른 답장을 저장하지 못했습니다."
+      "quickReplySaveError": "빠른 답장을 저장하지 못했습니다.",
+      "closedWindowTitle": "메시지 보내기",
+      "closedWindowSuffix": "— 대화 창이 닫힌 고객에게",
+      "closedWindowOr": "또는",
+      "sendATemplate": "템플릿 보내기",
+      "closedWindowSent": "{name} 템플릿으로 보냄"
     },
     "bubble": {
       "photo": "사진",
@@ -252,7 +257,8 @@
       "downloadFailed": "첨부파일을 다운로드할 수 없습니다",
       "viewImage": "이미지 보기",
       "expandVideo": "동영상 확대",
-      "imageAlt": "공유된 이미지"
+      "imageAlt": "공유된 이미지",
+      "marketingLimitHint": "Meta는 한 사람이 받는 마케팅 템플릿 수를 제한합니다. 하루 이틀 뒤 다시 시도하거나 유틸리티 템플릿을 보내세요."
     },
     "mediaViewer": {
       "counter": "{total}개 중 {index}번째",
@@ -1234,7 +1240,24 @@
         "fileUploaded": "파일이 업로드되었습니다.",
         "uploadFailed": "업로드에 실패했습니다.",
         "fileTooLarge": "파일이 {size}MB입니다 — 제한은 16MB입니다.",
-        "defaultOptionTitle": "옵션"
+        "defaultOptionTitle": "옵션",
+        "operators": {
+          "present": "값이 있음",
+          "absent": "비어 있음",
+          "equals": "같음",
+          "not_equals": "같지 않음",
+          "equals_ignore_case": "같음(대소문자 무시)",
+          "contains": "포함",
+          "not_contains": "포함하지 않음",
+          "starts_with": "다음으로 시작",
+          "ends_with": "다음으로 끝남",
+          "gt": "보다 큼(>)",
+          "gte": "이상(>=)",
+          "lt": "보다 작음(<)",
+          "lte": "이하(<=)",
+          "regex": "정규식과 일치"
+        },
+        "numberExpected": "숫자(또는 변수)를 입력하세요."
       },
       "categories": {
         "actions": "작업",
@@ -1963,7 +1986,7 @@
       "description": "플로우에서 사용할 외부 앱을 연결하세요.",
       "sheetsDesc": "시트에 행이 추가되면 플로우를 시작하고, 플로우에서 행을 추가합니다(리드, 주문, 양식 답변).",
       "loading": "불러오는 중…",
-      "needsMigration": "Google 시트를 사용하려면 데이터베이스 마이그레이션 051이 필요합니다.",
+      "needsMigration": "Google Sheets를 사용하려면 데이터베이스 마이그레이션 051과 053이 필요합니다.",
       "notConfigured": "서버에 Google 로그인이 아직 설정되지 않았습니다(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET). docs/GOOGLE_SHEETS_SETUP.md를 참고하세요.",
       "connectedAs": "{email}(으)로 연결됨",
       "reconnect": "Google 다시 연결",
@@ -1973,16 +1996,21 @@
       "disconnectFailed": "Google 연결을 해제하지 못했습니다.",
       "adminOnly": "관리자만 Google을 연결할 수 있습니다.",
       "connect": "Google 계정 연결",
-      "connectHint": "플로우는 이 Google 계정이 편집할 수 있는 모든 시트를 열 수 있습니다. 시트를 이 계정과 편집자로 공유하세요.",
+      "connectHint": "플로우는 선택한 Google 계정이 편집할 수 있는 모든 시트를 열 수 있습니다. 여러 Google 계정을 연결하고 플로우마다 하나를 선택할 수 있습니다.",
       "results": {
         "connected": "Google 시트가 연결되었습니다.",
         "denied": "Google 로그인이 취소되었습니다.",
         "error": "Google을 연결하지 못했습니다. 다시 시도하세요.",
-        "forbidden": "관리자만 Google을 연결할 수 있습니다.",
+        "forbidden": "Google을 연결할 권한이 없습니다.",
         "invalid_state": "로그인 링크가 만료되었습니다. 다시 시도하세요.",
         "missing_scope": "Google 화면에서 Google 시트 액세스를 허용한 후 다시 시도하세요.",
         "not_configured": "서버에 Google 로그인이 아직 설정되지 않았습니다."
-      }
+      },
+      "accountsTitle": "연결된 Google 계정",
+      "connectAnother": "다른 Google 계정 연결",
+      "connectedOn": "{date}에 연결됨",
+      "disconnectAccountConfirm": "{email} 연결을 해제할까요? 이 Google 계정을 사용하는 플로우는 다른 계정을 선택할 때까지 행을 읽거나 추가하지 않습니다.",
+      "noPermission": "Google을 연결할 권한이 없습니다."
     }
   },
   "SignupPage": {
@@ -2800,7 +2828,7 @@
         "sla_breached": "응답이 받은편지함 SLA를 놓치면 시작됩니다(설정 → 받은편지함).",
         "incoming_webhook": "다른 시스템(Google 시트 스크립트, 웹사이트 양식, Zapier)이 이 플로우의 URL을 호출하면 시작됩니다.",
         "time_based": "예약 트리거는 아직 실행되지 않습니다.",
-        "ctwa_lead": "새 리드가 Click-to-WhatsApp 광고에서 메시지를 보내면 시작됩니다. 그 메시지로 생성된 연락처, 또는 (선택) 기존 연락처가 해당 광고로 처음 대화를 시작한 경우입니다.",
+        "ctwa_lead": "새 리드가 WhatsApp 클릭 광고에서 메시지를 보내면 시작됩니다. 모든 광고 또는 연결된 Facebook 계정의 캠페인이나 광고 세트 하나를 추적합니다.",
         "google_sheet_new_row": "Google 시트 탭에 새 행이 추가될 때마다 한 번 시작됩니다. 전화번호 열로 고객을 찾고, 없으면 새 연락처를 만듭니다."
       },
       "sections": {
@@ -2974,7 +3002,14 @@
         "missing": "(삭제됨)",
         "removeChip": "삭제",
         "search": "검색",
-        "none": "아직 태그가 없습니다. 연락처에서 만드세요."
+        "none": "아직 태그가 없습니다. 연락처에서 만드세요.",
+        "createList": "새 브로드캐스트 목록 만들기",
+        "createTag": "새 태그 만들기",
+        "newListName": "새 목록 이름",
+        "newTagName": "새 태그 이름",
+        "create": "만들기",
+        "exists": "이미 있는 이름입니다.",
+        "createFailed": "만들지 못했습니다."
       },
       "template": {
         "select": "템플릿 선택",
@@ -3047,16 +3082,16 @@
       },
       "sheets": {
         "checking": "Google 연결 확인 중…",
-        "needsMigration": "Google 시트를 사용하려면 데이터베이스 마이그레이션 051이 필요합니다.",
+        "needsMigration": "Google Sheets를 사용하려면 데이터베이스 마이그레이션 051과 053이 필요합니다.",
         "notConnected": "Google 시트가 아직 연결되지 않았습니다. 관리자가 설정 → 통합에서 Google 계정을 연결할 수 있습니다.",
         "reconnectNeeded": "Google 액세스가 만료되었거나 삭제되었습니다. 관리자가 설정 → 통합에서 Google을 다시 연결해야 합니다.",
         "openIntegrations": "통합 열기",
         "connectedAs": "{email} 사용 중",
-        "spreadsheet": "스프레드시트 링크",
+        "spreadsheet": "스프레드시트",
         "load": "불러오기",
-        "tab": "시트(탭)",
+        "tab": "시트",
         "pickTab": "탭 선택",
-        "refresh": "열 다시 불러오기",
+        "refresh": "목록과 열 새로고침",
         "noHeaders": "이 탭에 머리글 행이 없습니다. 1행에 열 이름을 입력하세요.",
         "addRowHelp": "탭 맨 아래에 행 하나를 추가합니다. 각 값은 해당 열 이름(1행) 아래에 들어갑니다.",
         "values": "값",
@@ -3073,20 +3108,109 @@
         "rowVariables": "다음 단계에서 행 값 사용:",
         "pollHint": "5분마다 확인합니다. 플로우를 켠 후 추가된 행만 플로우를 시작합니다. 새 연락처에는 먼저 승인된 템플릿만 보낼 수 있습니다(WhatsApp 24시간 규칙).",
         "lastChecked": "마지막 확인",
-        "rowsStarted": "시작된 행"
+        "rowsStarted": "시작된 행",
+        "viewSheet": "시트 보기",
+        "viewExample": "예시 보기",
+        "firstRowHeader": "첫 행을 머리글로 사용",
+        "duplicateHeaders": "중복된 열 이름: {headers}. 각 열 이름이 하나가 되도록 바꾸세요.",
+        "blankHeaders": "이름이 없는 열: {columns}.",
+        "exampleTitle": "\"{tab}\"의 예시 행",
+        "exampleDesc": "탭의 처음 몇 행(읽기 전용)입니다. 아무것도 가져오거나 보내지 않습니다.",
+        "waUserIdColumn": "WhatsApp 사용자 ID 열(선택)",
+        "waUserIdHint": "행에 사용할 수 있는 전화번호가 없을 때 사용합니다. 해당 WhatsApp 사용자 ID(BSUID)로 이미 메시지를 보낸 연락처와 일치시킵니다.",
+        "skippedRows": "시작되지 않은 행",
+        "rowProblem": "{row}행: {reason}",
+        "triggerIntro": "Google 시트에 새 행이 추가되면 플로우를 시작합니다",
+        "selectAccount": "계정 선택",
+        "orAddAccount": "또는 다른 Google 계정 추가:",
+        "signInWithGoogle": "Google 계정으로 로그인",
+        "userDataPolicy": "Google API 서비스 사용자 데이터 정책",
+        "signInFailed": "Google 로그인이 완료되지 않았습니다. 다시 시도하세요.",
+        "popupBlocked": "브라우저가 Google 창을 차단했습니다. 이 사이트의 팝업을 허용한 뒤 다시 시도하세요.",
+        "notConfigured": "서버에 Google 로그인이 아직 설정되지 않았습니다(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET).",
+        "needsReconnect": "다시 연결 필요",
+        "connected": "연결됨",
+        "change": "변경",
+        "cancel": "취소",
+        "selectSpreadsheet": "스프레드시트 선택",
+        "selectSheet": "시트 선택",
+        "search": "검색",
+        "noResults": "결과 없음",
+        "modified": "{when} 수정됨",
+        "refreshShort": "새로고침",
+        "pasteLink": "또는 스프레드시트 링크 붙여넣기",
+        "loadingColumns": "열을 불러오는 중…",
+        "phoneField": "전화번호 필드 선택",
+        "phoneFieldHelp": "전화번호 필드는 이 플로우를 고객과 연결하는 데 사용됩니다. 전화번호에 국가 코드가 포함되어 있는지 확인하세요",
+        "phonePlaceholder": "전화번호 열 선택",
+        "usernameField": "사용자 이름(BSUID) 필드 선택",
+        "usernameFieldHelp": "전화번호가 없을 때만 사용됩니다. WhatsApp 사용자 이름으로 메시지를 보내는 고객용입니다. 예: IN.1429526195123904",
+        "usernamePlaceholder": "사용자 이름 열 선택",
+        "customerIdField": "고객 ID 필드 선택",
+        "customerIdFieldHelp": "전화번호와 사용자 이름이 모두 없을 때만 사용됩니다. Bluetick 고객 ID(연락처 ID)입니다.",
+        "customerIdPlaceholder": "고객 ID 열 선택",
+        "noAccountsYet": "추가된 Google 계정이 없습니다 — 아래에서 로그인하세요"
       },
       "ctwaLead": {
-        "mode": "리드로 집계",
-        "modes": {
-          "new_contact": "새 연락처만",
-          "new_ad": "새 연락처 및 새 광고로 들어온 기존 연락처"
-        },
         "adIds": "광고 / 게시물 ID(선택)",
         "anyAd": "모든 광고",
         "adIdsHint": "쉼표로 구분합니다. 비워 두면 모든 Click-to-WhatsApp 광고에 반응합니다.",
-        "variables": "다음 단계용 광고 정보:"
+        "variables": "다음 단계용 광고 정보:",
+        "account": "계정 선택",
+        "selectAccount": "Facebook 계정을 선택하세요",
+        "connectNew": "+ 새 Facebook 계정 연결",
+        "connectedTo": "{name}에 연결됨",
+        "change": "변경",
+        "keep": "{name} 유지",
+        "loadingAccounts": "Facebook 계정을 불러오는 중…",
+        "accountsFailed": "Facebook 계정을 불러오지 못했습니다.",
+        "accountMissing": "이전에 선택한 Facebook 계정의 연결이 해제되었습니다. 다른 계정을 선택하세요.",
+        "needsReconnect": "다시 연결 필요",
+        "reconnectHint": "Facebook이 이 로그인을 더 이상 허용하지 않습니다. 캠페인 추적을 유지하려면 계정을 다시 연결하세요.",
+        "needsMigration": "Facebook 계정이 아직 설정되지 않았습니다(데이터베이스 마이그레이션 054).",
+        "notConfigured": "이 서버에 Facebook 로그인이 설정되지 않았습니다(META_APP_ID).",
+        "waitingForFacebook": "Facebook 로그인을 기다리는 중…",
+        "cancel": "취소",
+        "connectResult": {
+          "blocked": "브라우저가 Facebook 로그인 창을 차단했습니다. 이 사이트의 팝업을 허용하고 다시 시도하세요.",
+          "not_configured": "이 서버에 Facebook 로그인이 설정되지 않았습니다(META_APP_ID).",
+          "missing_scope": "Facebook이 광고 접근 권한(ads_read)을 부여하지 않았습니다. 다시 연결하고 허용하세요.",
+          "denied": "Facebook 로그인이 취소되었습니다.",
+          "forbidden": "계정을 연결할 권한이 없습니다.",
+          "error": "Facebook 계정을 연결하지 못했습니다. 다시 시도하세요."
+        },
+        "trackFrom": "리드 추적 대상",
+        "track": {
+          "all": "전체",
+          "campaign": "캠페인",
+          "adset": "광고 세트"
+        },
+        "selectCampaign": "캠페인 선택",
+        "selectAdSet": "광고 세트 선택",
+        "selectValue": "값 선택",
+        "searchCampaigns": "캠페인 검색",
+        "searchAdSets": "광고 세트 검색",
+        "loadingCampaigns": "Facebook에서 불러오는 중…",
+        "campaignsFailed": "Facebook에서 불러오지 못했습니다.",
+        "noCampaigns": "이 Facebook 계정에 캠페인이 없습니다.",
+        "noAdSets": "이 Facebook 계정에 광고 세트가 없습니다.",
+        "legacyAds": "이 트리거는 이전에 선택한 광고 ID {count}개에만 반응합니다.",
+        "legacyClear": "해당 필터 제거"
       },
-      "duplicateFlow": "플로우 복제"
+      "duplicateFlow": "플로우 복제",
+      "ads": {
+        "anyAd": "모든 광고(비워 두기)",
+        "remove": "광고 제거",
+        "search": "광고 검색 또는 광고 ID 붙여넣기",
+        "loading": "광고 불러오는 중…",
+        "addId": "광고 ID {id} 사용",
+        "chats": "대화 {count}개",
+        "loadFailed": "광고를 불러오지 못했습니다. 광고 ID는 붙여넣을 수 있습니다.",
+        "none": "아직 광고가 없습니다. 고객이 광고로 메시지를 보내거나 Meta Ads를 연결하면 표시됩니다.",
+        "metaHint": "광고와 캠페인 이름을 보려면 Meta Ads를 연결하세요.",
+        "metaError": "Meta Ads에 연결할 수 없어 대화가 있었던 광고만 표시합니다.",
+        "openAds": "Meta Ads"
+      }
     }
   },
   "Campaigns": {
@@ -3537,6 +3661,32 @@
       "saved": "광고 계정이 저장되었습니다",
       "saveFailed": "광고 계정을 저장하지 못했습니다.",
       "disconnected": "광고 계정 연결이 해제되었습니다"
+    }
+  },
+  "MetaConnections": {
+    "title": "Facebook 계정",
+    "description": "WhatsApp 클릭 광고를 운영하는 Facebook 계정을 연결하세요. 그러면 \"Lead From CTWA\" 트리거가 특정 캠페인이나 광고 세트의 리드에만 시작될 수 있습니다.",
+    "loading": "불러오는 중…",
+    "needsMigration": "Facebook 계정을 연결하려면 데이터베이스 마이그레이션 054를 실행하세요.",
+    "notConfigured": "이 서버에 Facebook 로그인이 설정되지 않았습니다. META_APP_ID(및 앱 시크릿)를 설정하고 Meta 앱에 콜백 URL을 추가하세요.",
+    "connect": "Facebook 계정 연결",
+    "connectHint": "캠페인과 광고에 대한 읽기 전용 접근(ads_read)입니다. Bluetick은 광고를 변경하지 않습니다.",
+    "connectedOn": "{date}에 연결됨",
+    "reconnectNeeded": "Facebook이 이 로그인을 더 이상 허용하지 않습니다. 다시 연결하세요.",
+    "disconnect": "연결 해제",
+    "disconnectConfirm": "{name}의 연결을 해제할까요? 이 계정만 볼 수 있는 캠페인을 추적하는 플로우는 리드를 더 이상 감지하지 못합니다.",
+    "disconnected": "Facebook 계정 연결이 해제되었습니다",
+    "disconnectFailed": "Facebook 계정 연결을 해제하지 못했습니다",
+    "cancel": "취소",
+    "results": {
+      "connected": "Facebook 계정이 연결되었습니다",
+      "denied": "Facebook 로그인이 취소되었습니다",
+      "error": "Facebook 계정을 연결하지 못했습니다. 다시 시도하세요.",
+      "forbidden": "계정을 연결할 권한이 없습니다",
+      "invalid_state": "Facebook 로그인이 만료되었습니다. 다시 시도하세요.",
+      "missing_scope": "Facebook이 광고 접근 권한(ads_read)을 부여하지 않았습니다. 다시 연결하고 허용하세요.",
+      "not_configured": "이 서버에 Facebook 로그인이 설정되지 않았습니다(META_APP_ID)",
+      "blocked": "브라우저가 Facebook 로그인 창을 차단했습니다. 이 사이트의 팝업을 허용하세요."
     }
   }
 }

@@ -26,10 +26,10 @@ SELECT to_regclass('public.google_connections') AS connections,
 ## 2. Create the Google OAuth client (one time)
 
 1. Open https://console.cloud.google.com and create a project, for example "Bluetick".
-2. Go to **APIs & Services → Library**, search for **Google Sheets API** and click **Enable**.
+2. Go to **APIs & Services → Library**, search for **Google Sheets API** and click **Enable**. Do the same for **Google Drive API** (used only to list spreadsheet names in the Bot Builder picker).
 3. Go to **APIs & Services → OAuth consent screen** (called "Google Auth Platform" in newer consoles):
    1. Set the user type to **External**, the app name to **Bluetick**, and add your support email.
-   2. Under **Data access / Scopes**, add `.../auth/spreadsheets`, `openid` and `email`.
+   2. Under **Data access / Scopes**, add `.../auth/spreadsheets`, `.../auth/drive.metadata.readonly`, `openid` and `email`. Google accounts connected before the Drive scope was added must sign in again to see the spreadsheet list (pasting a link still works meanwhile).
    3. Under **Audience**, add the Google accounts that will connect as **Test users**, or publish the app (see the note below).
 4. Go to **APIs & Services → Credentials → Create credentials → OAuth client ID**:
    1. Set the application type to **Web application**.

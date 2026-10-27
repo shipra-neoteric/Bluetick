@@ -27,9 +27,25 @@ export interface MediaGalleryItem {
   message: Message;
 }
 
+/**
+ * What a template's header `media_url` holds. The message row doesn't
+ * record the template's header type, so it's read off the link's
+ * extension; anything unrecognised is treated as an image, the common case.
+ */
+export function templateHeaderKind(url: string): "image" | "video" | "document" {
+  const path = url.split(/[?#]/)[0].toLowerCase();
+  if (/\.(mp4|3gp|3gpp|mov|webm)$/.test(path)) return "video";
+  if (/\.(pdf|docx?|xlsx?|pptx?|txt|csv)$/.test(path)) return "document";
+  return "image";
+}
+
 function galleryKind(message: Message): MediaGalleryKind | null {
   if (message.content_type === "image") return "image";
   if (message.content_type === "video") return "video";
+  if (message.content_type === "template" && message.media_url) {
+    const kind = templateHeaderKind(message.media_url);
+    return kind === "document" ? null : kind;
+  }
   return null;
 }
 

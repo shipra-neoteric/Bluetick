@@ -22,6 +22,7 @@ import {
   Plus,
   MessageSquareDashed,
   Zap,
+  Clock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GatedButton } from "@/components/ui/gated-button";
@@ -126,6 +127,13 @@ interface MessageComposerProps {
   draftKey?: string;
   /** Contact is blocked in the CRM: free-form sending is disabled. */
   blocked?: boolean;
+  /**
+   * Closed-window messaging (migration 055): the configured template's
+   * body around `{{1}}`. When set and the 24h window is closed, the agent
+   * can still type — `onSendClosedWindow` sends it as that template.
+   */
+  closedWindow?: { before: string; after: string } | null;
+  onSendClosedWindow?: (text: string) => void;
 }
 
 function readDraft(key?: string): string {
@@ -169,6 +177,8 @@ export function MessageComposer({
   onClearReply,
   draftKey,
   blocked = false,
+  closedWindow = null,
+  onSendClosedWindow,
 }: MessageComposerProps) {
   const t = useTranslations("Inbox.composer");
 
@@ -235,6 +245,9 @@ export function MessageComposer({
   // and never to a contact blocked in the CRM.
   const sessionClosed = sessionExpired || blocked;
   const inputsDisabled = readOnly || sessionClosed;
+  // Window closed, but text can still go out inside the configured template.
+  const closedWindowMode = sessionExpired && !blocked && !!closedWindow && !!onSendClosedWindow;
+  const textDisabled = readOnly || (sessionClosed && !closedWindowMode);
 
   const clearTimer = useCallback(() => {
     if (timerRef.current !== null) {
@@ -266,11 +279,12 @@ export function MessageComposer({
 
   const handleSend = useCallback(async () => {
     const trimmed = text.trim();
-    if (!trimmed || sending || sessionClosed) return;
+    if (!trimmed || sending || textDisabled) return;
 
     setSending(true);
     try {
-      onSend(trimmed, replyTo?.id);
+      if (closedWindowMode) onSendClosedWindow!(trimmed);
+      else onSend(trimmed, replyTo?.id);
       setText("");
       writeDraft(draftKey, "");
       if (textareaRef.current) {
@@ -279,7 +293,7 @@ export function MessageComposer({
     } finally {
       setSending(false);
     }
-  }, [text, sending, sessionClosed, onSend, replyTo?.id, draftKey]);
+  }, [text, sending, textDisabled, closedWindowMode, onSendClosedWindow, onSend, replyTo?.id, draftKey]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -591,7 +605,21 @@ export function MessageComposer({
           />
         </div>
       )}
-      {sessionExpired && (
+      {closedWindowMode && (
+        <div className="mb-2 rounded-lg border border-border bg-muted/40 px-3 py-2">
+          <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Clock className="h-3.5 w-3.5 text-red-500" />
+            <span>
+              <span className="font-semibold text-foreground">{t("closedWindowTitle")}</span>{" "}
+              {t("closedWindowSuffix")}
+            </span>
+          </p>
+          {closedWindow!.before && (
+            <p className="mt-1.5 whitespace-pre-wrap text-sm text-foreground/80">{closedWindow!.before}</p>
+          )}
+        </div>
+      )}
+      {sessionExpired && !closedWindowMode && (
         <div className="mb-2 flex items-center justify-between rounded-lg bg-amber-500/10 px-3 py-2">
           <p className="text-xs text-amber-400">
             {t("sessionExpiredHint")}
@@ -781,11 +809,11 @@ export function MessageComposer({
                 ? t("readOnlyPlaceholder")
                 : blocked
                   ? "Contact is blocked — unblock to send messages"
-                  : sessionExpired
+                  : sessionExpired && !closedWindowMode
                     ? t("sessionExpiredPlaceholder")
                     : t("typeMessagePlaceholder")
             }
-            disabled={sessionClosed || readOnly}
+            disabled={textDisabled}
             rows={1}
             // Textarea keeps its own inline title — the GatedButton
             // wrapping pattern doesn't apply to non-button inputs.
@@ -793,7 +821,7 @@ export function MessageComposer({
             title={readOnly ? t("readOnlyTitle") : undefined}
             className={cn(
               "flex-1 resize-none rounded-xl border border-border bg-muted px-4 py-2.5 text-sm text-foreground placeholder-muted-foreground outline-none transition-colors focus:border-primary/50",
-              (sessionClosed || readOnly) && "cursor-not-allowed opacity-50"
+              textDisabled && "cursor-not-allowed opacity-50"
             )}
           />
 
@@ -801,7 +829,7 @@ export function MessageComposer({
             size="sm"
             canAct={!readOnly}
             gateReason="send messages"
-            disabled={!text.trim() || sessionClosed || sending}
+            disabled={!text.trim() || textDisabled || sending}
             onClick={handleSend}
             className="h-9 w-9 shrink-0 bg-primary p-0 hover:bg-primary/90 disabled:opacity-40"
           >
@@ -813,6 +841,19 @@ export function MessageComposer({
       {/* Hint sits outside the flex row so its height doesn't push
           `items-end` buttons below the textarea. Indented to line up
           under the textarea left edge. */}
+      {closedWindowMode && !draft && !recording && (
+        <div className="mt-1.5 space-y-1 pl-[5.5rem]">
+          {closedWindow!.after && (
+            <p className="whitespace-pre-wrap text-sm italic text-foreground/80">{closedWindow!.after}</p>
+          )}
+          <p className="text-xs text-muted-foreground">
+            {t("closedWindowOr")}{" "}
+            <button type="button" onClick={onOpenTemplates} className="font-medium text-primary underline">
+              {t("sendATemplate")}
+            </button>
+          </p>
+        </div>
+      )}
       {!draft && !recording && (
         <p className="mt-1 pl-[5.5rem] text-[10px] text-muted-foreground">
           {t("draftHint")}

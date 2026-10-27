@@ -12,6 +12,9 @@ export interface InboxSettings {
   sla_next_response_minutes: number;
   timezone: string;
   tag_selection_limit: number;
+  /** Template for messaging outside the 24h window (migration 055); null = off. */
+  closed_window_template: string | null;
+  closed_window_template_language: string | null;
 }
 
 export const DEFAULT_INBOX_SETTINGS: InboxSettings = {
@@ -21,6 +24,8 @@ export const DEFAULT_INBOX_SETTINGS: InboxSettings = {
   sla_next_response_minutes: 30,
   timezone: 'Asia/Kolkata',
   tag_selection_limit: 50,
+  closed_window_template: null,
+  closed_window_template_language: null,
 };
 
 export async function loadInboxSettings(

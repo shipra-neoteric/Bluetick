@@ -164,7 +164,42 @@ export type ConditionOperator =
   | "equals"
   | "contains"
   | "present"
-  | "absent";
+  | "absent"
+  // Bot Builder operators: text (case-insensitive variants), numeric
+  // comparisons (both sides must be numbers) and a bounded regex.
+  | "not_equals"
+  | "equals_ignore_case"
+  | "not_contains"
+  | "starts_with"
+  | "ends_with"
+  | "gt"
+  | "gte"
+  | "lt"
+  | "lte"
+  | "regex";
+
+/** Every operator, in builder display order. */
+export const CONDITION_OPERATORS: ConditionOperator[] = [
+  "present",
+  "absent",
+  "equals",
+  "not_equals",
+  "equals_ignore_case",
+  "contains",
+  "not_contains",
+  "starts_with",
+  "ends_with",
+  "gt",
+  "gte",
+  "lt",
+  "lte",
+  "regex",
+];
+
+/** Operators that compare against `value` (all but present/absent). */
+export function operatorNeedsValue(op: string | undefined): boolean {
+  return !!op && op !== "present" && op !== "absent";
+}
 
 export type ConditionSubject = "var" | "tag" | "contact_field";
 
@@ -347,9 +382,13 @@ export interface CallApiNodeConfig {
 
 /** Google Sheets "Add Row" (migration 051). */
 export interface GoogleSheetsNodeConfig {
+  /** Which of the account's Google connections writes (migration 053). */
+  google_connection_id?: string;
   spreadsheet_id: string;
   spreadsheet_title?: string;
   sheet_name: string;
+  /** Google's stable sheetId of the tab (a renamed tab keeps working). */
+  sheet_id?: number;
   /** Header row as last loaded in the builder (display only). */
   headers?: string[];
   /** Value per column, matched to the header row by name at run time. */
