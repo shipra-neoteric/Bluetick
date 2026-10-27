@@ -200,16 +200,24 @@ export function NewConversationDialog({
         toast.error(`Failed to send template: ${payload?.error || `HTTP ${res.status}`}`);
         return;
       }
-      const { data: conv } = await supabase
-        .from("conversations")
-        .select("id")
-        .eq("contact_id", contact.id)
-        .order("last_message_at", { ascending: false, nullsFirst: false })
-        .limit(1)
-        .maybeSingle();
+      // The route returns the thread it sent into; fall back to a lookup
+      // for an older server that doesn't.
+      let convId: string | null =
+        typeof payload?.conversation_id === "string" ? payload.conversation_id : null;
+      if (!convId) {
+        const { data: conv } = await supabase
+          .from("conversations")
+          .select("id")
+          .eq("contact_id", contact.id)
+          .order("last_message_at", { ascending: false, nullsFirst: false })
+          .limit(1)
+          .maybeSingle();
+        convId = conv?.id ?? null;
+      }
       toast.success(`Conversation started with ${contact.name || contact.phone}`);
       close();
-      if (conv?.id) onStarted(conv.id);
+      if (convId) onStarted(convId);
+      else toast.error("Template sent, but the chat could not be opened. Refresh the inbox.");
     } finally {
       setBusy(false);
     }

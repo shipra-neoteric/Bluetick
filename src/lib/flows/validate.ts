@@ -23,7 +23,8 @@
  * `node_key`; trigger-scoped use `scope: 'trigger'`.
  */
 
-import { isEventTrigger } from "./types";
+import { CONDITION_OPERATORS, isEventTrigger, operatorNeedsValue } from "./types";
+import { regexProblem, toNumber } from "./matching";
 import { validateTriggerForActivation } from "@/lib/automations/validate";
 import { INTERACTIVE_LIMITS } from "@/lib/whatsapp/meta-api";
 import {
@@ -628,7 +629,7 @@ function validateNode(
       const cfg = node.config as {
         subject?: "var" | "tag" | "contact_field";
         subject_key?: string;
-        operator?: "equals" | "contains" | "present" | "absent";
+        operator?: string;
         value?: string;
         true_next?: string;
         false_next?: string;
@@ -665,7 +666,7 @@ function validateNode(
         // rule carries its own comparison
       } else if (
         !cfg.operator ||
-        !["equals", "contains", "present", "absent"].includes(cfg.operator)
+        !(CONDITION_OPERATORS as string[]).includes(cfg.operator)
       ) {
         issues.push({
           severity: "error",
@@ -674,8 +675,28 @@ function validateNode(
           field: "operator",
           message: "Condition needs an operator.",
         });
+      } else if (cfg.operator === "regex" && regexProblem(cfg.value)) {
+        issues.push({
+          severity: "error",
+          scope: "node",
+          node_key: node.node_key,
+          field: "value",
+          message: `Regex: ${regexProblem(cfg.value)}`,
+        });
       } else if (
-        (cfg.operator === "equals" || cfg.operator === "contains") &&
+        ["gt", "gte", "lt", "lte"].includes(cfg.operator) &&
+        !(cfg.value ?? "").includes("{{") &&
+        toNumber(cfg.value) === null
+      ) {
+        issues.push({
+          severity: "error",
+          scope: "node",
+          node_key: node.node_key,
+          field: "value",
+          message: "Number comparisons need a number to compare with.",
+        });
+      } else if (
+        operatorNeedsValue(cfg.operator) &&
         (cfg.value === undefined || cfg.value === "")
       ) {
         issues.push({

@@ -37,6 +37,7 @@ import { formatDate, formatPhone } from '@/lib/bot/formatters'
 import { planWaitUntil, workingHoursAt } from '@/lib/bot/working-hours'
 import { interpolate as interpolateScope, needsContact } from '@/lib/bot/variables'
 import { matchesWholeWord } from '@/lib/bot/keyword'
+import { ctwaAdMatches } from '@/lib/meta/ctwa-match'
 import { validateInteractivePayload } from '@/lib/whatsapp/interactive'
 import { isDeliverableUrl } from '@/lib/webhooks/ssrf'
 
@@ -988,17 +989,19 @@ export function triggerMatches(automation: Automation, ctx: AutomationContext | 
     if (cfg?.change_mode === 'removed') return !empty(before) && empty(after)
     return true
   }
+  // Ad filter (migration 054): all ads, one campaign or one ad set (the
+  // webhook resolves the ad into ctx.trigger.campaign_id / adset_id),
+  // plus the legacy ad-id list.
   if (automation.trigger_type === 'ctwa_message') {
     const cfg = automation.trigger_config as CtwaTriggerConfig
-    const ids = (cfg?.source_ids ?? []).filter(Boolean)
-    return ids.length === 0 || Boolean(ctx?.source_id && ids.includes(ctx.source_id))
+    return ctwaAdMatches(cfg, ctx?.source_id, ctx?.trigger)
   }
   // Lead From CTWA (migration 051): a new contact from an ad, or, with
-  // lead_mode 'new_ad', also a known contact's first chat from this ad.
+  // the legacy lead_mode 'new_ad', also a known contact's first chat
+  // from this ad.
   if (automation.trigger_type === 'ctwa_lead') {
-    const cfg = automation.trigger_config as CtwaTriggerConfig & { lead_mode?: string }
-    const ids = (cfg?.source_ids ?? []).filter(Boolean)
-    if (ids.length > 0 && !(ctx?.source_id && ids.includes(ctx.source_id))) return false
+    const cfg = automation.trigger_config as CtwaTriggerConfig
+    if (!ctwaAdMatches(cfg, ctx?.source_id, ctx?.trigger)) return false
     const lead = ctx?.trigger as { new_contact?: boolean; new_ad?: boolean } | undefined
     return cfg?.lead_mode === 'new_ad' ? Boolean(lead?.new_contact || lead?.new_ad) : Boolean(lead?.new_contact)
   }

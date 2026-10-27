@@ -232,7 +232,12 @@
       "send": "Send",
       "quickReplyNamePrompt": "Name this quick reply:",
       "quickReplySaved": "Saved as a quick reply.",
-      "quickReplySaveError": "Couldn't save the quick reply."
+      "quickReplySaveError": "Couldn't save the quick reply.",
+      "closedWindowTitle": "Send a message",
+      "closedWindowSuffix": "to customer in closed window",
+      "closedWindowOr": "or",
+      "sendATemplate": "Send a template",
+      "closedWindowSent": "Sent as template {name}"
     },
     "bubble": {
       "photo": "Photo",
@@ -252,7 +257,8 @@
       "downloadFailed": "Couldn't download the attachment",
       "viewImage": "View image",
       "expandVideo": "Expand video",
-      "imageAlt": "Shared image"
+      "imageAlt": "Shared image",
+      "marketingLimitHint": "Meta caps how many marketing templates one person receives. Try again in a day or two, or send a Utility template."
     },
     "mediaViewer": {
       "counter": "{index} of {total}",
@@ -1234,7 +1240,24 @@
         "fileUploaded": "File uploaded.",
         "uploadFailed": "Upload failed.",
         "fileTooLarge": "File is {size} MB — limit is 16 MB.",
-        "defaultOptionTitle": "Option"
+        "defaultOptionTitle": "Option",
+        "operators": {
+          "present": "is set",
+          "absent": "is empty",
+          "equals": "equals",
+          "not_equals": "does not equal",
+          "equals_ignore_case": "equals (ignore case)",
+          "contains": "contains",
+          "not_contains": "does not contain",
+          "starts_with": "starts with",
+          "ends_with": "ends with",
+          "gt": "is greater than (>)",
+          "gte": "is at least (>=)",
+          "lt": "is less than (<)",
+          "lte": "is at most (<=)",
+          "regex": "matches regex"
+        },
+        "numberExpected": "Enter a number (or a variable)."
       },
       "categories": {
         "actions": "Actions",
@@ -1963,7 +1986,7 @@
       "description": "Connect outside apps that your flows can use.",
       "sheetsDesc": "Start flows when a row is added to a sheet, and add rows from flows (leads, orders, form answers).",
       "loading": "Loading…",
-      "needsMigration": "Google Sheets needs database migration 051.",
+      "needsMigration": "Google Sheets needs database migrations 051 and 053.",
       "notConfigured": "Google sign-in is not set up on the server yet (GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET). See docs/GOOGLE_SHEETS_SETUP.md.",
       "connectedAs": "Connected as {email}",
       "reconnect": "Reconnect Google",
@@ -1973,16 +1996,21 @@
       "disconnectFailed": "Could not disconnect Google.",
       "adminOnly": "Only an admin can connect Google.",
       "connect": "Connect Google account",
-      "connectHint": "Flows can open any sheet this Google account can edit. Share your sheets with it as Editor.",
+      "connectHint": "Flows can open any sheet the chosen Google account can edit. You can connect several Google accounts and pick one in each flow.",
       "results": {
         "connected": "Google Sheets connected.",
         "denied": "Google sign-in was cancelled.",
         "error": "Could not connect Google. Try again.",
-        "forbidden": "Only an admin can connect Google.",
+        "forbidden": "You do not have permission to connect Google.",
         "invalid_state": "The sign-in link expired. Try again.",
         "missing_scope": "Allow access to Google Sheets on the Google screen, then try again.",
         "not_configured": "Google sign-in is not set up on the server yet."
-      }
+      },
+      "accountsTitle": "Connected Google accounts",
+      "connectAnother": "Connect another Google account",
+      "connectedOn": "Connected {date}",
+      "disconnectAccountConfirm": "Disconnect {email}? Flows that use this Google account stop reading and adding rows until you pick another account in them.",
+      "noPermission": "You do not have permission to connect Google."
     }
   },
   "SignupPage": {
@@ -2851,7 +2879,7 @@
         "sla_breached": "Starts when a reply misses the inbox SLA (Settings → Inbox).",
         "incoming_webhook": "Starts when another system (Google Sheets script, website form, Zapier) calls this flow's URL.",
         "time_based": "Scheduled triggers don't run yet.",
-        "ctwa_lead": "Starts when a new lead messages you from a Click-to-WhatsApp ad: a contact created by that message, or (optional) a known contact's first chat from that ad.",
+        "ctwa_lead": "Starts when a new lead messages you from a Click-to-WhatsApp ad. Follow every ad, or one campaign or ad set from a connected Facebook account.",
         "google_sheet_new_row": "Starts once for every new row added to a Google Sheet tab. The row's phone column identifies the customer (a new contact is created if needed)."
       },
       "sections": {
@@ -2974,7 +3002,14 @@
         "missing": "(deleted)",
         "removeChip": "Remove",
         "search": "Search",
-        "none": "No tags yet. Create them in Contacts."
+        "none": "No tags yet. Create them in Contacts.",
+        "createList": "Create new broadcast list",
+        "createTag": "Create new tag",
+        "newListName": "New list name",
+        "newTagName": "New tag name",
+        "create": "Create",
+        "exists": "That name already exists.",
+        "createFailed": "Could not create it."
       },
       "template": {
         "select": "Select template",
@@ -3047,16 +3082,16 @@
       },
       "sheets": {
         "checking": "Checking Google connection…",
-        "needsMigration": "Google Sheets needs database migration 051.",
+        "needsMigration": "Google Sheets needs database migrations 051 and 053.",
         "notConnected": "Google Sheets is not connected yet. An admin can connect a Google account in Settings → Integrations.",
         "reconnectNeeded": "Google access expired or was removed. An admin needs to reconnect Google in Settings → Integrations.",
         "openIntegrations": "Open Integrations",
         "connectedAs": "Using {email}",
-        "spreadsheet": "Spreadsheet link",
+        "spreadsheet": "Spreadsheet",
         "load": "Load",
-        "tab": "Sheet (tab)",
+        "tab": "Sheet",
         "pickTab": "Pick a tab",
-        "refresh": "Reload columns",
+        "refresh": "Refresh the list and columns",
         "noHeaders": "This tab has no header row. Put column names in row 1.",
         "addRowHelp": "Adds one row at the bottom of the tab. Each value goes under its column name (row 1).",
         "values": "Values",
@@ -3073,20 +3108,109 @@
         "rowVariables": "Use row values in later steps:",
         "pollHint": "Checked every 5 minutes. Only rows added after the flow is turned on start it. New contacts can only receive approved templates first (WhatsApp 24-hour rule).",
         "lastChecked": "Last checked",
-        "rowsStarted": "Rows started"
+        "rowsStarted": "Rows started",
+        "viewSheet": "View sheet",
+        "viewExample": "View example",
+        "firstRowHeader": "Use first row as header",
+        "duplicateHeaders": "Duplicate column names: {headers}. Rename them so each column has one name.",
+        "blankHeaders": "Columns without a name: {columns}.",
+        "exampleTitle": "Example rows from \"{tab}\"",
+        "exampleDesc": "The first rows of the tab, read-only. Nothing is imported or sent.",
+        "waUserIdColumn": "WhatsApp user ID column (optional)",
+        "waUserIdHint": "Used when a row has no usable phone: matches a contact who already messaged you with that WhatsApp user ID (BSUID).",
+        "skippedRows": "Rows not started",
+        "rowProblem": "Row {row}: {reason}",
+        "triggerIntro": "Trigger flow when new row is added to google sheet",
+        "selectAccount": "Select Account",
+        "orAddAccount": "Or add another Google account:",
+        "signInWithGoogle": "Sign in with Google",
+        "userDataPolicy": "Google API Services User Data Policy",
+        "signInFailed": "Google sign-in did not finish. Try again.",
+        "popupBlocked": "Your browser blocked the Google window. Allow pop-ups for this site and try again.",
+        "notConfigured": "Google sign-in is not set up on the server yet (GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET).",
+        "needsReconnect": "Reconnect needed",
+        "connected": "Connected",
+        "change": "Change",
+        "cancel": "Cancel",
+        "selectSpreadsheet": "Select a spreadsheet",
+        "selectSheet": "Select a sheet",
+        "search": "Search",
+        "noResults": "Nothing found",
+        "modified": "Modified {when}",
+        "refreshShort": "Refresh",
+        "pasteLink": "Or paste the spreadsheet link",
+        "loadingColumns": "Loading columns…",
+        "phoneField": "Select phone number field",
+        "phoneFieldHelp": "The phone number field will help us map this flow to a customer. Please ensure that the phone number contains the country code",
+        "phonePlaceholder": "Select phone column",
+        "usernameField": "Select username (BSUID) field",
+        "usernameFieldHelp": "Used only when no phone number is found. For customers who message from a WhatsApp username, e.g. IN.1429526195123904",
+        "usernamePlaceholder": "Select username column",
+        "customerIdField": "Select customer ID field",
+        "customerIdFieldHelp": "Used only when no phone number or username is found. The Bluetick customer ID (contact ID).",
+        "customerIdPlaceholder": "Select customer ID column",
+        "noAccountsYet": "No Google account added yet — sign in below"
       },
       "ctwaLead": {
-        "mode": "Count as a lead",
-        "modes": {
-          "new_contact": "New contacts only",
-          "new_ad": "New contacts, and known contacts coming from a new ad"
-        },
         "adIds": "Ad / post IDs (optional)",
         "anyAd": "Any ad",
         "adIdsHint": "Comma-separated. Leave empty to react to every Click-to-WhatsApp ad.",
-        "variables": "Ad details for later steps:"
+        "variables": "Ad details for later steps:",
+        "account": "Select Account",
+        "selectAccount": "Select a Facebook account",
+        "connectNew": "+ Connect new Facebook account",
+        "connectedTo": "Connected to {name}",
+        "change": "Change",
+        "keep": "Keep {name}",
+        "loadingAccounts": "Loading Facebook accounts…",
+        "accountsFailed": "Could not load Facebook accounts.",
+        "accountMissing": "The Facebook account picked earlier was disconnected. Choose another one.",
+        "needsReconnect": "reconnect needed",
+        "reconnectHint": "Facebook no longer accepts this login. Connect the account again to keep campaign tracking working.",
+        "needsMigration": "Facebook accounts are not set up yet (database migration 054).",
+        "notConfigured": "Facebook login is not configured on this server (META_APP_ID).",
+        "waitingForFacebook": "Waiting for Facebook login…",
+        "cancel": "Cancel",
+        "connectResult": {
+          "blocked": "The browser blocked the Facebook login window. Allow pop-ups for this site and try again.",
+          "not_configured": "Facebook login is not configured on this server (META_APP_ID).",
+          "missing_scope": "Facebook did not grant access to ads (ads_read). Connect again and allow it.",
+          "denied": "Facebook login was cancelled.",
+          "forbidden": "You do not have permission to connect accounts.",
+          "error": "Could not connect the Facebook account. Try again."
+        },
+        "trackFrom": "Track leads from",
+        "track": {
+          "all": "All",
+          "campaign": "Campaign",
+          "adset": "Ad Set"
+        },
+        "selectCampaign": "Select Campaign",
+        "selectAdSet": "Select Ad Set",
+        "selectValue": "Select Value",
+        "searchCampaigns": "Search campaigns",
+        "searchAdSets": "Search ad sets",
+        "loadingCampaigns": "Loading from Facebook…",
+        "campaignsFailed": "Could not load from Facebook.",
+        "noCampaigns": "No campaigns found for this Facebook account.",
+        "noAdSets": "No ad sets found for this Facebook account.",
+        "legacyAds": "This trigger also only reacts to {count, plural, one {# ad ID} other {# ad IDs}} chosen earlier.",
+        "legacyClear": "Remove that filter"
       },
-      "duplicateFlow": "Duplicate flow"
+      "duplicateFlow": "Duplicate flow",
+      "ads": {
+        "anyAd": "Any ad (leave empty)",
+        "remove": "Remove ad",
+        "search": "Search ads or paste an ad ID",
+        "loading": "Loading ads…",
+        "addId": "Use ad ID {id}",
+        "chats": "{count} chats",
+        "loadFailed": "Could not load ads. You can still paste an ad ID.",
+        "none": "No ads yet. Ads appear after a customer messages you from one, or when Meta Ads is connected.",
+        "metaHint": "Connect Meta Ads to see ad and campaign names.",
+        "metaError": "Meta Ads could not be reached, so only ads that sent chats are listed.",
+        "openAds": "Meta Ads"
+      }
     }
   },
   "Campaigns": {
@@ -3537,6 +3661,32 @@
       "saved": "Ad account saved",
       "saveFailed": "Couldn't save the ad account.",
       "disconnected": "Ad account disconnected"
+    }
+  },
+  "MetaConnections": {
+    "title": "Facebook accounts",
+    "description": "Connect the Facebook accounts that run your Click-to-WhatsApp ads. The \"Lead From CTWA\" trigger can then start only for leads from one campaign or ad set.",
+    "loading": "Loading…",
+    "needsMigration": "Run database migration 054 to connect Facebook accounts.",
+    "notConfigured": "Facebook login is not configured on this server. Set META_APP_ID (and the app secret) and add the callback URL to the Meta app.",
+    "connect": "Connect Facebook account",
+    "connectHint": "Read-only access to your campaigns and ads (ads_read). Bluetick never changes your ads.",
+    "connectedOn": "Connected {date}",
+    "reconnectNeeded": "Facebook no longer accepts this login. Connect it again.",
+    "disconnect": "Disconnect",
+    "disconnectConfirm": "Disconnect {name}? Flows that track a campaign only this account can see will stop matching leads.",
+    "disconnected": "Facebook account disconnected",
+    "disconnectFailed": "Could not disconnect the Facebook account",
+    "cancel": "Cancel",
+    "results": {
+      "connected": "Facebook account connected",
+      "denied": "Facebook login was cancelled",
+      "error": "Could not connect the Facebook account. Try again.",
+      "forbidden": "You do not have permission to connect accounts",
+      "invalid_state": "The Facebook login expired. Try again.",
+      "missing_scope": "Facebook did not grant access to ads (ads_read). Connect again and allow it.",
+      "not_configured": "Facebook login is not configured on this server (META_APP_ID)",
+      "blocked": "The browser blocked the Facebook login window. Allow pop-ups for this site."
     }
   }
 }

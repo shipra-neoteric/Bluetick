@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { a1, buildRow, headerKeys, isBlankRow, parseSpreadsheetId, rowToRecord } from './sheets';
-import { findColumn } from './sheet-trigger';
+import { a1, buildRow, columnLetter, headerKeys, headerProblems, isBlankRow, letterHeaders, parseSpreadsheetId, rowToRecord } from './sheets';
+import { findColumn, rowKey, tabKeyOf } from './sheet-trigger';
 
 describe('Google Sheets helpers', () => {
   it('reads the spreadsheet id from a link or a bare id', () => {
@@ -46,5 +46,24 @@ describe('Google Sheets helpers', () => {
   it('finds the phone column whatever its case or spacing', () => {
     expect(findColumn(['Name', ' Phone '], 'phone')).toBe(1);
     expect(findColumn(['Name'], 'Phone')).toBe(-1);
+  });
+
+  it('names columns by letter when the first row is data', () => {
+    expect([0, 25, 26, 701].map(columnLetter)).toEqual(['A', 'Z', 'AA', 'ZZ']);
+    expect(letterHeaders(3)).toEqual(['Column A', 'Column B', 'Column C']);
+  });
+
+  it('reports duplicate and blank headers instead of remapping', () => {
+    expect(headerProblems(['Name', 'Phone', 'phone ', '', 'City', ''])).toEqual({ duplicates: ['Phone'], blank: [3] });
+    expect(headerProblems(['Name', 'Phone'])).toEqual({ duplicates: [], blank: [] });
+  });
+
+  it('identifies a tab by its stable id and a row by position + content', () => {
+    expect(tabKeyOf({ sheet_name: 'Leads', sheet_id: 0 })).toBe('#0');
+    expect(tabKeyOf({ sheet_name: 'Leads' })).toBe('Leads');
+    const k = rowKey('s1', '#0', 5, ['Asha', 98765]);
+    expect(rowKey('s1', '#0', 5, ['Asha', '98765'])).toBe(k);
+    expect(rowKey('s1', '#0', 6, ['Asha', 98765])).not.toBe(k);
+    expect(rowKey('s1', '#0', 5, ['Asha B', 98765])).not.toBe(k);
   });
 });

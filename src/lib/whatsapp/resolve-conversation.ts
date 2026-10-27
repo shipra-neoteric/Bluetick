@@ -156,6 +156,28 @@ export async function resolveConversationByPhone(
 }
 
 /**
+ * The conversation for an existing contact of this account (created if
+ * the contact has none), with the same audit user as above. Used when a
+ * contact is identified by something other than a phone number.
+ */
+export async function findOrCreateConversationForContact(
+  db: SupabaseClient,
+  accountId: string,
+  contactId: string
+): Promise<string> {
+  let ownerUserId: string;
+  try {
+    ownerUserId = await resolveAuditUserId(db, accountId);
+  } catch (err) {
+    if (err instanceof ContactError) {
+      throw new SendMessageError('db_error', err.message, err.status);
+    }
+    throw err;
+  }
+  return findOrCreateConversationRow(db, accountId, contactId, ownerUserId);
+}
+
+/**
  * Find (oldest-first) or create the single conversation for
  * `(accountId, contactId)`. Handles the unique-index race the same way
  * the inbound webhook does: on a 23505 from a concurrent create,

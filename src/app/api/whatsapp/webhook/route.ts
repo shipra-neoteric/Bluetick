@@ -20,6 +20,7 @@ import { dispatchInboundToFlows } from '@/lib/flows/engine'
 import { dispatchInboundToAiReply } from '@/lib/ai/auto-reply'
 import { dispatchWebhookEvent } from '@/lib/webhooks/deliver'
 import { recordFirstDailyMessage } from '@/lib/bot/events'
+import { resolveAd } from '@/lib/meta/ad-lookup'
 import {
   attributeBroadcastReply,
   captureReferral,
@@ -1041,6 +1042,18 @@ async function processMessage(
       }).catch((err) => console.error('[automations] first_daily dispatch failed:', err))
     }
     if (message.referral && (message.referral.source_id || message.referral.source_url)) {
+      // Migration 054: the ad's campaign / ad set (cached; read with a
+      // connected Facebook account). Never throws; null when unknown.
+      const ad = message.referral.source_type !== 'post'
+        ? await resolveAd(supabaseAdmin(), accountId, message.referral.source_id)
+        : null
+      const adFields = {
+        ad_name: ad?.ad_name ?? null,
+        adset_id: ad?.adset_id ?? null,
+        adset_name: ad?.adset_name ?? null,
+        campaign_id: ad?.campaign_id ?? null,
+        campaign_name: ad?.campaign_name ?? null,
+      }
       await runAutomationsForTrigger({
         accountId,
         triggerType: 'ctwa_message',
@@ -1049,6 +1062,7 @@ async function processMessage(
           ...botContext,
           source_id: message.referral.source_id,
           trigger: {
+            ...adFields,
             source_id: message.referral.source_id ?? null,
             source_type: message.referral.source_type ?? null,
             source_url: message.referral.source_url ?? null,
@@ -1080,6 +1094,7 @@ async function processMessage(
             ...botContext,
             source_id: message.referral.source_id,
             trigger: {
+              ...adFields,
               new_contact: newContact,
               new_ad: newAd,
               source_id: message.referral.source_id ?? null,

@@ -619,7 +619,9 @@ async function evaluateConditionNode(
   return evaluateConditionPredicate({
     operator: cfg.operator,
     subjectValue,
-    configValue: cfg.value,
+    // Variables in the comparison value are filled in; a regex pattern
+    // stays literal so customer text can never change the pattern.
+    configValue: cfg.operator === "regex" || !cfg.value ? cfg.value : interpolateVars(cfg.value, run.vars ?? {}),
   });
 }
 
@@ -1214,6 +1216,12 @@ export async function resumeDueFlowRuns(limit = 50): Promise<number> {
         .eq("current_node_key", run.current_node_key ?? "")
         .select("id");
       if (!cleared?.length) continue;
+      // Switched off (or archived/deleted) while waiting: don't send.
+      if (!(await flowIsLive(db, run.flow_id))) {
+        await logEvent(db, run.id, "completed", run.current_node_key, { reason: "flow_turned_off" });
+        await endRun(db, run.id, "completed", "flow_turned_off");
+        continue;
+      }
       if (!node || !isDelayNode(node.node_type)) {
         await logEvent(db, run.id, "error", run.current_node_key, { reason: "delay_node_missing" });
         await endRun(db, run.id, "failed", "delay_node_missing");
@@ -1244,6 +1252,14 @@ const LOOP_GUARDED = new Set(["conversation_assigned", "conversation_opened", "c
  * start in the background; they take the conversation only when they
  * ask the customer something.
  */
+/** Is the flow still switched on? (Checked again before a run continues.) */
+async function flowIsLive(db: AdminClient, flowId: string): Promise<boolean> {
+  const { data, error } = await db.from("flows").select("status").eq("id", flowId).maybeSingle();
+  // On a read error keep the old behaviour (continue) rather than drop runs.
+  if (error) return true;
+  return (data as { status?: string } | null)?.status === "active";
+}
+
 /** Active flows (as published) whose trigger is `triggerType`. */
 export async function loadFlowsForTrigger(accountId: string, triggerType: string): Promise<FlowRow[]> {
   const runtime = await loadRuntimeFlows(supabaseAdmin(), accountId);
@@ -1541,23 +1557,26 @@ async function runBotStudioNode(
         const { getAccessToken } = await import("@/lib/google/connection");
         const sheets = await import("@/lib/google/sheets");
         try {
-          const token = await getAccessToken(db, run.account_id);
-          const headers = await sheets.getHeaders(token, cfg.spreadsheet_id, cfg.sheet_name);
-          if (!headers.some((h) => h.trim())) return failed(`tab "${cfg.sheet_name}" has no header row`);
+          // The step's own Google account (053); older steps use the oldest one.
+          const token = await getAccessToken(db, run.account_id, cfg.google_connection_id);
+          // Follow a renamed tab by its stable sheetId.
+          const tab = await sheets.resolveTabTitle(token, cfg.spreadsheet_id, cfg.sheet_name, cfg.sheet_id);
+          const headers = await sheets.getHeaders(token, cfg.spreadsheet_id, tab);
+          if (!headers.some((h) => h.trim())) return failed(`tab "${tab}" has no header row`);
           const { row, unknown } = sheets.buildRow(
             headers,
             (cfg.columns ?? []).map((c) => ({ column: c.column, value: fill(c.value) })),
           );
           if (unknown.length) return failed(`column${unknown.length > 1 ? "s" : ""} not in the header row: ${unknown.join(", ")}`);
           if (!row.length) return failed("every mapped value is empty");
-          const range = await sheets.appendRow(token, cfg.spreadsheet_id, cfg.sheet_name, row);
+          const range = await sheets.appendRow(token, cfg.spreadsheet_id, tab, row);
           const rowNumber = Number(range?.match(/(\d+)(?::[A-Z]+\d+)?$/)?.[1]) || null;
           if (rowNumber) {
             const vars = { ...run.vars, sheet_row: rowNumber };
             await db.from("flow_runs").update({ vars }).eq("id", run.id);
             run.vars = vars;
           }
-          return { kind: "next", next: cfg.next_node_key ?? "", log: { sheet: cfg.sheet_name, range } };
+          return { kind: "next", next: cfg.next_node_key ?? "", log: { sheet: tab, range } };
         } catch (err) {
           return failed(err instanceof Error ? err.message : String(err));
         }
@@ -1614,11 +1633,18 @@ export async function dispatchInboundToFlows(
 ): Promise<DispatchInboundResult> {
   const db = supabaseAdmin();
   try {
-    const activeRun = await loadActiveRunForContact(
+    let activeRun = await loadActiveRunForContact(
       db,
       input.accountId,
       input.contactId,
     );
+    // A run whose flow was switched off since it asked its question is
+    // over: end it so this message is handled like any other.
+    if (activeRun && !(await flowIsLive(db, activeRun.flow_id))) {
+      await logEvent(db, activeRun.id, "completed", activeRun.current_node_key, { reason: "flow_turned_off" });
+      await endRun(db, activeRun.id, "completed", "flow_turned_off");
+      activeRun = null;
+    }
 
     // Idempotency — only matters if there's already a run for this
     // contact. For new runs, the partial unique index catches duplicate

@@ -114,7 +114,7 @@ export const TRIGGER_SECTIONS: CatalogSection[] = [
   {
     id: "leads",
     items: [
-      trig("ctwa_lead", "ctwa_lead", MousePointerClick, GREEN, { source_ids: [], lead_mode: "new_contact" }),
+      trig("ctwa_lead", "ctwa_lead", MousePointerClick, GREEN, { track: "all" }),
       trig("conversation_assigned", "conversation_assigned", UserPlus, GREEN),
       trig("contact_field_changed", "contact_field_changed", PencilLine, GREEN),
       trig("new_contact_created", "new_contact_created", UserRound, GREEN),

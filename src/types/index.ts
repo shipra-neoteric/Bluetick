@@ -656,8 +656,19 @@ export interface ContactFieldChangedTriggerConfig {
 }
 
 export interface CtwaTriggerConfig {
-  /** Only these ad / post ids; empty = any ad. */
+  /** Only these ad / post ids; empty = any ad. Legacy for ctwa_lead
+   *  (migration 054 picks a campaign / ad set instead), still honoured. */
   source_ids?: string[];
+  /** Migration 054: the connected Facebook account the campaign was picked from. */
+  meta_connection_id?: string;
+  /** 'all' (default) | 'campaign' | 'adset'. */
+  track?: 'all' | 'campaign' | 'adset';
+  campaign_id?: string;
+  campaign_name?: string;
+  adset_id?: string;
+  adset_name?: string;
+  /** ctwa_lead: 'new_contact' (default) | 'new_ad' (legacy option). */
+  lead_mode?: 'new_contact' | 'new_ad';
 }
 
 export interface TemplateDeliveredTriggerConfig {

@@ -14,6 +14,7 @@ import { selectContactForSend } from '@/lib/contacts/send-contact'
 import {
   resolveTemplateRow,
   templateContentText,
+  templateHeaderMediaUrl,
 } from '@/lib/whatsapp/template-body'
 import { supabaseAdmin } from './admin-client'
 
@@ -280,6 +281,10 @@ async function sendViaMeta(input: SendInput): Promise<{ whatsapp_message_id: str
     sender_type: 'bot',
     content_type,
     content_text,
+    media_url:
+      input.kind === 'template'
+        ? templateHeaderMediaUrl(templateRow, { headerMediaUrl: input.headerMediaUrl })
+        : null,
     template_name,
     message_id: waMessageId,
     status: 'sent',

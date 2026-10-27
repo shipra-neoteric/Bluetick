@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { addContactTag, deleteContactTag } from '@/lib/contacts/tag-api';
 import { useAuth } from '@/hooks/use-auth';
@@ -66,6 +67,7 @@ export function ContactDetailView({
   onUpdated,
 }: ContactDetailViewProps) {
   const t = useTranslations('Contacts.detailView');
+  const router = useRouter();
   const supabase = createClient();
   const { accountId, defaultCurrency } = useAuth();
 
@@ -386,6 +388,11 @@ export function ContactDetailView({
       }
 
       toast.success(t('toastTemplateSent', { name: template.name }));
+      // Open the chat the template landed in.
+      if (typeof payload?.conversation_id === 'string') {
+        onOpenChange(false);
+        router.push(`/inbox?c=${encodeURIComponent(payload.conversation_id)}`);
+      }
     } catch (err) {
       const reason = err instanceof Error ? err.message : 'network error';
       toast.error(`Failed to send template: ${reason}`);

@@ -151,6 +151,27 @@ export async function resolveTemplateRow(
 }
 
 /**
+ * The image / video / document header link the customer received, to
+ * persist as `messages.media_url` so the Inbox bubble can show it. The
+ * same precedence as the send-builder: a per-send `headerMediaUrl`
+ * override, then the template's stored public URL. Null for text or
+ * no header, and when the header was sent by media id (no public link).
+ */
+export function templateHeaderMediaUrl(
+  row: MessageTemplate | null,
+  templateMessageParams?: unknown
+): string | null {
+  const type = row?.header_type;
+  if (type !== 'image' && type !== 'video' && type !== 'document') return null;
+  const override =
+    templateMessageParams && typeof templateMessageParams === 'object'
+      ? (templateMessageParams as { headerMediaUrl?: unknown }).headerMediaUrl
+      : undefined;
+  if (typeof override === 'string' && override.trim()) return override.trim();
+  return row?.header_media_url || null;
+}
+
+/**
  * The text to persist as `messages.content_text` for a template send.
  *
  * `callerText` wins when supplied — the dashboard composer renders the

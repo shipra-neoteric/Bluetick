@@ -12,7 +12,8 @@ import { useTranslations } from "next-intl";
 import { AutomationTriggerFields } from "@/components/automations/automation-builder";
 import type { AutomationTriggerType } from "@/types";
 import { useFlowEditor } from "../flow-editor-state";
-import { CtwaLeadTriggerBody, SheetTriggerBody } from "./sheets-body";
+import { SheetTriggerBody } from "./sheets-body";
+import { CtwaLeadTriggerBody, CtwaMessageTriggerBody } from "./ctwa-body";
 
 const MAX_KEYWORD = 200;
 
@@ -88,11 +89,16 @@ export function TriggerBody() {
       <SheetTriggerBody flowId={flow.id} cfg={cfg} set={set} />
     ) : state.trigger_type === "ctwa_lead" ? (
       <CtwaLeadTriggerBody cfg={cfg} set={set} />
+    ) : state.trigger_type === "ctwa_message" ? (
+      <CtwaMessageTriggerBody cfg={cfg} set={set} />
     ) : null;
 
   return (
     <div className="flex flex-col gap-2 text-[12.5px]">
-      <p className="text-muted-foreground leading-snug">{t(`triggerHelp.${state.trigger_type}`)}</p>
+      {/* The Google Sheet card has its own one-line intro. */}
+      {state.trigger_type !== "google_sheet_new_row" && (
+        <p className="text-muted-foreground leading-snug">{t(`triggerHelp.${state.trigger_type}`)}</p>
+      )}
       {own}
       {!own && state.trigger_type !== "manual" && state.trigger_type !== "first_inbound_message" && (
         <AutomationTriggerFields

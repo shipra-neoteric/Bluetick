@@ -18,6 +18,8 @@ import { useMemo, useState } from "react";
 import { CalendarDays, Plus, Search, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
+import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { useAutomationResources } from "@/components/automations/automation-builder";
 import type { ExtraVariable } from "@/components/bot/variable-picker";
@@ -158,13 +160,36 @@ export function WaitTillBody({ node, vars, onUpdate }: { node: BuilderNode; vars
 
 export function TagsBody({ node, onUpdate }: { node: BuilderNode; onUpdate: (p: Record<string, unknown>) => void }) {
   const t = useTranslations("BotStudio.builder");
-  const { tags } = useAutomationResources();
+  const { tags, reloadTags } = useAutomationResources();
+  const { user, accountId } = useAuth();
+  const [newName, setNewName] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
   const c = node.config as { mode?: string; tag_id?: string; tag_ids?: string[]; variant?: string };
   const lists = c.variant === "broadcast_list";
   const selected = c.tag_ids?.length ? c.tag_ids : c.tag_id ? [c.tag_id] : [];
   const [q, setQ] = useState("");
   const options = tags.filter((x) => !selected.includes(x.id) && x.name.toLowerCase().includes(q.toLowerCase()));
   const set = (ids: string[]) => onUpdate({ tag_ids: ids, tag_id: ids[0] ?? "" });
+  // Creates a row in the same tags table the Broadcast lists screen uses
+  // (lists are tags), then selects it. Creating it sends nothing.
+  const create = async () => {
+    const name = (newName ?? "").trim();
+    if (!name || !user || !accountId) return;
+    setCreating(true);
+    const { data, error } = await createClient()
+      .from("tags")
+      .insert({ name, user_id: user.id, account_id: accountId, color: "#25D366" })
+      .select("id")
+      .single();
+    setCreating(false);
+    if (error) {
+      toast.error(error.code === "23505" ? t("tags.exists") : t("tags.createFailed"));
+      return;
+    }
+    await reloadTags();
+    set([...selected, (data as { id: string }).id]);
+    setNewName(null);
+  };
   return (
     <div className="flex flex-col gap-2">
       {!lists && (
@@ -202,6 +227,39 @@ export function TagsBody({ node, onUpdate }: { node: BuilderNode; onUpdate: (p: 
           ))}
         </div>
       </div>
+      {newName === null ? (
+        <button
+          type="button"
+          onClick={() => setNewName(q.trim())}
+          className="inline-flex items-center gap-1 self-start text-[12px] font-medium text-emerald-700 dark:text-emerald-400"
+        >
+          <Plus className="h-3.5 w-3.5" /> {t(lists ? "tags.createList" : "tags.createTag")}
+        </button>
+      ) : (
+        <div className="flex gap-1">
+          <input
+            autoFocus
+            value={newName}
+            maxLength={60}
+            onChange={(e) => setNewName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") void create();
+              if (e.key === "Escape") setNewName(null);
+            }}
+            placeholder={t(lists ? "tags.newListName" : "tags.newTagName")}
+            aria-label={t(lists ? "tags.newListName" : "tags.newTagName")}
+            className={FIELD}
+          />
+          <button
+            type="button"
+            disabled={creating || !newName.trim()}
+            onClick={() => void create()}
+            className="shrink-0 rounded-md bg-emerald-600 px-2 text-[12px] font-medium text-white disabled:opacity-50"
+          >
+            {t("tags.create")}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

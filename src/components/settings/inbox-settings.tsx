@@ -9,6 +9,9 @@ import { useAuth } from '@/hooks/use-auth';
 import { useCan } from '@/hooks/use-can';
 import { Button } from '@/components/ui/button';
 import { SettingsPanelHead } from '@/components/settings/settings-panel-head';
+import { isMissingSchemaError } from '@/lib/db/schema-compat';
+import { isClosedWindowTemplate } from '@/lib/inbox/closed-window';
+import type { MessageTemplate } from '@/types';
 import {
   DEFAULT_INBOX_SETTINGS,
   loadInboxSettings,
@@ -30,6 +33,8 @@ export function InboxSettingsPanel() {
   const [s, setS] = useState<InboxSettings>(DEFAULT_INBOX_SETTINGS);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  // Approved templates with a single {{1}} — candidates for closed-window messages.
+  const [cwTemplates, setCwTemplates] = useState<MessageTemplate[]>([]);
 
   useEffect(() => {
     if (!accountId) return;
@@ -37,22 +42,36 @@ export function InboxSettingsPanel() {
       setS(v);
       setLoading(false);
     });
+    supabase
+      .from('message_templates')
+      .select('*')
+      .eq('status', 'APPROVED')
+      .order('name')
+      .then(({ data }) => setCwTemplates(((data as MessageTemplate[] | null) ?? []).filter(isClosedWindowTemplate)));
   }, [supabase, accountId]);
 
   async function save() {
     if (!accountId) return;
     setSaving(true);
-    const { error } = await supabase.from('inbox_settings').upsert(
-      {
-        account_id: accountId,
-        ...s,
-        updated_at: new Date().toISOString(),
-        updated_by: user?.id ?? null,
-      },
-      { onConflict: 'account_id' },
-    );
+    const row = {
+      account_id: accountId,
+      ...s,
+      updated_at: new Date().toISOString(),
+      updated_by: user?.id ?? null,
+    };
+    let { error } = await supabase.from('inbox_settings').upsert(row, { onConflict: 'account_id' });
+    let missing055 = false;
+    if (error && isMissingSchemaError(error)) {
+      // Migration 055 not applied: save everything else.
+      const rest: Partial<typeof row> = { ...row };
+      delete rest.closed_window_template;
+      delete rest.closed_window_template_language;
+      ({ error } = await supabase.from('inbox_settings').upsert(rest, { onConflict: 'account_id' }));
+      missing055 = !error && !!s.closed_window_template;
+    }
     setSaving(false);
     if (error) toast.error(`Could not save: ${error.message}`);
+    else if (missing055) toast.warning('Saved, except the closed-window template — apply database migration 055 first.');
     else toast.success('Inbox settings saved');
   }
 
@@ -159,6 +178,49 @@ export function InboxSettingsPanel() {
                 onChange={(e) => setS({ ...s, tag_selection_limit: num(e.target.value, 1, 500) })}
               />
             </label>
+          </div>
+
+          <div className="space-y-2 border-t border-border pt-5">
+            <span className="block text-sm font-medium text-foreground">Message customers in a closed window</span>
+            <span className="block text-xs text-muted-foreground">
+              After 24 hours without a customer message, WhatsApp only allows templates. Pick an approved template
+              whose body has a single {'{{1}}'} (e.g. &ldquo;Hello, {'{{1}}'} Your chat support request is
+              registered.&rdquo;) and agents can type the {'{{1}}'} part in the chat box — it is sent as that template.
+            </span>
+            <select
+              className="block h-9 w-full max-w-md rounded-md border border-border bg-muted px-2 text-sm text-foreground outline-none focus:border-primary disabled:opacity-60"
+              disabled={!canEdit}
+              value={s.closed_window_template ? `${s.closed_window_template}|${s.closed_window_template_language ?? ''}` : ''}
+              onChange={(e) => {
+                const [name, language] = e.target.value.split('|');
+                setS({
+                  ...s,
+                  closed_window_template: name || null,
+                  closed_window_template_language: name ? language || null : null,
+                });
+              }}
+            >
+              <option value="">Off — agents pick a template</option>
+              {s.closed_window_template &&
+                !cwTemplates.some(
+                  (x) => x.name === s.closed_window_template && (x.language ?? '') === (s.closed_window_template_language ?? ''),
+                ) && (
+                  <option value={`${s.closed_window_template}|${s.closed_window_template_language ?? ''}`}>
+                    {s.closed_window_template} (no longer usable)
+                  </option>
+                )}
+              {cwTemplates.map((x) => (
+                <option key={x.id} value={`${x.name}|${x.language ?? ''}`}>
+                  {x.name}
+                  {x.language ? ` · ${x.language}` : ''} — {x.body_text.slice(0, 60)}
+                </option>
+              ))}
+            </select>
+            {cwTemplates.length === 0 && (
+              <span className="block text-xs text-amber-600">
+                No approved template has a single {'{{1}}'} yet. Create a Utility template like the example above.
+              </span>
+            )}
           </div>
 
           {canEdit ? (
