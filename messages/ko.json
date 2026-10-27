@@ -3021,7 +3021,9 @@
         "sync": "Meta에서 템플릿 동기화",
         "syncing": "동기화 중…",
         "synced": "템플릿이 동기화되었습니다.",
-        "syncFailed": "템플릿을 동기화하지 못했습니다: {reason}"
+        "syncFailed": "템플릿을 동기화하지 못했습니다: {reason}",
+        "headerDocument": "문서",
+        "headerMissing": "이 템플릿에 저장된 {type}이(가) 없습니다 — 아래에서 업로드하세요"
       },
       "api": {
         "needsMigration": "API 호출에는 데이터베이스 마이그레이션 049가 필요합니다.",

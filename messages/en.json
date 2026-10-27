@@ -3021,7 +3021,9 @@
         "sync": "Sync templates from Meta",
         "syncing": "Syncing…",
         "synced": "Templates synced.",
-        "syncFailed": "Could not sync templates: {reason}"
+        "syncFailed": "Could not sync templates: {reason}",
+        "headerDocument": "Document",
+        "headerMissing": "No {type} saved on this template — upload one below"
       },
       "api": {
         "needsMigration": "Call Api needs database migration 049.",

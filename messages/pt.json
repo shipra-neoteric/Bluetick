@@ -3021,7 +3021,9 @@
         "sync": "Sincronizar modelos da Meta",
         "syncing": "Sincronizando…",
         "synced": "Modelos sincronizados.",
-        "syncFailed": "Não foi possível sincronizar os modelos: {reason}"
+        "syncFailed": "Não foi possível sincronizar os modelos: {reason}",
+        "headerDocument": "Documento",
+        "headerMissing": "Nenhum {type} salvo neste modelo — envie um abaixo"
       },
       "api": {
         "needsMigration": "Chamar API requer a migração 049 do banco de dados.",

@@ -15,7 +15,7 @@
  */
 
 import { useMemo, useState } from "react";
-import { CalendarDays, Plus, Search, X } from "lucide-react";
+import { CalendarDays, FileText, Image as ImageIcon, Plus, Search, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
@@ -293,6 +293,11 @@ export function TemplateBody({ node, vars, onUpdate }: { node: BuilderNode; vars
   const varCount = new Set((current?.body_text ?? "").match(/\{\{\s*\d+\s*\}\}/g) ?? []).size;
   const params = c.params ?? [];
   const mediaHeader = current?.header_type && current.header_type !== "text";
+  // What the header shows: this step's own media, else the template's
+  // stored link, else Meta's sample (synced templates keep it as an
+  // https link in header_handle).
+  const sampleHandle = current?.header_handle?.startsWith("https://") ? current.header_handle : undefined;
+  const headerPreview = mediaHeader ? c.header_media_url || current?.header_media_url || sampleHandle : undefined;
   return (
     <div className="flex flex-col gap-2">
       <button type="button" onClick={() => setOpen((v) => !v)} className={cn(FIELD, "flex items-center justify-between text-left")}>
@@ -340,6 +345,23 @@ export function TemplateBody({ node, vars, onUpdate }: { node: BuilderNode; vars
       {current && (
         <div className="bg-muted/50 rounded-md p-2 text-[12px] whitespace-pre-wrap">
           {current.header_type === "text" && current.header_content ? <div className="mb-1 font-semibold">{current.header_content}</div> : null}
+          {mediaHeader &&
+            (headerPreview ? (
+              current.header_type === "image" ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={headerPreview} alt="" className="mb-1.5 max-h-48 w-full rounded object-cover" />
+              ) : current.header_type === "video" ? (
+                <video src={headerPreview} controls preload="metadata" className="mb-1.5 max-h-48 w-full rounded" />
+              ) : (
+                <a href={headerPreview} target="_blank" rel="noopener noreferrer" className="bg-card mb-1.5 flex items-center gap-1.5 rounded border px-2 py-1.5 text-[11.5px]">
+                  <FileText className="h-4 w-4 shrink-0" /> {t("template.headerDocument")}
+                </a>
+              )
+            ) : (
+              <div className="bg-card text-muted-foreground mb-1.5 flex h-20 items-center justify-center gap-1.5 rounded border border-dashed text-[11px]">
+                <ImageIcon className="h-4 w-4" /> {t("template.headerMissing", { type: current.header_type ?? "" })}
+              </div>
+            ))}
           {current.body_text}
           {current.footer_text ? <div className="text-muted-foreground mt-1 text-[11px]">{current.footer_text}</div> : null}
           {current.buttons?.length ? (
