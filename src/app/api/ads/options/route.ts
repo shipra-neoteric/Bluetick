@@ -5,7 +5,7 @@
 // Two read-only sources, merged by ad id:
 //   1. Click-to-WhatsApp referrals Bluetick already received (no Meta
 //      connection needed): ad id, headline, chats, last seen.
-//   2. When a Meta ad account is connected (Settings → Meta Ads): ad and
+//   2. When a Meta ad account is connected (Settings → Integrations): ad and
 //      campaign names from the last 90 days of insights.
 // A Meta failure never hides source 1; it is reported as `meta: 'error'`.
 // ============================================================

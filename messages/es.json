@@ -3211,7 +3211,7 @@
         "none": "Aún no hay anuncios. Aparecen cuando un cliente te escribe desde uno o al conectar Meta Ads.",
         "metaHint": "Conecta Meta Ads para ver nombres de anuncios y campañas.",
         "metaError": "No se pudo contactar con Meta Ads; solo se listan anuncios que enviaron chats.",
-        "openAds": "Meta Ads"
+        "openAds": "Configuración → Integraciones"
       }
     }
   },
@@ -3662,7 +3662,10 @@
       "save": "Guardar",
       "saved": "Cuenta publicitaria guardada",
       "saveFailed": "No se pudo guardar la cuenta publicitaria.",
-      "disconnected": "Cuenta publicitaria desconectada"
+      "disconnected": "Cuenta publicitaria desconectada",
+      "cardTitle": "Cuenta publicitaria de Meta",
+      "cardDesc": "Conecta tu cuenta publicitaria para que el Bot Builder muestre nombres de anuncios y campañas de los leads de Click-to-WhatsApp. Solo lectura: nada aquí cambia tus anuncios ni tu gasto.",
+      "cardNotConnected": "No hay ninguna cuenta publicitaria conectada."
     }
   },
   "MetaConnections": {

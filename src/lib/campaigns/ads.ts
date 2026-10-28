@@ -11,6 +11,14 @@
  * Nothing here creates, edits, pauses or funds ads.
  */
 
+/**
+ * The Meta Ads dashboard (/ads) is hidden from the app: no nav link, and
+ * the URL redirects to Settings → Integrations. The code, the ad account
+ * and CTWA lead capture all keep working. Flip to true to bring it back
+ * (and re-add the sidebar link).
+ */
+export const ADS_DASHBOARD_ENABLED: boolean = false;
+
 export const GRAPH_VERSION = 'v21.0';
 export const MESSAGING_ACTION = 'onsite_conversion.messaging_conversation_started_7d';
 const MAX_PAGES = 10;

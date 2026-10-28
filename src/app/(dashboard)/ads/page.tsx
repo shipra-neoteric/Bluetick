@@ -1,41 +1,34 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { redirect } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { ExternalLink, Loader2, RefreshCw, Search, Settings2, Target } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useCan } from '@/hooks/use-can';
 import { isMissingSchemaError } from '@/lib/db/schema-compat';
-import { summarizeReferrals, type AdInsight, type ReferralRow } from '@/lib/campaigns/ads';
+import { ADS_DASHBOARD_ENABLED, summarizeReferrals, type AdInsight, type ReferralRow } from '@/lib/campaigns/ads';
 import { formatDateTime } from '@/lib/campaigns/customers';
 import { Button } from '@/components/ui/button';
 import { GatedButton } from '@/components/ui/gated-button';
 import { Input } from '@/components/ui/input';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { AdAccountDialog, type AdAccountSettings as Settings } from '@/components/settings/ad-account-card';
 
 type Tab = 'leads' | 'fetched';
 const RANGES = [7, 30, 90] as const;
 
-interface Settings {
-  available: boolean;
-  connected?: boolean;
-  ad_account_id?: string;
-  currency?: string | null;
-  timezone_name?: string | null;
-  last_sync_at?: string | null;
-  last_error?: string | null;
-}
-
 function isoDay(d: Date): string {
   return d.toISOString().slice(0, 10);
+}
+
+/**
+ * Hidden while ADS_DASHBOARD_ENABLED is off: the URL sends you to
+ * Settings → Integrations, where the ad account is managed.
+ */
+export default function AdsPage() {
+  if (!ADS_DASHBOARD_ENABLED) redirect('/settings?tab=integrations');
+  return <AdsDashboard />;
 }
 
 /**
@@ -43,7 +36,7 @@ function isoDay(d: Date): string {
  * Click-to-WhatsApp ads, and read-only insights fetched from Meta.
  * Nothing here changes ads or spend.
  */
-export default function AdsPage() {
+function AdsDashboard() {
   const t = useTranslations('Campaigns.ads');
   const canAdmin = useCan('edit-settings');
   const [tab, setTab] = useState<Tab>('leads');
@@ -277,7 +270,7 @@ export default function AdsPage() {
       )}
 
       {settings?.available && (
-        <AdsSettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} settings={settings} onSaved={() => void loadSettings()} />
+        <AdAccountDialog open={settingsOpen} onOpenChange={setSettingsOpen} settings={settings} onSaved={() => void loadSettings()} />
       )}
     </div>
   );
@@ -289,91 +282,5 @@ function Notice({ children, icon }: { children: React.ReactNode; icon?: boolean 
       {icon && <Target className="h-8 w-8" />}
       <p className="max-w-lg">{children}</p>
     </div>
-  );
-}
-
-function AdsSettingsDialog({
-  open,
-  onOpenChange,
-  settings,
-  onSaved,
-}: {
-  open: boolean;
-  onOpenChange: (o: boolean) => void;
-  settings: Settings;
-  onSaved: () => void;
-}) {
-  const t = useTranslations('Campaigns.ads');
-  const [adAccountId, setAdAccountId] = useState(settings.ad_account_id ?? '');
-  const [token, setToken] = useState('');
-  const [currencyCode, setCurrencyCode] = useState(settings.currency ?? 'INR');
-  const [busy, setBusy] = useState(false);
-
-  async function save() {
-    setBusy(true);
-    try {
-      const res = await fetch('/api/ads/settings', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ad_account_id: adAccountId, access_token: token || undefined, currency: currencyCode }),
-      });
-      const body = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(body?.error || `HTTP ${res.status}`);
-      toast.success(t('saved'));
-      setToken('');
-      onSaved();
-      onOpenChange(false);
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : t('saveFailed'));
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function disconnect() {
-    setBusy(true);
-    const res = await fetch('/api/ads/settings', { method: 'DELETE' });
-    setBusy(false);
-    if (res.ok) {
-      toast.success(t('disconnected'));
-      onSaved();
-      onOpenChange(false);
-    } else toast.error(t('saveFailed'));
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="border-border bg-popover sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>{t('settingsTitle')}</DialogTitle>
-          <DialogDescription>{t('settingsDesc')}</DialogDescription>
-        </DialogHeader>
-        <div className="space-y-3">
-          <label className="block space-y-1 text-sm">
-            {t('adAccountId')}
-            <Input value={adAccountId} onChange={(e) => setAdAccountId(e.target.value)} placeholder="act_1234567890" />
-          </label>
-          <label className="block space-y-1 text-sm">
-            {t('token')}
-            <Input type="password" autoComplete="off" value={token} onChange={(e) => setToken(e.target.value)} placeholder={settings.connected ? t('tokenKeep') : ''} />
-            <span className="block text-xs text-muted-foreground">{t('tokenHint')}</span>
-          </label>
-          <label className="block space-y-1 text-sm">
-            {t('currency')}
-            <Input value={currencyCode} maxLength={3} onChange={(e) => setCurrencyCode(e.target.value.toUpperCase())} />
-          </label>
-          {settings.last_error && <p className="text-xs text-red-500">{t('lastError', { error: settings.last_error })}</p>}
-        </div>
-        <DialogFooter className="sm:justify-between">
-          {settings.connected ? (
-            <Button variant="outline" onClick={() => void disconnect()} disabled={busy}>{t('disconnect')}</Button>
-          ) : <span />}
-          <Button onClick={() => void save()} disabled={busy || !adAccountId.trim() || (!settings.connected && !token.trim())}>
-            {busy && <Loader2 className="h-4 w-4 animate-spin" />}
-            {t('save')}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
   );
 }

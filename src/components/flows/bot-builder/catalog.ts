@@ -99,7 +99,7 @@ export const TRIGGER_SECTIONS: CatalogSection[] = [
   {
     id: "message",
     items: [
-      trig("ctwa_message", "ctwa_message", MousePointerClick, BLUE),
+      trig("ctwa_message", "ctwa_message", MousePointerClick, BLUE, { track: "all" }),
       trig("conversation_closed", "conversation_closed", CheckCircle2, BLUE),
       trig("first_daily_message", "first_daily_message", MessageSquareDashed, BLUE),
       trig("keyword", "keyword", Mail, BLUE, { keywords: [], match_type: "contains" }),

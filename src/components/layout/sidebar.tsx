@@ -25,7 +25,6 @@ import {
   Radio,
   Settings,
   Shield,
-  Target,
   User,
   UserCog,
   Users,
@@ -119,7 +118,7 @@ const navEntries: NavEntry[] = [
       { href: "/templates", labelKey: "templates", icon: FileText },
       { href: "/broadcasts", labelKey: "broadcasts", icon: Radio },
       { href: "/broadcasts/scheduled", labelKey: "scheduledBroadcasts", icon: CalendarClock },
-      { href: "/ads", labelKey: "metaAds", icon: Target },
+      // Meta Ads (/ads) is hidden — see ADS_DASHBOARD_ENABLED.
     ],
   },
   {

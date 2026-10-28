@@ -21,6 +21,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { RequireRole } from '@/components/auth/require-role';
 import { SettingsPanelHead } from './settings-panel-head';
 import { MetaConnectionsCard } from './meta-connections-card';
+import { AdAccountCard } from './ad-account-card';
 
 interface GoogleAccount {
   id: string;
@@ -168,6 +169,7 @@ export function IntegrationsPanel() {
       </Card>
       {/* Facebook accounts for the "Lead From CTWA" trigger (migration 054). */}
       <MetaConnectionsCard />
+      <AdAccountCard />
     </div>
   );
 }

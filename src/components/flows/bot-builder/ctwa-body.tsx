@@ -2,7 +2,7 @@
 
 /**
  * Click-to-WhatsApp triggers in the Bot Builder:
- *   - CtwaMessageTriggerBody: "Message from CTWA" — which ads (empty = any);
+ *   - CtwaMessageTriggerBody: "Message from CTWA" — same settings as below;
  *   - CtwaLeadTriggerBody: "Lead From CTWA" — a connected Facebook
  *     account, then all ads / one campaign / one ad set (migration 054).
  *
@@ -17,7 +17,6 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { ChevronDown, Loader2, Plus, Search, TriangleAlert } from "lucide-react";
 import { Label } from "./message-bodies";
-import { AdPicker } from "./ad-picker";
 import { connectFacebookPopup, useMetaConnections } from "@/components/meta/use-meta-connections";
 
 const FIELD = "border-border w-full rounded-md border bg-transparent px-2 py-1.5 text-[13px] outline-none focus:border-emerald-600";
@@ -28,16 +27,12 @@ type Cfg = Record<string, unknown>;
 type SetCfg = (patch: Cfg) => void;
 const str = (v: unknown) => (typeof v === "string" ? v : "");
 
-/** "Message from CTWA": which ads (empty = any). */
+/**
+ * "Message from CTWA": the same account → all / campaign / ad set picker
+ * as "Lead From CTWA" (the engine matches both with ctwaAdMatches).
+ */
 export function CtwaMessageTriggerBody({ cfg, set }: { cfg: Cfg; set: SetCfg }) {
-  const t = useTranslations("BotStudio.builder.ctwaLead");
-  const ids = Array.isArray(cfg.source_ids) ? (cfg.source_ids as string[]) : [];
-  return (
-    <div>
-      <Label>{t("adIds")}</Label>
-      <AdPicker value={ids} onChange={(next) => set({ source_ids: next })} />
-    </div>
-  );
+  return <CtwaLeadTriggerBody cfg={cfg} set={set} />;
 }
 
 /** "Lead From CTWA" trigger settings. */

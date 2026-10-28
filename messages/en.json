@@ -3211,7 +3211,7 @@
         "none": "No ads yet. Ads appear after a customer messages you from one, or when Meta Ads is connected.",
         "metaHint": "Connect Meta Ads to see ad and campaign names.",
         "metaError": "Meta Ads could not be reached, so only ads that sent chats are listed.",
-        "openAds": "Meta Ads"
+        "openAds": "Settings → Integrations"
       }
     }
   },
@@ -3662,7 +3662,10 @@
       "save": "Save",
       "saved": "Ad account saved",
       "saveFailed": "Couldn't save the ad account.",
-      "disconnected": "Ad account disconnected"
+      "disconnected": "Ad account disconnected",
+      "cardTitle": "Meta ad account",
+      "cardDesc": "Connect your ad account so the Bot Builder can show ad and campaign names for Click-to-WhatsApp leads. Read-only: nothing here changes your ads or spend.",
+      "cardNotConnected": "No ad account connected."
     }
   },
   "MetaConnections": {

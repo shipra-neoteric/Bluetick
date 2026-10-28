@@ -5,7 +5,7 @@
 // Facebook users connected with Facebook Login (ads_read) so the
 // "Lead From CTWA" trigger can follow one campaign / ad set. Several per
 // workspace; each can be disconnected. Tokens stay on the server.
-// The Ad Performance page keeps its own pasted token (Settings → Meta Ads).
+// The Meta ad account (pasted token) has its own card: ad-account-card.tsx.
 // ============================================================
 
 import { useEffect, useState } from 'react';

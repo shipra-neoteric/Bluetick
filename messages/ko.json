@@ -3211,7 +3211,7 @@
         "none": "아직 광고가 없습니다. 고객이 광고로 메시지를 보내거나 Meta Ads를 연결하면 표시됩니다.",
         "metaHint": "광고와 캠페인 이름을 보려면 Meta Ads를 연결하세요.",
         "metaError": "Meta Ads에 연결할 수 없어 대화가 있었던 광고만 표시합니다.",
-        "openAds": "Meta Ads"
+        "openAds": "설정 → 통합"
       }
     }
   },
@@ -3662,7 +3662,10 @@
       "save": "저장",
       "saved": "광고 계정이 저장되었습니다",
       "saveFailed": "광고 계정을 저장하지 못했습니다.",
-      "disconnected": "광고 계정 연결이 해제되었습니다"
+      "disconnected": "광고 계정 연결이 해제되었습니다",
+      "cardTitle": "Meta 광고 계정",
+      "cardDesc": "Click-to-WhatsApp 리드의 광고 및 캠페인 이름을 Bot Builder에 표시하려면 광고 계정을 연결하세요. 읽기 전용: 광고나 지출은 변경되지 않습니다.",
+      "cardNotConnected": "연결된 광고 계정이 없습니다."
     }
   },
   "MetaConnections": {

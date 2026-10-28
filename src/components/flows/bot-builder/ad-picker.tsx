@@ -131,7 +131,7 @@ export function AdPicker({ value, onChange }: { value: string[]; onChange: (ids:
       {meta !== "connected" && (
         <p className="text-muted-foreground text-[10.5px] leading-snug">
           {meta === "error" ? t("metaError") : t("metaHint")}{" "}
-          <Link href="/ads" className="text-emerald-700 underline dark:text-emerald-400">
+          <Link href="/settings?tab=integrations" className="text-emerald-700 underline dark:text-emerald-400">
             {t("openAds")}
           </Link>
         </p>
