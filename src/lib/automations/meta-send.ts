@@ -51,9 +51,8 @@ interface SendTemplateArgs {
   templateName: string
   language?: string
   params?: string[]
-  /** Image/video/document header link. When set, the local template
-   *  row is used to build header + body components; without it the
-   *  send keeps its original body-params-only payload. */
+  /** Image/video/document header link for this send. Overrides the
+   *  template row's stored header_media_url. */
   headerMediaUrl?: string
 }
 
@@ -170,9 +169,9 @@ async function sendViaMeta(input: SendInput): Promise<{ whatsapp_message_id: str
 
   const accessToken = decrypt(config.access_token)
 
-  // Local template row — read for the body we persist below, not for
-  // the Meta payload (the wire shape is deliberately unchanged here).
-  // A missing row is fine: the send still goes out, we just can't
+  // Local template row — builds the Meta components (media header,
+  // body, buttons) and the body we persist below. A missing row is
+  // fine: the send falls back to body-only params, we just can't
   // reconstruct the text the customer saw.
   const templateRow =
     input.kind === 'template'
@@ -206,7 +205,11 @@ async function sendViaMeta(input: SendInput): Promise<{ whatsapp_message_id: str
         templateName: input.templateName,
         language: input.language,
         params: input.params,
-        ...(input.headerMediaUrl && templateRow
+        // Build from the template row whenever we have one: a media
+        // header must ride along on every send (falling back to the
+        // template's stored header_media_url), or Meta rejects the send
+        // with #132012 "Parameter format does not match".
+        ...(templateRow
           ? {
               template: templateRow,
               messageParams: { body: input.params ?? [], headerMediaUrl: input.headerMediaUrl },
