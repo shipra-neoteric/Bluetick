@@ -32,6 +32,9 @@ interface MetaErrorResponse {
     error_subcode?: number
     type?: string
     fbtrace_id?: string
+    /** Graph's own human-readable explanation — often the only useful text on a bare "(#100) Invalid parameter". */
+    error_user_title?: string
+    error_user_msg?: string
     /** WhatsApp-specific envelope — `details` is the human-readable part. */
     error_data?: { messaging_product?: string; details?: string }
   }
@@ -98,7 +101,7 @@ async function readMetaError(response: Response, fallback: string): Promise<Meta
     type: envelope?.type ?? null,
     fbtraceId: envelope?.fbtrace_id ?? null,
     httpStatus: response.status,
-    details: envelope?.error_data?.details ?? null,
+    details: envelope?.error_data?.details ?? envelope?.error_user_msg ?? null,
   })
 }
 
@@ -283,6 +286,30 @@ export async function listWabaPhoneNumbers(
     url = data.paging?.next
   }
   return out
+}
+
+/**
+ * Diagnostic — ask Graph what kind of object an id is
+ * (`whatsapp_business_account`, `business`, `application`,
+ * `whatsapp_business_phone_number`, …) via `?metadata=1`. Used when
+ * the WABA-scoped calls fail with a bare "(#100) Invalid parameter",
+ * which almost always means a different Meta id was pasted into the
+ * WABA field. Returns null when the type can't be read — never throws.
+ */
+export async function getMetaObjectType(args: {
+  id: string
+  accessToken: string
+}): Promise<string | null> {
+  try {
+    const response = await fetch(`${META_API_BASE}/${args.id}?metadata=1&fields=id`, {
+      headers: { Authorization: `Bearer ${args.accessToken}` },
+    })
+    if (!response.ok) return null
+    const data = (await response.json()) as { metadata?: { type?: string } }
+    return data.metadata?.type ?? null
+  } catch {
+    return null
+  }
 }
 
 export interface GetSubscribedAppsArgs {

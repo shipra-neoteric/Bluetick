@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
 import {
+  getMetaObjectType,
   getSubscribedApps,
   listWabaPhoneNumbers,
   registerPhoneNumber,
@@ -77,6 +78,29 @@ function metaFailure(err: unknown, step: MetaConnectStep, ctx: MetaErrorContext)
   return NextResponse.json(
     { error: explained.summary, meta: metaErrorPayload(explained) },
     { status: explained.httpStatus },
+  )
+}
+
+/** Graph `metadata.type` values people commonly paste into the WABA field by mistake. */
+const WRONG_WABA_TYPE_LABEL: Record<string, string> = {
+  whatsapp_business_phone_number: 'a Phone Number ID',
+  business: 'a Business portfolio ID (Business Manager ID)',
+  application: 'a Meta App ID',
+  user: 'a user ID',
+  page: 'a Facebook Page ID',
+  adaccount: 'an ad account ID',
+}
+
+function wrongWabaIdResponse(wabaId: string, label: string) {
+  return NextResponse.json(
+    {
+      error:
+        `The WhatsApp Business Account ID you entered (${wabaId}) is ${label}, not a WhatsApp ` +
+        'Business Account ID. Copy the "WhatsApp Business Account ID" shown under Meta → WhatsApp → ' +
+        'API Setup (or WhatsApp Manager → Account tools), not the Business portfolio or App ID.',
+      field: 'waba_id',
+    },
+    { status: 400 },
   )
 }
 
@@ -299,6 +323,9 @@ export async function POST(request: Request) {
         { status: 400 }
       )
     }
+    if (waba_id && waba_id === phone_number_id) {
+      return wrongWabaIdResponse(waba_id, WRONG_WABA_TYPE_LABEL.whatsapp_business_phone_number)
+    }
     const metaCtx: MetaErrorContext = { phoneNumberId: phone_number_id, wabaId: waba_id || null }
 
     if (pin !== undefined && pin !== null && pin !== '') {
@@ -365,6 +392,12 @@ export async function POST(request: Request) {
           accessToken: access_token,
         })
       } catch (err) {
+        // A bare "(#100) Invalid parameter" here almost always means the
+        // id is a real Meta object of the wrong kind — ask Graph which.
+        const type = await getMetaObjectType({ id: waba_id, accessToken: access_token })
+        if (type && type !== 'whatsapp_business_account') {
+          return wrongWabaIdResponse(waba_id, WRONG_WABA_TYPE_LABEL[type] ?? `a "${type}" object`)
+        }
         return metaFailure(err, 'waba_phone_numbers', metaCtx)
       }
       if (!phoneNumberBelongsToWaba(wabaNumbers, phone_number_id)) {

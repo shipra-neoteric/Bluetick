@@ -221,8 +221,11 @@ export function explainMetaError(
       )
     }
     return build(
-      `Meta rejected a parameter while ${STEP_LABEL[step]}: ${err.message}. Check that the ` +
-        `${target.noun} is copied exactly (digits only, no spaces).`,
+      `Meta rejected a parameter while ${STEP_LABEL[step]}: ${metaMessage}. Check that the ` +
+        `${target.noun} is copied exactly (digits only, no spaces)` +
+        (target.field === 'waba_id'
+          ? ' and is the WhatsApp Business Account ID — not the Business portfolio ID or App ID.'
+          : '.'),
       target.field,
       'user',
     )
